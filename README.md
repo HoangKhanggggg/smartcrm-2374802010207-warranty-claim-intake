@@ -1,31 +1,41 @@
-# Smart CRM – Warranty Claim Intake System
+# Warranty App – Smart CRM
 
-## 1. Giới thiệu
+## 1. Thông tin đề tài
 
-Smart CRM là dự án xây dựng hệ thống hỗ trợ quản lý khách hàng và tiếp nhận yêu cầu bảo hành cho Mekong Mobile.
+- **Tên đề tài:** Hệ thống tiếp nhận và quản lý yêu cầu bảo hành.
+- **Dự án:** Smart CRM – Mekong Mobile.
+- **Track:** Software Engineering (SE).
+- **Repository:** `smartcrm-2374802010207-warranty-claim-intake`.
 
-## 2. Mục tiêu
+## 2. Cấu trúc tài liệu
 
-- Quản lý thông tin khách hàng và thiết bị.
-- Tiếp nhận và phân loại yêu cầu bảo hành.
-- Tạo phiếu bảo hành và theo dõi trạng thái xử lý.
-- Lưu lịch sử thay đổi trạng thái phiếu.
+- `docs/srs.md`: Đặc tả yêu cầu phần mềm.
+- `docs/usecase.drawio`: Sơ đồ Use Case.
+- `docs/architecture.drawio`: Sơ đồ kiến trúc hệ thống.
+- `docs/erd.drawio`: Sơ đồ thực thể – liên kết.
+- `docs/wireframe.drawio`: Thiết kế giao diện.
+- `docs/ai-declaration.md`: Khai báo sử dụng AI.
+- `docs/export/`: Ảnh PNG xuất từ các sơ đồ.
+- `db/schema.sql`: Mã SQL DDL skeleton.
+- `BT1_<MSSV>_<Họ tên>.pdf`: Bản PDF nộp VLU E-learning.
 
-## 3. Phạm vi
+## 3. Cách mở file thiết kế
 
-Dự án tập trung vào quy trình tiếp nhận và phân loại yêu cầu bảo hành, làm cơ sở cho việc phát triển hệ thống CRM.
+Các file `.drawio` có thể mở và chỉnh sửa bằng diagrams.net:
 
-## 4. Công nghệ
+https://app.diagrams.net/
 
-Cập nhật các công nghệ thực tế sau khi nhóm thống nhất và triển khai.
+Các file `.png` có thể xem trực tiếp trên GitHub. File PDF có thể mở bằng trình đọc PDF tương thích.
 
-## 5. Cấu trúc thư mục
+## 4. Luồng thực hiện
 
-- `docs/`: Tài liệu phân tích và thiết kế.
-- `src/backend/`: Mã nguồn backend.
-- `src/frontend/`: Mã nguồn frontend.
-- `tests/`: Tài liệu và mã kiểm thử.
+1. Xây dựng SRS và xác định yêu cầu.
+2. Thiết kế Use Case và luồng nghiệp vụ.
+3. Xây dựng sơ đồ kiến trúc.
+4. Thiết kế ERD và SQL DDL.
+5. Thiết kế wireframe.
+6. Xuất ảnh sơ đồ và tổng hợp tài liệu PDF.
 
-## 6. Trạng thái dự án
+## 5. Trạng thái
 
-Đang trong giai đoạn xây dựng tài liệu phân tích, thiết kế và phát triển hệ thống.
+Cập nhật trạng thái thực tế của từng hạng mục trước khi nộp bài.
