@@ -17,7 +17,7 @@
 - `docs/ai-declaration.md`: Khai báo sử dụng AI.
 - `docs/export/`: Ảnh PNG xuất từ các sơ đồ.
 - `db/schema.sql`: Mã SQL DDL skeleton.
-- `BT1_<MSSV>_<Họ tên>.pdf`: Bản PDF nộp VLU E-learning.
+- `BT1_2374802010207_BuiHoangKhang.pdf`: Bản PDF nộp VLU E-learning.
 
 ## 3. Cách mở file thiết kế
 
