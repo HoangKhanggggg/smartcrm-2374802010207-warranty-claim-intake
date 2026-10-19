@@ -6,49 +6,224 @@
 - **Dự án:** Smart CRM – Mekong Mobile.
 - **Track:** Software Engineering (SE).
 - **Repository:** `smartcrm-2374802010207-warranty-claim-intake`.
+- **Chức năng chính:** Tiếp nhận, tra cứu, cập nhật và quản lý phiếu bảo hành.
 
 ## 2. Yêu cầu môi trường
-- Node.js 20 LTS, npm 10
-- SQLite 3 (qua better-sqlite3, không cần cài riêng)
-- Biến môi trường: xem .env.example (PORT, DB_FILE)
-- Chạy: npm install && npm start (migration và seed tự chạy khi khởi động)
 
-## 3. Cách mở file thiết kế
+- Node.js và npm.
+- PostgreSQL.
+- pgAdmin để quản lý cơ sở dữ liệu.
+- Visual Studio Code để chỉnh sửa mã nguồn.
+- Git để quản lý phiên bản.
+
+### Công nghệ sử dụng
+
+- **Backend:** Node.js, Express.js.
+- **Database:** PostgreSQL.
+- **Kết nối database:** Thư viện `pg`.
+- **API:** REST API.
+- **Quản lý mã nguồn:** Git và GitHub.
+- **Thiết kế sơ đồ:** diagrams.net (draw.io).
+
+### Cấu hình môi trường
+
+Tạo và cấu hình file `.env` theo mẫu `.env.example`, bao gồm các biến môi trường phù hợp với mã nguồn:
+
+```env
+PORT=3000
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_NAME=smart_crm
+```
+
+**Lưu ý:** Thay `your_password` bằng mật khẩu PostgreSQL trên máy của bạn. Không commit file `.env` chứa thông tin đăng nhập lên GitHub.
+
+### Cài đặt và chạy ứng dụng
+
+Mở terminal tại thư mục gốc của repository và thực hiện:
+
+```powershell
+npm install
+node src/app.js
+```
+
+Sau khi ứng dụng khởi động thành công, API mặc định được truy cập tại:
+
+`http://127.0.0.1:3000`
+
+Nếu dự án đã cấu hình script `start` trong `package.json`, có thể sử dụng `npm start`.
+
+## 3. Cấu trúc repository
+
+```text
+smartcrm-2374802010207-warranty-claim-intake/
+├── db/
+│   └── schema.sql
+├── docs/
+│   ├── srs.md
+│   ├── usecase.drawio
+│   ├── architecture.drawio
+│   ├── erd.drawio
+│   ├── wireframe.drawio
+│   ├── ai-declaration.md
+│   └── export/
+├── src/
+│   ├── app.js
+│   ├── db/
+│   │   └── index.js
+│   ├── repositories/
+│   │   └── ticketRepository.js
+│   ├── services/
+│   │   └── ticketService.js
+│   ├── routes/
+│   │   └── tickets.js
+│   └── utils/
+│       ├── AppError.js
+│       └── sla.js
+├── tests/
+├── .env.example
+├── .gitignore
+├── package.json
+└── README.md
+```
+
+Cấu trúc trên mô tả các thành phần chính dự kiến của dự án. Một số file hoặc thư mục có thể chưa được tạo hoặc chưa hoàn thiện trong repository hiện tại.
+
+## 4. Cơ sở dữ liệu
+
+Database sử dụng PostgreSQL với tên `smart_crm`.
+
+Hệ thống gồm 5 bảng chính:
+
+| Bảng | Chức năng |
+|---|---|
+| `customer` | Lưu thông tin khách hàng. |
+| `device` | Lưu thông tin thiết bị của khách hàng. |
+| `issue_category` | Quản lý danh mục loại lỗi bảo hành. |
+| `ticket` | Lưu thông tin phiếu bảo hành. |
+| `ticket_status_log` | Ghi nhận lịch sử thay đổi trạng thái phiếu. |
+
+Các bảng được liên kết bằng khóa chính và khóa ngoại nhằm bảo đảm tính nhất quán của dữ liệu.
+
+## 5. Chức năng hệ thống
+
+### 5.1. Tiếp nhận phiếu bảo hành
+
+- Tiếp nhận thông tin thiết bị và mô tả lỗi.
+- Xác định loại lỗi và mức độ ưu tiên.
+- Sinh mã phiếu bảo hành.
+- Tính hạn cam kết xử lý theo mức ưu tiên.
+- Gán trạng thái ban đầu là `Mới`.
+- Ghi nhận lịch sử trạng thái khi tạo phiếu.
+
+### 5.2. Tra cứu phiếu bảo hành
+
+- Lấy danh sách phiếu bảo hành.
+- Tra cứu phiếu theo ID.
+- Lọc danh sách theo trạng thái, loại lỗi và mức độ ưu tiên.
+- Hỗ trợ phân trang danh sách phiếu.
+
+### 5.3. Cập nhật và đóng phiếu
+
+- Cập nhật thông tin phân loại và mức độ ưu tiên.
+- Cập nhật trạng thái xử lý.
+- Ghi nhận lịch sử khi trạng thái thay đổi.
+- Đóng phiếu bảo hành thông qua API tương ứng.
+
+Các chức năng được triển khai theo từng giai đoạn và cần được kiểm thử trước khi xác nhận hoàn thành.
+
+## 6. API và kiểm thử
+
+Các API phiếu bảo hành được tổ chức dưới đường dẫn `/tickets`.
+
+| Phương thức | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/tickets` | Lấy danh sách phiếu. |
+| POST | `/tickets` | Tạo phiếu bảo hành. |
+| GET | `/tickets/:id` | Lấy chi tiết phiếu. |
+| PATCH | `/tickets/:id` | Cập nhật phiếu. |
+| DELETE | `/tickets/:id` | Đóng phiếu bảo hành theo logic nghiệp vụ hiện tại. |
+
+### Kết quả kiểm thử đã thực hiện
+
+- **GET `/tickets`:** Trả về HTTP `200 OK`.
+- **POST `/tickets`:** Trả về HTTP `201 Created`.
+- Đã tạo thành công phiếu bảo hành có ID `1`, trạng thái ban đầu `Mới`.
+
+### Kiểm thử bằng PowerShell
+
+Lấy danh sách phiếu:
+
+```powershell
+curl.exe -i http://127.0.0.1:3000/tickets
+```
+
+Tạo phiếu bảo hành:
+
+```powershell
+curl.exe -i -X POST http://127.0.0.1:3000/tickets -H "Content-Type: application/json" -d "@body.json"
+```
+
+Nội dung file `body.json` dùng để kiểm thử:
+
+```json
+{
+  "deviceId": 1,
+  "categoryId": 1,
+  "description": "Man hinh bi soc",
+  "priority": "Cao"
+}
+```
+
+Yêu cầu tạo phiếu thành công cần có thiết bị với ID `1` và danh mục lỗi với ID `1` trong database.
+
+## 7. Tài liệu thiết kế
+
+Các tài liệu phục vụ phân tích và thiết kế phần mềm gồm:
+
+- `docs/srs.md`: Đặc tả yêu cầu phần mềm.
+- `docs/usecase.drawio`: Sơ đồ Use Case.
+- `docs/architecture.drawio`: Sơ đồ kiến trúc hệ thống.
+- `docs/erd.drawio`: Sơ đồ thực thể – liên kết dữ liệu.
+- `docs/wireframe.drawio`: Thiết kế giao diện.
+- `db/schema.sql`: Cấu trúc cơ sở dữ liệu.
+- `docs/ai-declaration.md`: Khai báo sử dụng công cụ AI.
+- `docs/export/`: Lưu ảnh PNG xuất từ các sơ đồ.
 
 Các file `.drawio` có thể mở và chỉnh sửa bằng diagrams.net:
 
 https://app.diagrams.net/
 
-Các file `.png` có thể xem trực tiếp trên GitHub. File PDF có thể mở bằng trình đọc PDF tương thích.
+Cần bảo đảm nội dung tài liệu, sơ đồ, SQL DDL và cấu trúc database thực tế nhất quán với nhau.
 
-## 4. Luồng thực hiện
+## 8. Trạng thái thực hiện
 
-1. Xây dựng SRS và xác định yêu cầu.
-2. Thiết kế Use Case và luồng nghiệp vụ.
-3. Xây dựng sơ đồ kiến trúc.
-4. Thiết kế ERD và SQL DDL.
-5. Thiết kế wireframe.
-6. Xuất ảnh sơ đồ và tổng hợp tài liệu PDF.
+- [x] Hoàn thành phần giới thiệu repository.
+- [x] Có 5 bảng database chính.
+- [x] API GET `/tickets` trả về HTTP 200.
+- [x] API POST `/tickets` trả về HTTP 201.
+- [ ] Kiểm tra lịch sử trạng thái trong `ticket_status_log`.
+- [ ] Kiểm thử API chi tiết, cập nhật và đóng phiếu.
+- [ ] Hoàn thiện CRUD khách hàng và thiết bị.
+- [ ] Viết unit test cho lớp service.
+- [ ] Rà soát SRS và sơ đồ thiết kế.
+- [ ] Đối chiếu ERD với SQL DDL và database thực tế.
+- [ ] Bổ sung ảnh sơ đồ và kết quả kiểm thử vào `docs/`.
+- [ ] Kiểm tra PDF BT1 đã nộp trên VLU E-learning.
 
-## 5. Trạng thái thực hiện
+**Trạng thái chung:** Dự án đã kiểm thử thành công API đọc danh sách và tạo phiếu bảo hành. Các chức năng còn lại và tài liệu thiết kế tiếp tục được hoàn thiện trước khi nộp bài.
 
-- **README.md:** Đã hoàn thành phần giới thiệu đề tài và cấu trúc repository.
-- **SRS (`docs/srs.md`):** Đang rà soát và hoàn thiện yêu cầu phần mềm.
-- **Use Case (`docs/usecase.drawio`):** Cần kiểm tra và hoàn thiện sơ đồ.
-- **Architecture (`docs/architecture.drawio`):** Cần kiểm tra và hoàn thiện sơ đồ kiến trúc.
-- **ERD (`docs/erd.drawio`):** Cần kiểm tra tính nhất quán với cơ sở dữ liệu.
-- **SQL DDL (`db/schema.sql`):** Đã tạo file, cần đối chiếu với ERD.
-- **Wireframe (`docs/wireframe.drawio`):** Cần kiểm tra và hoàn thiện thiết kế giao diện.
-- **Khai báo AI (`docs/ai-declaration.md`):** Đã tạo file khai báo sử dụng AI.
-- **Ảnh sơ đồ (`docs/export/`):** Kiểm tra và bổ sung ảnh PNG sau khi hoàn thiện các sơ đồ.
-- **PDF BT1:** Kiểm tra và tải lên bản PDF đã nộp trên VLU E-learning.
-## 6. Trạng thái hiện tại (buổi 8)
-- [x] Migration 5 bảng theo DDL BT1 + seed danh mục
-- [x] CRUD /tickets qua routes/services/repositories
-- [ ] CRUD customer, device
-- [ ] Unit test lớp service (xong trước buổi 10)
-- Ghi chú: dùng SQLite thay PostgreSQL để tránh lỗi cài đặt;
-  cú pháp DDL đổi cho SQLite, ràng buộc giữ nguyên.
+## 9. Quản lý phiên bản
 
-**Trạng thái chung:** Đang hoàn thiện và rà soát tài liệu trước khi nộp bài.
+Sử dụng Git để theo dõi quá trình phát triển và lưu lại các thay đổi của dự án.
 
+Ví dụ:
+
+```powershell
+git status
+git add README.md
+git commit -m "docs: update project README"
+git push
+```
