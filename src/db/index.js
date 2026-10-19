@@ -1,14 +1,26 @@
-const Database = require('better-sqlite3');
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config();
+const { Pool } = require('pg');
 
-const db = new Database(process.env.DB_FILE || 'smartcrm.sqlite');
-db.pragma('foreign_keys = ON'); // SQLite mặc định TẮT khóa ngoại
+const pool = new Pool({
+  host: process.env.DB_HOST || 'localhost',
+  port: Number(process.env.DB_PORT) || 5432,
+  user: process.env.DB_USER || 'postgres',
+  password: String(process.env.DB_PASSWORD || ''), // Ép kiểu chuỗi bắt buộc
+  database: process.env.DB_NAME || 'smart_crm',
+});
 
-function migrate() {
-  const dir = path.join(__dirname, 'migrations');
-  fs.readdirSync(dir).filter(f => f.endsWith('.sql')).sort()
-    .forEach(f => db.exec(fs.readFileSync(path.join(dir, f), 'utf8')));
-}
+const query = (text, params) => pool.query(text, params);
+const getClient = () => pool.connect();
 
-module.exports = { db, migrate };
+const migrate = async () => {
+  const client = await pool.connect();
+  console.log('Đã kết nối cơ sở dữ liệu PostgreSQL thành công!');
+  client.release();
+};
+
+module.exports = {
+  pool,
+  query,
+  getClient,
+  migrate,
+};

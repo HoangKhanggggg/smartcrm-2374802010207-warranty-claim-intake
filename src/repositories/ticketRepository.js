@@ -1,41 +1,165 @@
-const { db } = require('../db');
+const db = require('../db');
 
-const findDevice = id => db.prepare('SELECT * FROM device WHERE device_id=?').get(id);
-const findCategory = id => db.prepare('SELECT * FROM issue_category WHERE category_id=?').get(id);
-const findById = id => db.prepare('SELECT * FROM ticket WHERE ticket_id=?').get(id);
+const findDevice = async (id) => {
+  const result = await db.query(
+    'SELECT * FROM device WHERE device_id = $1',
+    [id]
+  );
+  return result.rows[0] || null;
+};
 
-function list({ status, categoryId, priority, limit, offset }) {
-  const where = [], args = [];
-  if (status) { where.push('status=?'); args.push(status); }
-  if (categoryId) { where.push('category_id=?'); args.push(categoryId); }
-  if (priority) { where.push('priority=?'); args.push(priority); }
-  const w = where.length ? 'WHERE ' + where.join(' AND ') : '';
-  return db.prepare(`SELECT * FROM ticket ${w} ORDER BY created_at DESC LIMIT ? OFFSET ?`)
-           .all(...args, limit, offset);
-}
+const findCategory = async (id) => {
+  const result = await db.query(
+    'SELECT * FROM issue_category WHERE category_id = $1',
+    [id]
+  );
+  return result.rows[0] || null;
+};
 
-// Chèn ticket + dòng log đầu tiên trong MỘT transaction (US03-AC3)
-const create = db.transaction(t => {
-  const tmp = 'TMP-' + Date.now() + Math.random();
-  const r = db.prepare(`INSERT INTO ticket(ticket_code,device_id,category_id,description,
-      priority,status,commitment_deadline,created_at) VALUES (?,?,?,?,?,?,?,?)`)
-    .run(tmp, t.deviceId, t.categoryId ?? null, t.description, t.priority, 'Mới',
-         t.deadline, t.createdAt);
-  const id = r.lastInsertRowid;
-  const day = t.createdAt.slice(0, 10).replace(/-/g, '');
-  const code = `BH-${day}-${String(id).padStart(5, '0')}`;
-  db.prepare('UPDATE ticket SET ticket_code=? WHERE ticket_id=?').run(code, id);
-  db.prepare('INSERT INTO ticket_status_log(ticket_id,status,changed_at) VALUES (?,?,?)')
-    .run(id, 'Mới', t.createdAt);
-  return id;
-});
+const findById = async (id) => {
+  const result = await db.query(
+    'SELECT * FROM ticket WHERE ticket_id = $1',
+    [id]
+  );
+  return result.rows[0] || null;
+};
 
-const update = db.transaction((id, f) => {
-  db.prepare(`UPDATE ticket SET category_id=?, priority=?, commitment_deadline=?, status=? 
-              WHERE ticket_id=?`).run(f.categoryId, f.priority, f.deadline, f.status, id);
-  if (f.statusChanged)
-    db.prepare('INSERT INTO ticket_status_log(ticket_id,status,changed_at) VALUES (?,?,?)')
-      .run(id, f.status, new Date().toISOString());
-});
+const list = async ({ status, categoryId, priority, limit = 20, offset = 0 }) => {
+  const conditions = [];
+  const values = [];
 
-module.exports = { findDevice, findCategory, findById, list, create, update };
+  if (status) {
+    values.push(status);
+    conditions.push(`status = $${values.length}`);
+  }
+
+  if (categoryId) {
+    values.push(categoryId);
+    conditions.push(`category_id = $${values.length}`);
+  }
+
+  if (priority) {
+    values.push(priority);
+    conditions.push(`priority = $${values.length}`);
+  }
+
+  values.push(limit);
+  const limitParam = `$${values.length}`;
+
+  values.push(offset);
+  const offsetParam = `$${values.length}`;
+
+  const where = conditions.length
+    ? `WHERE ${conditions.join(' AND ')}`
+    : '';
+
+  const result = await db.query(
+    `SELECT * FROM ticket
+     ${where}
+     ORDER BY ticket_id DESC
+     LIMIT ${limitParam} OFFSET ${offsetParam}`,
+    values
+  );
+
+  return result.rows;
+};
+
+const create = async (ticketData) => {
+  const client = await db.getClient();
+
+  try {
+    await client.query('BEGIN');
+
+    const result = await client.query(
+      `INSERT INTO ticket
+       (ticket_code, device_id, category_id, description,
+        priority, status, commitment_deadline)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
+      [
+        ticketData.ticketCode,
+        ticketData.deviceId,
+        ticketData.categoryId || null,
+        ticketData.description,
+        ticketData.priority,
+        ticketData.status,
+        ticketData.commitmentDeadline
+      ]
+    );
+
+    const ticket = result.rows[0];
+
+    await client.query(
+      `INSERT INTO ticket_status_log (ticket_id, status)
+       VALUES ($1, $2)`,
+      [ticket.ticket_id, ticket.status]
+    );
+
+    await client.query('COMMIT');
+
+    return ticket;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+const update = async (id, data) => {
+  const client = await db.getClient();
+
+  try {
+    await client.query('BEGIN');
+
+    const result = await client.query(
+      `UPDATE ticket
+       SET category_id = $1,
+           priority = $2,
+           commitment_deadline = $3,
+           status = $4
+       WHERE ticket_id = $5
+       RETURNING *`,
+      [
+        data.categoryId || null,
+        data.priority,
+        data.deadline,
+        data.status,
+        id
+      ]
+    );
+
+    const ticket = result.rows[0];
+
+    if (!ticket) {
+      await client.query('ROLLBACK');
+      return null;
+    }
+
+    if (data.statusChanged) {
+      await client.query(
+        `INSERT INTO ticket_status_log (ticket_id, status)
+         VALUES ($1, $2)`,
+        [ticket.ticket_id, ticket.status]
+      );
+    }
+
+    await client.query('COMMIT');
+
+    return ticket;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+module.exports = {
+  findDevice,
+  findCategory,
+  findById,
+  list,
+  create,
+  update
+};
