@@ -1,0 +1,33 @@
+{
+  "name": "smartcrm-2374802010207-warranty-claim-intake",
+  "version": "1.0.0",
+  "description": "- **Tên đề tài:** Hệ thống tiếp nhận và quản lý yêu cầu bảo hành.\r - **Dự án:** Smart CRM – Mekong Mobile.\r - **Track:** Software Engineering (SE).\r - **Repository:** `smartcrm-2374802010207-warranty-claim-intake`.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+  "start": "node src/app.js",
+  "test": "jest"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/issues"
+  },
+  "homepage": "https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake#readme",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2"
+  }
+}
