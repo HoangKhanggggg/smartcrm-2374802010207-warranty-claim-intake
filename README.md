@@ -7,17 +7,11 @@
 - **Track:** Software Engineering (SE).
 - **Repository:** `smartcrm-2374802010207-warranty-claim-intake`.
 
-## 2. Cấu trúc tài liệu
-
-- `docs/srs.md`: Đặc tả yêu cầu phần mềm.
-- `docs/usecase.drawio`: Sơ đồ Use Case.
-- `docs/architecture.drawio`: Sơ đồ kiến trúc hệ thống.
-- `docs/erd.drawio`: Sơ đồ thực thể – liên kết.
-- `docs/wireframe.drawio`: Thiết kế giao diện.
-- `docs/ai-declaration.md`: Khai báo sử dụng AI.
-- `docs/export/`: Ảnh PNG xuất từ các sơ đồ.
-- `db/schema.sql`: Mã SQL DDL skeleton.
-- `BT1_2374802010207_BuiHoangKhang.pdf`: Bản PDF nộp VLU E-learning.
+## 2. Yêu cầu môi trường
+- Node.js 20 LTS, npm 10
+- SQLite 3 (qua better-sqlite3, không cần cài riêng)
+- Biến môi trường: xem .env.example (PORT, DB_FILE)
+- Chạy: npm install && npm start (migration và seed tự chạy khi khởi động)
 
 ## 3. Cách mở file thiết kế
 
@@ -48,6 +42,13 @@ Các file `.png` có thể xem trực tiếp trên GitHub. File PDF có thể m�
 - **Khai báo AI (`docs/ai-declaration.md`):** Đã tạo file khai báo sử dụng AI.
 - **Ảnh sơ đồ (`docs/export/`):** Kiểm tra và bổ sung ảnh PNG sau khi hoàn thiện các sơ đồ.
 - **PDF BT1:** Kiểm tra và tải lên bản PDF đã nộp trên VLU E-learning.
+## 6. Trạng thái hiện tại (buổi 8)
+- [x] Migration 5 bảng theo DDL BT1 + seed danh mục
+- [x] CRUD /tickets qua routes/services/repositories
+- [ ] CRUD customer, device
+- [ ] Unit test lớp service (xong trước buổi 10)
+- Ghi chú: dùng SQLite thay PostgreSQL để tránh lỗi cài đặt;
+  cú pháp DDL đổi cho SQLite, ràng buộc giữ nguyên.
 
 **Trạng thái chung:** Đang hoàn thiện và rà soát tài liệu trước khi nộp bài.
 
