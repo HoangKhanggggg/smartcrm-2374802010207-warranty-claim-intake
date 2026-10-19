@@ -6,9 +6,7 @@
 **Ngành:** Công nghệ thông tin  
 **Chuyên ngành:** SE – Kỹ thuật phần mềm
 
-### Đề tài
-
-# SRS — L02: TIẾP NHẬN VÀ PHÂN LOẠI BẢO HÀNH
+# SRS — L02: TIẾP NHẬN VÀ PHÂN LOẠI YÊU CẦU BẢO HÀNH
 
 **Sinh viên thực hiện:** Bùi Hoàng Khang  
 **MSSV:** 2374802010207  
@@ -23,9 +21,9 @@
 
 **Mục 1. BẢN SRS RÚT GỌN**
 
-1.1. Giới thiệu, phạm vi và bảng thuật ngữ  
+1.1. Giới thiệu, phạm vi và thuật ngữ  
 1.2. Các bên liên quan và vai trò người dùng  
-1.3. Yêu cầu chức năng và User Story  
+1.3. User Story và tiêu chí chấp nhận  
 1.4. Yêu cầu chức năng – FR  
 1.5. Yêu cầu phi chức năng – NFR  
 1.6. Ràng buộc và quy tắc nghiệp vụ  
@@ -33,25 +31,28 @@
 
 **Mục 2. USE CASE**
 
-2.1. Use Case Diagram  
-2.2. Đặc tả chi tiết Use Case quan trọng nhất  
+2.1. Danh sách Use Case  
+2.2. Mô tả Use Case Diagram  
+2.3. Đặc tả Use Case quan trọng nhất  
 
 **Mục 3. THIẾT KẾ KIẾN TRÚC**
 
-3.1. Sơ đồ kiến trúc  
-3.2. Ba câu lập luận NFR  
+3.1. Kiến trúc hệ thống  
+3.2. Luồng xử lý tạo phiếu  
+3.3. Ba lập luận thiết kế theo NFR  
 
 **Mục 4. MÔ HÌNH DỮ LIỆU – ERD VÀ SQL DDL**
 
 4.1. Xác định bảng dữ liệu  
 4.2. Quan hệ giữa các bảng  
-4.3. SQL DDL  
+4.3. SQL DDL tham chiếu cho PostgreSQL 18  
+4.4. Nguyên tắc đồng bộ dữ liệu  
 
 **Mục 5. WIREFRAME**
 
-Màn hình 1 – Tra cứu khách hàng và thiết bị  
-Màn hình 2 – Tiếp nhận và phân loại yêu cầu  
-Màn hình 3 – Danh sách phiếu bảo hành  
+5.1. Màn hình tra cứu khách hàng và thiết bị  
+5.2. Màn hình tiếp nhận và phân loại yêu cầu  
+5.3. Màn hình danh sách phiếu bảo hành  
 
 **PHỤ LỤC. BẢNG KHAI BÁO SỬ DỤNG CÔNG CỤ AI**
 
@@ -59,43 +60,79 @@ Màn hình 3 – Danh sách phiếu bảo hành
 
 # MỤC 1. BẢN SRS RÚT GỌN
 
-## 1.1. Giới thiệu, phạm vi và bảng thuật ngữ
+## 1.1. Giới thiệu, phạm vi và thuật ngữ
 
 ### 1.1.1. Giới thiệu
 
-Luồng L02 – Tiếp nhận và phân loại yêu cầu bảo hành thuộc hệ thống Smart CRM của Mekong Mobile. Luồng này hỗ trợ nhân viên tiếp nhận tra cứu khách hàng, ghi nhận thiết bị, tiếp nhận mô tả lỗi và tạo phiếu bảo hành điện tử.
+L02 – Tiếp nhận và phân loại yêu cầu bảo hành là một luồng nghiệp vụ thuộc hệ thống Smart CRM của Mekong Mobile. Luồng này tập trung vào việc ghi nhận thông tin thiết bị, mô tả lỗi, tạo phiếu bảo hành, lựa chọn mức ưu tiên và quản lý thông tin phiếu.
 
-Hệ thống quản lý phiếu theo mã duy nhất, hỗ trợ phân loại nhóm sự cố, lựa chọn mức ưu tiên, tính hạn cam kết và theo dõi danh sách phiếu. Mục tiêu là giảm tình trạng trùng hồ sơ khách hàng, hạn chế nhập liệu thủ công và giúp quản lý theo dõi các phiếu sắp đến hạn hoặc đã quá hạn.
+Hệ thống sử dụng mã phiếu duy nhất để nhận diện từng yêu cầu. Mỗi phiếu liên kết với một thiết bị và có thể liên kết với một nhóm sự cố. Khi tạo phiếu, hệ thống xác định trạng thái ban đầu, thời điểm tiếp nhận và hạn cam kết theo mức ưu tiên.
 
-### 1.1.2. Phạm vi hệ thống
+Phiên bản đang triển khai sử dụng Node.js, Express và PostgreSQL 18. Backend cung cấp API để tạo, xem danh sách, xem chi tiết và cập nhật phiếu bảo hành. Các chức năng mở rộng như xác thực người dùng, phân quyền, giao diện hoàn chỉnh, cảnh báo hạn và kiểm soát xóa dữ liệu cần được kiểm thử riêng trước khi xác nhận đã hoàn thành.
 
-**Trong phạm vi (IN SCOPE):**
+### 1.1.2. Mục tiêu
 
-- Tra cứu khách hàng bằng số điện thoại.
-- Tạo hồ sơ khách hàng mới khi chưa tồn tại.
+- Chuẩn hóa việc tiếp nhận yêu cầu bảo hành.
+- Lưu thông tin phiếu bảo hành trong cơ sở dữ liệu có cấu trúc.
+- Bảo đảm mã phiếu duy nhất và dữ liệu liên kết hợp lệ.
+- Hỗ trợ phân loại sự cố và lựa chọn mức ưu tiên.
+- Tự động tính hạn cam kết theo quy tắc SLA đã thống nhất.
+- Hỗ trợ truy vấn, cập nhật và theo dõi trạng thái phiếu.
+- Tạo cơ sở để mở rộng chức năng cảnh báo quá hạn và phân quyền trong các giai đoạn tiếp theo.
+
+### 1.1.3. Phạm vi hệ thống
+
+**Trong phạm vi nghiệp vụ:**
+
+- Quản lý hồ sơ khách hàng.
 - Ghi nhận và tra cứu thiết bị bằng serial/IMEI.
-- Hiển thị tình trạng bảo hành theo ngày hết hạn bảo hành.
-- Tiếp nhận mô tả lỗi và tạo phiếu bảo hành có mã duy nhất.
-- Phân loại nhóm sự cố.
+- Lưu ngày hết hạn bảo hành của thiết bị.
+- Tiếp nhận mô tả lỗi và tạo phiếu bảo hành.
+- Sinh mã phiếu duy nhất.
+- Lựa chọn nhóm sự cố.
 - Lựa chọn mức ưu tiên Cao, Trung bình hoặc Thấp.
 - Tính hạn cam kết theo mức ưu tiên và quy tắc SLA.
-- Xem và lọc danh sách phiếu bảo hành.
-- Nhận diện phiếu sắp đến hạn hoặc đã quá hạn.
-- Ghi nhận trạng thái ban đầu và lịch sử thay đổi trạng thái phiếu.
+- Xem danh sách, xem chi tiết và cập nhật phiếu.
+- Ghi nhận trạng thái và lịch sử thay đổi trạng thái.
+- Xác định phiếu sắp đến hạn hoặc quá hạn.
 
-**Ngoài phạm vi (OUT OF SCOPE):**
+**Trong phạm vi triển khai hiện tại:**
 
-- Phân công kỹ thuật viên và quản lý danh sách kỹ thuật viên.
+- Backend Node.js và Express.
+- Kết nối PostgreSQL 18 qua thư viện `pg`.
+- Các bảng `customer`, `device`, `issue_category`, `ticket`, `ticket_status_log`.
+- API Ticket gồm tạo phiếu, lấy danh sách, lấy chi tiết, cập nhật và endpoint DELETE.
+- Logic tính hạn cam kết theo mức ưu tiên.
+- Kiểm thử thực tế thành công với các thao tác GET, POST và PATCH trên phiếu bảo hành.
+
+**Ngoài phạm vi phiên bản hiện tại:**
+
+- Phân công kỹ thuật viên và quản lý năng lực kỹ thuật viên.
 - Quản lý quá trình sửa chữa thực tế.
-- Quản lý kho linh kiện và đặt linh kiện.
-- Thanh toán và hoàn tất nghiệp vụ sửa chữa thực tế.
-- Lưu hồ sơ phê duyệt chi tiết của quản lý đối với trường hợp chưa xác minh bảo hành.
-- Phân quyền theo từng trung tâm hoặc đơn vị cụ thể.
-- Báo cáo thống kê nâng cao ngoài chức năng xem và lọc phiếu.
+- Quản lý kho và đặt linh kiện.
+- Thanh toán và hoàn tất giao dịch sửa chữa.
+- Tích hợp hệ thống quản lý cửa hàng hoặc cổng thanh toán bên ngoài.
+- Báo cáo thống kê nâng cao.
+- Xác thực và phân quyền hoàn chỉnh nếu chưa được triển khai và kiểm thử.
+- Tác vụ lập lịch tự động gửi cảnh báo nếu chưa được triển khai.
 
-Các chức năng ngoài phạm vi có thể được xem xét trong những phiên bản tiếp theo của Smart CRM.
+Các chức năng nằm ngoài phạm vi triển khai hiện tại có thể được thực hiện trong các giai đoạn tiếp theo.
 
-### 1.1.3. Bảng thuật ngữ
+### 1.1.4. Công nghệ sử dụng
+
+| Thành phần | Công nghệ | Vai trò |
+|---|---|---|
+| Backend | Node.js | Môi trường thực thi JavaScript phía máy chủ |
+| API | Express | Khai báo và xử lý các endpoint HTTP |
+| Truy cập dữ liệu | Thư viện `pg` | Kết nối và truy vấn PostgreSQL |
+| Cơ sở dữ liệu | PostgreSQL 18 | Lưu trữ dữ liệu nghiệp vụ |
+| Quản trị cơ sở dữ liệu | pgAdmin | Truy vấn và kiểm tra dữ liệu |
+| Quản lý mã nguồn | Git, GitHub | Theo dõi phiên bản và lưu trữ mã nguồn |
+| Kiểm thử API | PowerShell, HTTP requests | Kiểm tra phản hồi và dữ liệu trả về |
+
+Lưu ý: `src/backend` có bộ khung Spring Boot riêng. Tài liệu này lấy backend Node.js tại `src/app.js` làm backend chính của phiên bản đã kiểm thử. Không sử dụng kiến trúc Spring Boot làm kiến trúc triển khai chính nếu chưa chuyển đổi và xác nhận lại dự án.
+
+### 1.1.5. Bảng thuật ngữ
 
 | Thuật ngữ | Ý nghĩa |
 |---|---|
@@ -109,192 +146,247 @@ Các chức năng ngoài phạm vi có thể được xem xét trong những phi
 | MoSCoW | Phương pháp phân loại mức độ ưu tiên yêu cầu |
 | Ticket/Phiếu | Hồ sơ điện tử đại diện cho một yêu cầu bảo hành |
 | SLA | Quy tắc xác định hạn cam kết xử lý |
-| Hạn cam kết | Thời điểm hệ thống tính toán dựa trên thời điểm tiếp nhận và mức ưu tiên |
+| Nhóm sự cố | Danh mục phân loại lỗi thiết bị |
 | Mức ưu tiên | Cao, Trung bình hoặc Thấp |
-| Nhóm sự cố | Danh mục dùng để phân loại sự cố thiết bị |
-| Trạng thái | Bước trong vòng đời xử lý phiếu |
+| Trạng thái | Giai đoạn xử lý hiện tại của phiếu |
 | PK/FK | Khóa chính/khóa ngoại |
 | ERD | Sơ đồ thực thể liên kết dữ liệu |
-| DDL | Các câu lệnh định nghĩa cấu trúc cơ sở dữ liệu |
-| Xóa mềm | Đánh dấu dữ liệu không còn sử dụng thay vì xóa vật lý |
+| DDL | Câu lệnh định nghĩa cấu trúc cơ sở dữ liệu |
+| API | Giao diện lập trình ứng dụng |
+| CRUD | Tạo, đọc, cập nhật và xóa dữ liệu |
+| Soft delete | Xóa mềm, đánh dấu không còn sử dụng thay vì xóa vật lý |
 
 ## 1.2. Các bên liên quan và vai trò người dùng
 
 | Actor | Vai trò |
 |---|---|
-| Nhân viên tiếp nhận | Tra cứu khách hàng, ghi nhận thiết bị, tạo phiếu, nhập mô tả lỗi, chọn nhóm sự cố và mức ưu tiên. |
-| Quản lý trung tâm | Xem và lọc danh sách phiếu, theo dõi phiếu sắp đến hạn hoặc quá hạn, xem tình trạng xác minh bảo hành. |
-| Bộ đếm thời gian | Kích hoạt việc kiểm tra định kỳ để xác định phiếu sắp đến hạn hoặc đã quá hạn. |
+| Nhân viên tiếp nhận | Tra cứu thông tin khách hàng và thiết bị, nhập mô tả lỗi, tạo phiếu và lựa chọn mức ưu tiên. |
+| Quản lý trung tâm | Xem và lọc danh sách phiếu, theo dõi trạng thái và các phiếu cần chú ý. |
+| Tác vụ lập lịch | Kiểm tra hạn cam kết theo chu kỳ và kích hoạt cảnh báo nếu chức năng này được triển khai. |
 
-Lưu ý: Bộ đếm thời gian là tác nhân hệ thống bên ngoài hoặc tác vụ lập lịch, tùy theo kiến trúc triển khai. Đây không phải người dùng đăng nhập như nhân viên hoặc quản lý.
+Tác vụ lập lịch là tác nhân kỹ thuật, không phải người dùng đăng nhập.
 
-## 1.3. Yêu cầu chức năng và User Story
+Ở phiên bản hiện tại, các vai trò trên được xác định ở mức nghiệp vụ. Không được xem việc xác định Actor trong SRS là bằng chứng rằng chức năng đăng nhập và phân quyền đã được triển khai.
+
+## 1.3. User Story và tiêu chí chấp nhận
+
+### 1.3.1. Danh sách User Story
 
 | Mã | User Story | Actor | MoSCoW |
 |---|---|---|---|
-| US01 | Là nhân viên tiếp nhận, tôi muốn tra cứu khách hàng bằng số điện thoại và tạo hồ sơ mới nếu chưa có, để hạn chế hồ sơ khách hàng trùng lặp. | Nhân viên tiếp nhận | MUST |
-| US02 | Là nhân viên tiếp nhận, tôi muốn ghi nhận thiết bị bằng serial/IMEI và kiểm tra tình trạng bảo hành, để xác định thiết bị trước khi tạo phiếu. | Nhân viên tiếp nhận | MUST |
+| US01 | Là nhân viên tiếp nhận, tôi muốn tra cứu khách hàng bằng số điện thoại và tạo hồ sơ mới nếu chưa tồn tại, để hạn chế dữ liệu khách hàng trùng lặp. | Nhân viên tiếp nhận | MUST |
+| US02 | Là nhân viên tiếp nhận, tôi muốn tra cứu thiết bị bằng serial/IMEI và xem thông tin bảo hành, để xác định thiết bị trước khi tạo phiếu. | Nhân viên tiếp nhận | MUST |
 | US03 | Là nhân viên tiếp nhận, tôi muốn nhập mô tả lỗi và tạo phiếu bảo hành có mã duy nhất, để lưu lại yêu cầu của khách hàng. | Nhân viên tiếp nhận | MUST |
 | US04 | Là nhân viên tiếp nhận, tôi muốn chọn nhóm sự cố từ danh mục có sẵn, để thống nhất cách phân loại yêu cầu. | Nhân viên tiếp nhận | SHOULD |
-| US05 | Là nhân viên tiếp nhận, tôi muốn chọn mức ưu tiên Cao, Trung bình hoặc Thấp, để xác định thời hạn cam kết phù hợp. | Nhân viên tiếp nhận | SHOULD |
-| US06 | Là nhân viên tiếp nhận, tôi muốn hệ thống tự tính và hiển thị hạn cam kết theo mức ưu tiên, để tránh tính toán thủ công. | Nhân viên tiếp nhận | SHOULD |
+| US05 | Là nhân viên tiếp nhận, tôi muốn chọn mức ưu tiên Cao, Trung bình hoặc Thấp, để xác định hạn cam kết phù hợp. | Nhân viên tiếp nhận | MUST |
+| US06 | Là nhân viên tiếp nhận, tôi muốn hệ thống tự tính và hiển thị hạn cam kết theo mức ưu tiên, để tránh tính toán thủ công. | Nhân viên tiếp nhận | MUST |
 | US07 | Là quản lý trung tâm, tôi muốn xem và lọc danh sách phiếu theo trạng thái, nhóm sự cố và mức ưu tiên, để theo dõi tình hình tiếp nhận và các phiếu cần chú ý. | Quản lý trung tâm | MUST |
 
-### 1.3.1. Tiêu chí chấp nhận (Given – When – Then)
+**Giải thích mức ưu tiên:** US05 và US06 được nâng thành MUST vì mã nguồn hiện tại đã có xử lý mức ưu tiên và tính hạn cam kết. Việc hoàn thiện đầy đủ quy tắc loại trừ Chủ nhật vẫn cần được kiểm thử riêng.
 
-**US01 – AC1: Tra cứu khách hàng đã tồn tại**
+### 1.3.2. Tiêu chí chấp nhận – US01
 
-- Given số điện thoại của khách hàng đã tồn tại trong hệ thống.
-- When nhân viên nhập số điện thoại hợp lệ và thực hiện tìm kiếm.
-- Then hệ thống chuẩn hóa số điện thoại, hiển thị hồ sơ hiện có và không tạo bản ghi khách hàng mới.
+**AC1 – Tra cứu khách hàng đã tồn tại**
 
-**US01 – AC2: Tạo khách hàng mới**
+- Given số điện thoại khách hàng đã tồn tại.
+- When nhân viên nhập số điện thoại hợp lệ và tìm kiếm.
+- Then hệ thống trả về hồ sơ hiện có và không tạo bản ghi khách hàng trùng.
+
+**AC2 – Tạo khách hàng mới**
 
 - Given số điện thoại hợp lệ chưa tồn tại.
 - When nhân viên nhập họ tên và lưu hồ sơ.
-- Then hệ thống tạo hồ sơ khách hàng mới và cho phép sử dụng hồ sơ đó khi lập phiếu.
+- Then hệ thống tạo khách hàng mới và có thể sử dụng hồ sơ này khi lập phiếu.
 
-**US01 – AC3: Số điện thoại không hợp lệ**
+**AC3 – Số điện thoại không hợp lệ**
 
-- Given số điện thoại chứa chữ cái hoặc không đáp ứng định dạng hợp lệ sau chuẩn hóa.
-- When nhân viên thực hiện tìm kiếm.
-- Then hệ thống thông báo số điện thoại không hợp lệ và không tạo hồ sơ khách hàng.
+- Given số điện thoại không đáp ứng quy tắc định dạng đã cấu hình.
+- When nhân viên tìm kiếm.
+- Then hệ thống thông báo dữ liệu không hợp lệ và không tạo hồ sơ mới.
 
-**US02 – AC1: Thiết bị có dữ liệu bảo hành**
+### 1.3.3. Tiêu chí chấp nhận – US02
+
+**AC1 – Thiết bị có dữ liệu bảo hành**
 
 - Given thiết bị có serial/IMEI hợp lệ và có ngày hết hạn bảo hành.
 - When nhân viên tra cứu thiết bị.
-- Then hệ thống xác định thiết bị còn bảo hành hoặc hết bảo hành dựa trên `warranty_end_date`.
+- Then hệ thống xác định tình trạng bảo hành dựa trên ngày hiện tại và `warranty_end_date`.
 
-**US02 – AC2: Chưa xác minh bảo hành**
+**AC2 – Chưa xác minh bảo hành**
 
-- Given thiết bị không có dữ liệu `warranty_end_date`.
+- Given thiết bị chưa có `warranty_end_date`.
 - When nhân viên tra cứu thiết bị.
-- Then hệ thống hiển thị “Chưa xác minh bảo hành”; nhân viên không được tự xác nhận thiết bị còn bảo hành.
+- Then hệ thống hiển thị “Chưa xác minh bảo hành”; không tự kết luận thiết bị còn bảo hành.
 
-**US02 – AC3: Serial/IMEI đã tồn tại**
+**AC3 – Serial/IMEI trùng**
 
-- Given serial/IMEI đã thuộc một thiết bị trong hệ thống.
-- When nhân viên nhập và lưu thiết bị trùng.
-- Then hệ thống từ chối tạo thiết bị trùng và thông báo lỗi phù hợp.
+- Given serial/IMEI đã tồn tại.
+- When nhân viên tạo thiết bị trùng.
+- Then hệ thống từ chối tạo dữ liệu trùng.
 
-**US03 – AC1: Tạo phiếu thành công**
+### 1.3.4. Tiêu chí chấp nhận – US03
 
-- Given khách hàng và thiết bị đã được xác định.
-- When nhân viên nhập mô tả lỗi hợp lệ và tạo phiếu.
-- Then hệ thống sinh mã phiếu duy nhất, đặt trạng thái ban đầu là “Mới”, sử dụng mức ưu tiên mặc định là “Trung bình”, tính hạn cam kết và ghi nhận lịch sử trạng thái ban đầu.
+**AC1 – Tạo phiếu thành công**
 
-**US03 – AC2: Thiếu dữ liệu bắt buộc**
+- Given `deviceId` hợp lệ và mô tả lỗi không rỗng.
+- When nhân viên gửi yêu cầu tạo phiếu.
+- Then hệ thống sinh mã phiếu, đặt trạng thái “Mới”, xác định mức ưu tiên, tính hạn cam kết và lưu dữ liệu.
 
-- Given phiếu chưa có thiết bị hoặc chưa có mô tả lỗi.
-- When nhân viên yêu cầu tạo phiếu.
-- Then hệ thống không lưu phiếu và thông báo trường cần bổ sung.
+**AC2 – Thiếu dữ liệu bắt buộc**
 
-**US03 – AC3: Lưu dữ liệu thất bại**
+- Given yêu cầu không có thiết bị hoặc mô tả lỗi rỗng.
+- When nhân viên tạo phiếu.
+- Then hệ thống từ chối yêu cầu và trả về thông báo lỗi phù hợp.
 
-- Given dữ liệu đã được nhập hợp lệ.
-- When quá trình lưu thất bại.
-- Then hệ thống thông báo lỗi, giữ dữ liệu trên biểu mẫu nếu có thể và không để lại phiếu được tạo dở dang.
+**AC3 – Lưu thất bại**
 
-**US04 – AC1: Chọn nhóm sự cố**
+- Given dữ liệu đầu vào hợp lệ.
+- When cơ sở dữ liệu không thể lưu phiếu.
+- Then hệ thống không trả về kết quả tạo phiếu thành công và phải xử lý giao dịch để tránh dữ liệu không nhất quán.
+
+**AC4 – Mã phiếu trùng**
+
+- Given mã phiếu đã tồn tại.
+- When hệ thống thử lưu phiếu mới.
+- Then cơ sở dữ liệu phải ngăn việc tạo mã trùng và ứng dụng phải xử lý lỗi phù hợp.
+
+### 1.3.5. Tiêu chí chấp nhận – US04
+
+**AC1 – Chọn nhóm sự cố**
 
 - Given nhân viên đang lập phiếu.
 - When nhân viên mở danh mục nhóm sự cố.
-- Then hệ thống hiển thị các nhóm đang sử dụng: Màn hình, Pin, Sạc, Phần mềm, Nước vào và Khác.
+- Then hệ thống cung cấp các nhóm đã được cấu hình, ví dụ Màn hình, Pin, Sạc, Phần mềm, Nước vào và Khác.
 
-**US04 – AC2: Chưa chọn nhóm sự cố**
+**AC2 – Chưa phân loại**
 
 - Given nhân viên chưa chọn nhóm sự cố.
-- When nhân viên tạo phiếu.
-- Then hệ thống vẫn cho phép lưu phiếu với `category_id` rỗng và cho phép bổ sung phân loại sau.
+- When phiếu được tạo.
+- Then hệ thống cho phép `category_id` nhận giá trị NULL theo quy tắc nghiệp vụ.
 
-**US05 – AC1: Giá trị ưu tiên hợp lệ**
+### 1.3.6. Tiêu chí chấp nhận – US05
 
-- Given nhân viên chọn mức ưu tiên.
-- When nhân viên mở danh sách ưu tiên.
-- Then hệ thống chỉ cho phép chọn Cao, Trung bình hoặc Thấp.
+**AC1 – Mức ưu tiên hợp lệ**
 
-**US05 – AC2: Giá trị mặc định**
+- Given nhân viên tạo hoặc cập nhật phiếu.
+- When nhân viên chọn mức ưu tiên.
+- Then chỉ chấp nhận Cao, Trung bình hoặc Thấp.
 
-- Given nhân viên tạo phiếu mới.
-- When hệ thống khởi tạo biểu mẫu.
-- Then mức ưu tiên mặc định là Trung bình; nhân viên có thể đổi sang Cao hoặc Thấp trước khi lưu.
+**AC2 – Mức ưu tiên mặc định**
 
-**US06 – AC1: Tính hạn cam kết**
+- Given nhân viên tạo phiếu mà không chỉ định mức ưu tiên.
+- When hệ thống xử lý yêu cầu.
+- Then mức ưu tiên mặc định là Trung bình.
 
-- Given nhân viên chọn hoặc thay đổi mức ưu tiên.
+### 1.3.7. Tiêu chí chấp nhận – US06
+
+**AC1 – Tính hạn cam kết**
+
+- Given phiếu có mức ưu tiên hợp lệ.
 - When hệ thống tính hạn cam kết.
-- Then hệ thống tính theo quy tắc 24 giờ, 72 giờ hoặc 120 giờ tương ứng với mức ưu tiên và không cho phép người dùng sửa trực tiếp hạn cam kết.
+- Then áp dụng thời lượng SLA tương ứng: Cao 24 giờ, Trung bình 72 giờ, Thấp 120 giờ.
 
-**US06 – AC2: SLA đi qua Chủ nhật**
+**AC2 – Thay đổi mức ưu tiên**
 
-- Given phiếu được tiếp nhận lúc 10:00 Thứ Bảy và có mức ưu tiên Cao với SLA 24 giờ.
-- When hệ thống tính hạn cam kết theo quy tắc loại trừ toàn bộ thời gian Chủ nhật.
+- Given phiếu đã tồn tại và có mức ưu tiên.
+- When mức ưu tiên thay đổi.
+- Then hệ thống tính lại hạn cam kết theo quy tắc được thống nhất.
+
+**AC3 – Loại trừ Chủ nhật**
+
+- Given hạn SLA đi qua Chủ nhật.
+- When hệ thống tính hạn theo QT-04.
+- Then toàn bộ khoảng thời gian Chủ nhật phải được loại trừ khỏi thời lượng SLA.
+
+**AC4 – Kiểm thử ranh giới**
+
+- Given phiếu được tiếp nhận lúc 10:00 Thứ Bảy với SLA 24 giờ.
+- When áp dụng quy tắc loại trừ toàn bộ Chủ nhật.
 - Then hạn cam kết là 10:00 Thứ Hai.
 
-**US07 – AC1: Hiển thị danh sách phiếu**
+Tiêu chí AC3 và AC4 là yêu cầu nghiệm thu. Mã nguồn hiện tại cần được điều chỉnh và kiểm thử bổ sung trước khi xác nhận đáp ứng hoàn toàn.
 
-- Given quản lý mở chức năng danh sách phiếu.
-- When hệ thống tải dữ liệu.
-- Then hệ thống hiển thị tối đa 20 phiếu mỗi trang với các thông tin: mã phiếu, khách hàng, thiết bị, trạng thái, nhóm sự cố, mức ưu tiên, hạn cam kết và ngày tiếp nhận.
+### 1.3.8. Tiêu chí chấp nhận – US07
 
-**US07 – AC2: Lọc danh sách**
+**AC1 – Hiển thị danh sách**
 
-- Given quản lý chọn một hoặc nhiều bộ lọc.
-- When quản lý thực hiện lọc.
-- Then hệ thống chỉ hiển thị các phiếu thỏa mãn đồng thời các điều kiện lọc.
+- Given người dùng truy vấn danh sách phiếu.
+- When API xử lý yêu cầu.
+- Then hệ thống trả về dữ liệu phiếu hiện có.
 
-**US07 – AC3: Không có kết quả**
+**AC2 – Lọc danh sách**
 
-- Given không có phiếu phù hợp với điều kiện lọc.
+- Given người dùng chọn các điều kiện lọc.
+- When gửi yêu cầu truy vấn.
+- Then hệ thống chỉ trả về các phiếu phù hợp với các điều kiện đã áp dụng.
+
+**AC3 – Không có kết quả**
+
+- Given không có phiếu thỏa mãn điều kiện.
 - When hệ thống trả kết quả.
-- Then hệ thống hiển thị thông báo “Không có phiếu phù hợp”.
+- Then trả về danh sách rỗng hoặc thông báo không có dữ liệu phù hợp.
+
+**AC4 – Giới hạn và phân trang**
+
+- Given số lượng phiếu vượt quá giới hạn hiển thị.
+- When người dùng truy vấn danh sách.
+- Then hệ thống phải hỗ trợ giới hạn kết quả và phân trang theo cấu hình triển khai.
+
+Giới hạn 20 phiếu mỗi trang chỉ được xem là yêu cầu nghiệm thu khi chức năng phân trang đã được bổ sung và kiểm thử.
 
 ## 1.4. Yêu cầu chức năng – FR
 
-| Mã | Yêu cầu chức năng | US liên quan |
-|---|---|---|
-| FR01 | Hệ thống cho phép tra cứu khách hàng bằng số điện thoại và hiển thị hồ sơ phù hợp. | US01 |
-| FR02 | Hệ thống cho phép tạo hồ sơ khách hàng mới khi số điện thoại chưa tồn tại. | US01 |
-| FR03 | Hệ thống cho phép ghi nhận hoặc tra cứu thiết bị bằng serial/IMEI. | US02 |
-| FR04 | Hệ thống hiển thị tình trạng bảo hành dựa trên `warranty_end_date`; nếu thiếu dữ liệu thì hiển thị “Chưa xác minh bảo hành”. | US02 |
-| FR05 | Hệ thống cho phép nhập và lưu mô tả lỗi của thiết bị. | US03 |
-| FR06 | Hệ thống tạo mã phiếu bảo hành duy nhất khi tạo phiếu thành công và đặt trạng thái ban đầu là “Mới”. | US03 |
-| FR07 | Hệ thống cung cấp danh mục nhóm sự cố để nhân viên lựa chọn. | US04 |
-| FR08 | Hệ thống cho phép chọn một trong ba mức ưu tiên Cao, Trung bình hoặc Thấp. | US05 |
-| FR09 | Hệ thống tự tính và hiển thị hạn cam kết theo mức ưu tiên và quy tắc SLA đã cấu hình. | US06 |
-| FR10 | Hệ thống cho phép quản lý xem và lọc danh sách phiếu bảo hành. | US07 |
-| FR11 | Hệ thống nhận diện và hiển thị phiếu sắp đến hạn hoặc đã quá hạn theo QT-13. | US07 |
-| FR12 | Hệ thống ghi nhận lịch sử trạng thái phiếu, gồm mã phiếu, trạng thái mới và thời điểm thay đổi. Khi tạo phiếu thành công, hệ thống ghi nhận trạng thái ban đầu là “Mới”. | US03, US07 |
+| Mã | Yêu cầu chức năng | US liên quan | Trạng thái triển khai |
+|---|---|---|---|
+| FR01 | Tra cứu khách hàng bằng số điện thoại và trả về hồ sơ phù hợp. | US01 | Cần xác minh API Customer |
+| FR02 | Tạo khách hàng mới khi số điện thoại chưa tồn tại. | US01 | Cần xác minh API Customer |
+| FR03 | Ghi nhận và tra cứu thiết bị bằng serial/IMEI. | US02 | Cần xác minh API Device |
+| FR04 | Xác định tình trạng bảo hành từ `warranty_end_date`. | US02 | Cần hoàn thiện và kiểm thử |
+| FR05 | Tiếp nhận mô tả lỗi và lưu vào phiếu. | US03 | Đã kiểm thử qua POST |
+| FR06 | Tạo mã phiếu duy nhất và đặt trạng thái ban đầu là “Mới”. | US03 | Đã kiểm thử qua POST |
+| FR07 | Cung cấp danh mục nhóm sự cố và cho phép chọn nhóm. | US04 | Có cấu trúc dữ liệu; API cần xác minh |
+| FR08 | Chỉ chấp nhận ba mức ưu tiên Cao, Trung bình, Thấp. | US05 | Đã kiểm thử một số trường hợp |
+| FR09 | Tính hạn cam kết theo mức ưu tiên và quy tắc SLA. | US06 | Đã kiểm thử tính hạn cơ bản; quy tắc Chủ nhật cần hoàn thiện |
+| FR10 | Xem danh sách, xem chi tiết và lọc phiếu bảo hành. | US07 | GET danh sách và chi tiết đã kiểm thử; lọc cần xác minh |
+| FR11 | Nhận diện phiếu sắp đến hạn hoặc quá hạn theo QT-13. | US07 | Cần triển khai hoặc xác minh |
+| FR12 | Ghi nhận trạng thái ban đầu và lịch sử thay đổi trạng thái. | US03, US07 | Trạng thái đã kiểm thử; lịch sử cần xác minh trong database |
+
+Trạng thái triển khai trong bảng phản ánh các kết quả kiểm thử hiện có, không thay thế cho việc kiểm thử toàn bộ tiêu chí chấp nhận.
 
 ## 1.5. Yêu cầu phi chức năng – NFR
 
 | Mã | Nhóm | Yêu cầu | Cách kiểm tra |
 |---|---|---|---|
-| NFR01 | Hiệu năng | 95% thao tác tra cứu khách hàng/thiết bị phản hồi trong không quá 2 giây với 50 người dùng đồng thời. | Kiểm thử tải và đo thời gian phản hồi. |
-| NFR02 | Tính toàn vẹn dữ liệu | 100% phiếu tạo thành công có mã duy nhất; hệ thống không lưu phiếu thiếu các trường bắt buộc. | Kiểm thử ràng buộc dữ liệu, khóa và trường bắt buộc. |
-| NFR03 | Bảo mật | 100% API tạo/xem phiếu phải kiểm tra quyền truy cập theo vai trò trước khi xử lý yêu cầu. | Kiểm thử bằng tài khoản có quyền và không có quyền. |
-| NFR04 | Khả năng sử dụng | Người dùng thử nghiệm hoàn thành quy trình tạo phiếu trong tối đa 3 phút sau hướng dẫn ngắn. | Kiểm thử usability theo kịch bản. |
+| NFR01 | Hiệu năng | 95% thao tác tra cứu khách hàng/thiết bị phản hồi không quá 2 giây khi có 50 người dùng đồng thời. | Kiểm thử tải, ghi nhận phân vị 95 của thời gian phản hồi. |
+| NFR02 | Toàn vẹn dữ liệu | 100% phiếu tạo thành công có mã duy nhất, thiết bị hợp lệ, mô tả lỗi không rỗng và trạng thái hợp lệ. | Kiểm thử dữ liệu đầu vào, khóa và ràng buộc cơ sở dữ liệu. |
+| NFR03 | Bảo mật | API cần bảo vệ dữ liệu phải xác thực và kiểm tra quyền theo vai trò trước khi xử lý yêu cầu. | Kiểm thử người dùng hợp lệ, không xác thực và không đủ quyền. |
+| NFR04 | Khả năng sử dụng | Người dùng thử nghiệm hoàn thành quy trình tạo phiếu trong tối đa 3 phút sau hướng dẫn ngắn. | Kiểm thử theo kịch bản với người dùng thử nghiệm. |
+
+Các NFR trên là mục tiêu nghiệm thu. Chưa có kết quả kiểm thử tải, usability hoặc bảo mật thì không được kết luận rằng hệ thống đã đạt các ngưỡng tương ứng.
 
 ## 1.6. Ràng buộc và quy tắc nghiệp vụ
 
 | Mã | Quy tắc nghiệp vụ | Áp dụng |
 |---|---|---|
-| QT-01 | Số điện thoại khách hàng phải duy nhất. Khi nhập số đã tồn tại, hệ thống hiển thị hồ sơ hiện có thay vì tạo khách hàng trùng. | FR01, FR02 |
-| QT-02 | Hệ thống chuẩn hóa số điện thoại về 10 chữ số bắt đầu bằng 0; xử lý định dạng +84, 84, dấu cách và dấu chấm. | FR01, FR02 |
-| QT-03 | Mỗi thiết bị được xác định bằng serial/IMEI duy nhất và liên kết với một khách hàng tại một thời điểm. | FR03 |
-| QT-04 | Hạn cam kết theo SLA: Cao 24 giờ, Trung bình 72 giờ, Thấp 120 giờ. Toàn bộ khoảng thời gian Chủ nhật được loại trừ khi tính SLA. | FR09 |
-| QT-05 | Nếu có `warranty_end_date`, hệ thống xác định tình trạng bảo hành bằng cách so sánh ngày hiện tại với ngày hết hạn bảo hành. Nếu `warranty_end_date` rỗng, hệ thống hiển thị “Chưa xác minh bảo hành”; nhân viên không tự xác nhận “Còn bảo hành”. | FR04 |
-| QT-06 | Vòng đời trạng thái phiếu gồm: Mới → Đã phân công → Đang xử lý → Chờ linh kiện → Hoàn tất → Đã đóng. Mỗi lần thay đổi trạng thái phải ghi một bản ghi mới vào `ticket_status_log`, gồm mã phiếu, trạng thái mới và thời điểm thay đổi. | FR06, FR12 |
-| QT-07 | Phiếu liên kết với khách hàng thông qua thiết bị: `ticket.device_id` tham chiếu `device.device_id`, còn `device.customer_id` tham chiếu `customer.customer_id`. Không tạo `ticket.customer_id` để tránh dư thừa dữ liệu. | FR03, FR05, FR06 |
-| QT-08 | Mức ưu tiên chỉ nhận một trong ba giá trị: Cao, Trung bình hoặc Thấp. | FR08 |
-| QT-09 | `category_id` có thể để trống khi phiếu chưa được phân loại; hệ thống cho phép bổ sung nhóm sự cố sau. | FR07 |
-| QT-10 | Không xóa vật lý phiếu, thiết bị và hồ sơ khách hàng trong quy trình nghiệp vụ. Cơ chế xóa mềm sẽ được xem xét khi mở rộng. | Toàn bộ |
-| QT-11 | Quyền truy cập được kiểm tra tại máy chủ. Nhân viên tiếp nhận được tạo phiếu và tra cứu dữ liệu phục vụ tiếp nhận; quản lý được xem, lọc và theo dõi phiếu sắp/quá hạn. | NFR03, FR10, FR11 |
-| QT-12 | Số điện thoại được che một phần khi hiển thị cho vai trò không được cấp quyền xem đầy đủ. | FR01, FR10, NFR03 |
-| QT-13 | Phiếu sắp đến hạn là phiếu còn không quá 8 giờ đến hạn cam kết và chưa ở trạng thái Hoàn tất hoặc Đã đóng. Phiếu quá hạn là phiếu đã vượt hạn cam kết và chưa ở trạng thái Hoàn tất hoặc Đã đóng. Ngưỡng 8 giờ là giá trị cấu hình. | FR11 |
+| QT-01 | Số điện thoại khách hàng phải duy nhất sau khi chuẩn hóa. | FR01, FR02 |
+| QT-02 | Chuẩn hóa số điện thoại theo quy tắc thống nhất, xử lý đầu số Việt Nam và ký tự phân cách trước khi kiểm tra. | FR01, FR02 |
+| QT-03 | Mỗi thiết bị có serial/IMEI duy nhất và liên kết với một khách hàng. | FR03 |
+| QT-04 | SLA cơ bản: Cao 24 giờ, Trung bình 72 giờ, Thấp 120 giờ. Toàn bộ thời gian Chủ nhật được loại trừ khi tính SLA. | FR09 |
+| QT-05 | Nếu có `warranty_end_date`, xác định tình trạng bảo hành theo ngày hiện tại và ngày hết hạn. Nếu giá trị rỗng, hiển thị “Chưa xác minh bảo hành”. | FR04 |
+| QT-06 | Vòng đời trạng thái gồm Mới → Đã phân công → Đang xử lý → Chờ linh kiện → Hoàn tất → Đã đóng. Mỗi lần thay đổi trạng thái phải ghi một bản ghi lịch sử gồm phiếu, trạng thái và thời điểm thay đổi. | FR06, FR12 |
+| QT-07 | Phiếu liên kết với khách hàng thông qua thiết bị: `ticket.device_id` → `device.device_id` → `customer.customer_id`. Không thêm `ticket.customer_id` vì sẽ tạo dữ liệu dư thừa. | FR03, FR05, FR06 |
+| QT-08 | Mức ưu tiên chỉ nhận Cao, Trung bình hoặc Thấp. Mặc định là Trung bình. | FR08, FR09 |
+| QT-09 | `category_id` có thể NULL khi phiếu chưa được phân loại. | FR07 |
+| QT-10 | Không xóa vật lý phiếu trong quy trình nghiệp vụ. Nếu cần loại bỏ phiếu khỏi danh sách hoạt động, sử dụng cơ chế xóa mềm hoặc trạng thái nghiệp vụ phù hợp. | FR10, FR12 |
+| QT-11 | Quyền truy cập được kiểm tra ở máy chủ. Nhân viên tiếp nhận và quản lý có quyền khác nhau theo nhiệm vụ. | NFR03 |
+| QT-12 | Số điện thoại được che một phần khi hiển thị cho vai trò không được cấp quyền xem đầy đủ. | NFR03 |
+| QT-13 | Phiếu sắp đến hạn là phiếu còn không quá 8 giờ đến hạn. Phiếu quá hạn là phiếu đã vượt hạn cam kết. Hai nhóm đều loại trừ phiếu Hoàn tất và Đã đóng. Ngưỡng 8 giờ có thể cấu hình. | FR11 |
 
-Lưu ý triển khai: QT-04 phải được thực hiện thống nhất trong Service và kiểm thử với các trường hợp hạn cam kết đi qua Chủ nhật. Không chỉ chuyển hạn sang Thứ Hai khi ngày hạn rơi vào Chủ nhật; cần loại trừ toàn bộ khoảng thời gian Chủ nhật khi tính SLA.
+**Lưu ý về QT-04:** Hàm SLA hiện tại trong `src/utils/sla.js` chỉ cộng số giờ và chuyển hạn sang ngày Thứ Hai nếu hạn rơi vào Chủ nhật. Cách xử lý này chưa tương đương với việc loại trừ toàn bộ thời gian Chủ nhật. Cần cập nhật hàm SLA và viết kiểm thử cho các trường hợp đi qua Chủ nhật.
+
+**Lưu ý về QT-06:** Việc API trả về trạng thái mới không tự chứng minh rằng lịch sử đã được ghi. Cần kiểm tra `ticket_status_log` sau khi tạo phiếu và cập nhật trạng thái.
+
+**Lưu ý về QT-10:** Backend có khai báo endpoint DELETE. Cần kiểm tra nội dung `src/routes/tickets.js` và xử lý được gọi bên trong để xác nhận endpoint này có xóa vật lý hay không. Không tuyên bố đã tuân thủ QT-10 nếu chưa xác minh.
 
 ## 1.7. Bảng truy vết yêu cầu
 
@@ -307,37 +399,25 @@ Lưu ý triển khai: QT-04 phải được thực hiện thống nhất trong S
 | FR05 | US03 | UC03 | MUST |
 | FR06 | US03 | UC03 | MUST |
 | FR07 | US04 | UC04 | SHOULD |
-| FR08 | US05 | UC05 | SHOULD |
-| FR09 | US06 | UC06 | SHOULD |
+| FR08 | US05 | UC05 | MUST |
+| FR09 | US06 | UC05, UC06 | MUST |
 | FR10 | US07 | UC07 | MUST |
 | FR11 | US07 | UC08 | MUST |
 | FR12 | US03, US07 | UC03, UC07 | MUST |
 
-### Đối chiếu vấn đề hiện tại
+### Đối chiếu vấn đề nghiệp vụ
 
-- **V1 – Hồ sơ khách hàng bị trùng:** giải quyết bằng US01, FR01 và FR02.
-- **V2 – Khó theo dõi trạng thái và phiếu quá hạn:** hỗ trợ giải quyết bằng US03, US06, US07 và FR09, FR11, FR12.
+- **V1 – Hồ sơ khách hàng bị trùng:** giải quyết bằng US01, FR01, FR02 và ràng buộc duy nhất số điện thoại.
+- **V2 – Khó theo dõi trạng thái và hạn xử lý:** giải quyết bằng US03, US06, US07 và FR09, FR11, FR12.
 - **V8 – Mô tả lỗi tự do gây khó thống kê:** cải thiện bằng US04 và FR07 thông qua danh mục nhóm sự cố.
-
-UC08 được sử dụng cho chức năng nhận diện phiếu sắp đến hạn hoặc quá hạn; UC07 dùng cho chức năng xem và lọc danh sách phiếu.
 
 ---
 
 # MỤC 2. USE CASE
 
-## 2.1. Use Case Diagram
+## 2.1. Danh sách Use Case
 
-Use Case Diagram mô tả mối quan hệ giữa các tác nhân và chức năng của hệ thống Smart CRM – L02.
-
-Các tác nhân gồm:
-
-- Nhân viên tiếp nhận.
-- Quản lý trung tâm.
-- Bộ đếm thời gian hoặc tác vụ lập lịch.
-
-Các Use Case chính:
-
-| Mã UC | Tên Use Case | Actor |
+| Mã UC | Tên Use Case | Actor chính |
 |---|---|---|
 | UC01 | Tra cứu khách hàng | Nhân viên tiếp nhận |
 | UC02 | Tạo hồ sơ khách hàng | Nhân viên tiếp nhận |
@@ -346,72 +426,161 @@ Các Use Case chính:
 | UC05 | Chọn mức ưu tiên | Nhân viên tiếp nhận |
 | UC06 | Tính hạn cam kết | Nhân viên tiếp nhận |
 | UC07 | Xem và lọc danh sách phiếu | Quản lý trung tâm |
-| UC08 | Nhận diện phiếu sắp đến hạn hoặc quá hạn | Quản lý trung tâm, bộ đếm thời gian |
+| UC08 | Nhận diện phiếu sắp đến hạn hoặc quá hạn | Quản lý trung tâm, tác vụ lập lịch |
 
-Trong sơ đồ, actor được đặt bên ngoài ranh giới hệ thống; các Use Case nằm bên trong ranh giới. Đường kết nối thể hiện tác nhân tham gia chức năng. Quan hệ include hoặc extend chỉ được sử dụng khi có quan hệ nghiệp vụ phù hợp.
+## 2.2. Mô tả Use Case Diagram
 
-## 2.2. Đặc tả chi tiết Use Case quan trọng nhất
+Ranh giới hệ thống là **Smart CRM – L02: Tiếp nhận và phân loại yêu cầu bảo hành**.
+
+Các tác nhân được đặt bên ngoài ranh giới hệ thống; các Use Case được đặt bên trong. Các đường kết nối biểu diễn quan hệ giữa tác nhân và chức năng.
+
+- Nhân viên tiếp nhận tham gia UC01, UC02, UC03, UC04, UC05 và UC06.
+- Quản lý trung tâm tham gia UC07 và UC08.
+- Tác vụ lập lịch tham gia UC08 khi chức năng kiểm tra hạn tự động được triển khai.
+
+UC03 có thể sử dụng UC04, UC05 và UC06 như các bước nghiệp vụ hỗ trợ. Nếu dùng quan hệ `include` trong sơ đồ, phải thể hiện đúng việc bước được gọi là bắt buộc; không dùng `extend` chỉ để trang trí sơ đồ.
+
+## 2.3. Đặc tả Use Case quan trọng nhất
 
 | Thuộc tính | Nội dung |
 |---|---|
-| Tên Use Case | UC03 – Ghi nhận thiết bị và tạo phiếu bảo hành |
+| Mã Use Case | UC03 |
+| Tên | Ghi nhận thiết bị và tạo phiếu bảo hành |
 | Actor chính | Nhân viên tiếp nhận |
-| Tiền điều kiện | Nhân viên đã đăng nhập; khách hàng đã được xác định; thiết bị có serial/IMEI hợp lệ. |
-| Hậu điều kiện thành công | Phiếu được lưu với mã duy nhất, liên kết với thiết bị, có nhóm sự cố nếu đã chọn, có mức ưu tiên và hạn cam kết; trạng thái ban đầu được ghi nhận. |
-| Hậu điều kiện thất bại | Không tạo phiếu dở dang; hệ thống thông báo lỗi và giữ dữ liệu biểu mẫu nếu có thể. |
+| Tiền điều kiện | Thiết bị đã được xác định và có ID hợp lệ; mô tả lỗi được nhập. |
+| Hậu điều kiện thành công | Phiếu được lưu với mã duy nhất, liên kết thiết bị, mức ưu tiên, trạng thái ban đầu và hạn cam kết. |
+| Hậu điều kiện thất bại | Không trả về kết quả tạo phiếu thành công; hệ thống thông báo lỗi và xử lý giao dịch phù hợp. |
 
 ### Luồng chính
 
 1. Nhân viên mở chức năng tạo phiếu bảo hành.
-2. Hệ thống hiển thị khách hàng và thiết bị đã xác định.
+2. Hệ thống tiếp nhận ID thiết bị đã xác định.
 3. Nhân viên nhập mô tả lỗi.
 4. Nhân viên chọn nhóm sự cố nếu có.
-5. Nhân viên chọn mức ưu tiên hoặc sử dụng giá trị mặc định Trung bình.
-6. Hệ thống kiểm tra các trường bắt buộc và dữ liệu liên quan.
-7. Hệ thống sinh mã phiếu duy nhất.
-8. Hệ thống tính hạn cam kết theo mức ưu tiên và quy tắc SLA.
-9. Hệ thống lưu phiếu bảo hành và ghi trạng thái ban đầu vào lịch sử trạng thái.
-10. Hệ thống thông báo tạo phiếu thành công.
+5. Nhân viên chọn mức ưu tiên hoặc sử dụng mặc định Trung bình.
+6. Hệ thống kiểm tra dữ liệu đầu vào.
+7. Hệ thống kiểm tra thiết bị có tồn tại trong cơ sở dữ liệu.
+8. Hệ thống kiểm tra nhóm sự cố nếu được cung cấp.
+9. Hệ thống sinh mã phiếu duy nhất.
+10. Hệ thống tính hạn cam kết.
+11. Hệ thống lưu phiếu với trạng thái ban đầu “Mới”.
+12. Hệ thống ghi nhận lịch sử trạng thái ban đầu theo QT-06.
+13. Hệ thống trả về thông tin phiếu vừa tạo.
 
 ### Luồng ngoại lệ
 
-**5a. Thiếu mô tả lỗi hoặc thiết bị:** Hệ thống thông báo trường cần bổ sung và không lưu phiếu.
+**E1 – Thiếu mô tả lỗi hoặc thiết bị:** Hệ thống từ chối yêu cầu và trả về thông báo dữ liệu không hợp lệ.
 
-**6a. Dữ liệu thiết bị không hợp lệ:** Hệ thống thông báo lỗi serial/IMEI hoặc dữ liệu liên quan; nhân viên cần kiểm tra lại.
+**E2 – Thiết bị không tồn tại:** Hệ thống trả về lỗi phù hợp và không tạo phiếu.
 
-**8a. Không tính được hạn cam kết:** Hệ thống thông báo lỗi cấu hình SLA và không báo tạo phiếu thành công.
+**E3 – Nhóm sự cố không hợp lệ:** Hệ thống từ chối yêu cầu nếu `category_id` không tồn tại.
 
-**9a. Lỗi kết nối hoặc cơ sở dữ liệu:** Hệ thống thông báo chưa lưu được dữ liệu, giữ thông tin biểu mẫu nếu có thể và không để lại bản ghi phiếu chưa hoàn chỉnh.
+**E4 – Mức ưu tiên không hợp lệ:** Hệ thống từ chối giá trị nằm ngoài Cao, Trung bình và Thấp.
+
+**E5 – Không tính được hạn cam kết:** Hệ thống không trả về thành công và thông báo lỗi cấu hình SLA.
+
+**E6 – Lỗi lưu dữ liệu:** Hệ thống xử lý giao dịch để không để lại phiếu được tạo dở dang. Việc ghi phiếu và lịch sử trạng thái cần được thực hiện trong cùng giao dịch nếu cả hai thao tác cùng thuộc một nghiệp vụ.
 
 ---
 
 # MỤC 3. THIẾT KẾ KIẾN TRÚC
 
-## 3.1. Sơ đồ kiến trúc
+## 3.1. Kiến trúc hệ thống
 
-Hệ thống được tổ chức theo các lớp để tách biệt giao diện, nghiệp vụ và truy cập dữ liệu.
+Kiến trúc thực tế của backend chính được tổ chức theo các lớp sau:
 
-| Thành phần | Trách nhiệm | Ví dụ |
+| Thành phần | Trách nhiệm | Vị trí tham chiếu |
 |---|---|---|
-| Presentation | Tiếp nhận thao tác của người dùng và hiển thị kết quả. | Màn hình tra cứu, tạo phiếu, danh sách phiếu. |
-| Controller/API | Tiếp nhận yêu cầu từ giao diện, kiểm tra dữ liệu đầu vào và gọi Service. | CustomerController, DeviceController, TicketController. |
-| Service | Xử lý quy tắc nghiệp vụ, tạo mã phiếu, phân loại và tính hạn cam kết. | CustomerService, DeviceService, TicketService, ClassifyService. |
-| Repository | Đọc và ghi dữ liệu cơ sở dữ liệu. | CustomerRepository, DeviceRepository, TicketRepository, CategoryRepository, StatusLogRepository. |
-| Database | Lưu trữ dữ liệu bền vững. | customer, device, issue_category, ticket, ticket_status_log. |
+| API/HTTP | Nhận yêu cầu HTTP và trả kết quả JSON. | `src/app.js` |
+| Routes | Khai báo endpoint và kết nối yêu cầu với xử lý nghiệp vụ. | `src/routes/tickets.js` |
+| Services | Kiểm tra dữ liệu, áp dụng quy tắc nghiệp vụ và tính hạn cam kết. | `src/services/ticketService.js` |
+| Repositories | Thực hiện truy vấn, thêm và cập nhật dữ liệu. | `src/repositories/ticketRepository.js` |
+| Database connection | Quản lý kết nối PostgreSQL thông qua connection pool. | `src/db/index.js` |
+| SLA utility | Tính hạn cam kết theo mức ưu tiên. | `src/utils/sla.js` |
+| PostgreSQL | Lưu dữ liệu khách hàng, thiết bị, nhóm sự cố, phiếu và lịch sử trạng thái. | Database `smart_crm` |
 
-Luồng xử lý tổng quát:
+Luồng xử lý:
 
-Presentation → Controller/API → Service → Repository → Database.
+**Client → Express Routes → Service → Repository → PostgreSQL**
 
-Khi tạo phiếu, Service kiểm tra dữ liệu, tính hạn cam kết và lưu phiếu cùng lịch sử trạng thái ban đầu. Các thao tác liên quan cần được thực hiện trong giao dịch phù hợp để hạn chế dữ liệu không nhất quán.
+Khi trả kết quả, dữ liệu đi ngược từ PostgreSQL qua Repository và Service đến API response.
 
-## 3.2. Ba câu lập luận NFR
+### Sơ đồ kiến trúc tham chiếu
 
-**Lập luận 1 – Hiệu năng:** NFR01 yêu cầu 95% thao tác tra cứu khách hàng và thiết bị phản hồi trong không quá 2 giây khi có 50 người dùng đồng thời. Vì vậy, hệ thống sử dụng ràng buộc UNIQUE trên `customer.phone` và `device.serial_imei` để hỗ trợ tra cứu, đồng thời tạo chỉ mục `idx_ticket_status_deadline` trên `ticket(status, commitment_deadline)` để hỗ trợ lọc phiếu và nhận diện phiếu sắp hoặc quá hạn. Đánh đổi là chỉ mục làm tăng dung lượng lưu trữ và chi phí cập nhật dữ liệu.
+```text
++---------------------------+
+| Client / PowerShell       |
+| HTTP Request              |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| Node.js + Express         |
+| src/app.js                |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| Routes                    |
+| src/routes/tickets.js     |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| TicketService             |
+| Validate + SLA            |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| TicketRepository          |
+| PostgreSQL Queries        |
++-------------+-------------+
+              |
+              v
++---------------------------+
+| PostgreSQL 18             |
+| Database: smart_crm       |
+| 5 tables                  |
++---------------------------+
+```
 
-**Lập luận 2 – Tính toàn vẹn dữ liệu:** NFR02 yêu cầu mọi phiếu tạo thành công phải có mã duy nhất và không thiếu các trường bắt buộc. Vì vậy, cơ sở dữ liệu sử dụng khóa chính, khóa ngoại, UNIQUE, NOT NULL và CHECK tại các cột phù hợp. Đánh đổi là dữ liệu không hợp lệ sẽ bị từ chối, do đó giao diện cần thông báo lỗi rõ ràng để người dùng sửa dữ liệu.
+### Vai trò của các lớp
 
-**Lập luận 3 – Bảo mật:** NFR03 yêu cầu API tạo và xem phiếu phải kiểm tra quyền truy cập theo vai trò. Vì vậy, việc xác thực và phân quyền được thực hiện ở phía máy chủ trước khi xử lý yêu cầu. Đánh đổi là hệ thống cần bổ sung cấu hình bảo mật và kiểm thử các trường hợp truy cập không đủ quyền.
+- **Routes:** nhận HTTP request, xác định endpoint và chuyển yêu cầu đến lớp xử lý.
+- **Service:** kiểm tra trường bắt buộc, kiểm tra mức ưu tiên, kiểm tra thiết bị và nhóm sự cố, tính hạn cam kết.
+- **Repository:** thực hiện SQL để lấy danh sách, tạo, cập nhật và truy vấn chi tiết phiếu.
+- **Database:** duy trì dữ liệu và các quan hệ bằng khóa chính, khóa ngoại và ràng buộc phù hợp.
+
+Các tên `CustomerController`, `DeviceController` hoặc `TicketController` theo mô hình Spring Boot không được đưa vào sơ đồ triển khai chính vì backend đang được kiểm thử là Node.js/Express.
+
+## 3.2. Luồng xử lý tạo phiếu
+
+1. Client gửi yêu cầu `POST /tickets`.
+2. Express chuyển yêu cầu đến route tương ứng.
+3. Service kiểm tra `deviceId`, `description`, `priority` và `categoryId` nếu được cung cấp.
+4. Service xác nhận thiết bị và nhóm sự cố tồn tại.
+5. Service sinh `ticket_code`.
+6. Service tính `commitment_deadline`.
+7. Repository ghi phiếu vào bảng `ticket`.
+8. Hệ thống ghi trạng thái ban đầu vào `ticket_status_log` theo thiết kế nghiệp vụ.
+9. API trả kết quả chứa dữ liệu phiếu vừa tạo.
+
+Các bước 7 và 8 cần được bảo đảm tính nguyên tử nếu cả hai được thực hiện trong cùng nghiệp vụ. Kết quả kiểm thử POST thành công xác nhận phiếu đã được tạo; cần kiểm tra bảng lịch sử riêng để xác nhận bước 8 hoạt động đúng.
+
+## 3.3. Ba lập luận thiết kế theo NFR
+
+**Lập luận 1 – Hiệu năng**
+
+NFR01 yêu cầu 95% thao tác tra cứu phản hồi không quá 2 giây khi có 50 người dùng đồng thời. Vì vậy, các trường tra cứu thường xuyên như `customer.phone`, `device.serial_imei` và `ticket.ticket_code` cần ràng buộc duy nhất hoặc chỉ mục phù hợp. Chỉ mục trên `ticket(status, commitment_deadline)` có thể hỗ trợ truy vấn danh sách và lọc hạn cam kết. Đánh đổi là chỉ mục làm tăng dung lượng lưu trữ và chi phí cập nhật dữ liệu. Việc đạt ngưỡng 2 giây cần được xác nhận bằng kiểm thử tải.
+
+**Lập luận 2 – Tính toàn vẹn dữ liệu**
+
+NFR02 yêu cầu mọi phiếu tạo thành công có mã duy nhất, thiết bị hợp lệ và dữ liệu bắt buộc đầy đủ. Vì vậy, hệ thống kết hợp kiểm tra ở Service với ràng buộc cơ sở dữ liệu như PK, FK, UNIQUE, NOT NULL và CHECK. Đánh đổi là dữ liệu không hợp lệ sẽ bị từ chối; API cần trả thông báo lỗi rõ ràng để người dùng có thể sửa dữ liệu.
+
+**Lập luận 3 – Bảo mật**
+
+NFR03 yêu cầu API kiểm tra quyền truy cập theo vai trò trước khi xử lý yêu cầu. Vì vậy, xác thực và phân quyền cần được triển khai ở phía máy chủ, không chỉ ẩn nút trên giao diện. Đánh đổi là cần bổ sung cơ chế xác thực, cấu hình quyền và kiểm thử bảo mật. Chỉ được xác nhận NFR03 đạt khi các biện pháp này đã được triển khai và kiểm thử.
 
 ---
 
@@ -419,65 +588,140 @@ Khi tạo phiếu, Service kiểm tra dữ liệu, tính hạn cam kết và lư
 
 ## 4.1. Xác định bảng dữ liệu
 
+Database `smart_crm` đang có năm bảng chính.
+
 | Bảng | Mục đích | Các cột chính |
 |---|---|---|
-| customer | Lưu thông tin khách hàng. | customer_id, full_name, phone |
-| device | Lưu thiết bị và thông tin bảo hành. | device_id, customer_id, serial_imei, warranty_end_date |
-| issue_category | Lưu danh mục nhóm sự cố. | category_id, category_name |
-| ticket | Lưu phiếu bảo hành. | ticket_id, ticket_code, device_id, category_id, description, priority, status, commitment_deadline, created_at |
-| ticket_status_log | Lưu lịch sử trạng thái phiếu. | log_id, ticket_id, status, changed_at |
+| `customer` | Lưu thông tin khách hàng. | `customer_id`, `full_name`, `phone` |
+| `device` | Lưu thiết bị và thông tin bảo hành. | `device_id`, `customer_id`, `serial_imei`, `warranty_end_date` |
+| `issue_category` | Lưu danh mục nhóm sự cố. | `category_id`, `category_name` |
+| `ticket` | Lưu phiếu bảo hành. | `ticket_id`, `ticket_code`, `device_id`, `category_id`, `description`, `priority`, `status`, `commitment_deadline`, `created_at` |
+| `ticket_status_log` | Lưu lịch sử trạng thái phiếu. | `log_id`, `ticket_id`, `status`, `changed_at` |
+
+### 4.1.1. Đặc điểm dữ liệu
+
+- `customer_id`, `device_id`, `category_id`, `ticket_id` và `log_id` là các cột định danh.
+- `ticket.category_id` có thể NULL khi chưa phân loại.
+- `ticket.status` sử dụng trạng thái tiếng Việt.
+- `ticket.priority` sử dụng Cao, Trung bình hoặc Thấp.
+- `ticket.commitment_deadline` là hạn cam kết được Service tính.
+- `ticket.created_at` lưu thời điểm tạo phiếu.
+- `ticket_status_log` ghi nhận trạng thái và thời điểm thay đổi.
+
+Các kiểu dữ liệu thời gian trong database đang chạy là kiểu PostgreSQL `timestamp without time zone`, theo kết quả kiểm tra cấu trúc đã thực hiện.
 
 ## 4.2. Quan hệ giữa các bảng
 
-- Một khách hàng có thể sở hữu nhiều thiết bị: `customer` 1–N `device`.
-- Một thiết bị có thể có nhiều phiếu bảo hành theo thời gian: `device` 1–N `ticket`.
-- Một nhóm sự cố có thể được sử dụng cho nhiều phiếu: `issue_category` 1–N `ticket`. Một phiếu có thể chưa được phân loại nên `category_id` được phép NULL.
-- Một phiếu có nhiều bản ghi lịch sử trạng thái: `ticket` 1–N `ticket_status_log`.
+**Quan hệ 1 – Customer và Device**
 
-**Nguyên tắc đồng bộ ERD–DDL:** ERD chỉ chứa các cột có trong DDL. Không thêm `customer.email`, `customer.segment`, `ticket.customer_id` hoặc các trường chưa được định nghĩa. Khách hàng được liên kết với phiếu thông qua thiết bị.
+Một khách hàng có thể sở hữu nhiều thiết bị. Mỗi thiết bị tham chiếu một khách hàng qua `device.customer_id`.
 
-## 4.3. SQL DDL
+**Quan hệ 2 – Device và Ticket**
 
-DDL dưới đây sử dụng cú pháp MySQL. Đây là cấu trúc cơ sở dữ liệu tham chiếu cho năm bảng của L02.
+Một thiết bị có thể có nhiều phiếu bảo hành theo thời gian. Mỗi phiếu tham chiếu thiết bị qua `ticket.device_id`.
+
+**Quan hệ 3 – Issue Category và Ticket**
+
+Một nhóm sự cố có thể được sử dụng bởi nhiều phiếu. `ticket.category_id` tham chiếu `issue_category.category_id` và được phép NULL khi phiếu chưa được phân loại.
+
+**Quan hệ 4 – Ticket và Ticket Status Log**
+
+Một phiếu có thể có nhiều bản ghi lịch sử trạng thái. `ticket_status_log.ticket_id` tham chiếu `ticket.ticket_id`.
+
+### Sơ đồ ERD dạng văn bản
+
+```text
+customer
+---------
+PK customer_id
+   full_name
+   phone
+       |
+       | 1 - N
+       v
+device
+------
+PK device_id
+FK customer_id
+   serial_imei
+   warranty_end_date
+       |
+       | 1 - N
+       v
+ticket
+------
+PK ticket_id
+   ticket_code
+FK device_id
+FK category_id (nullable)
+   description
+   priority
+   status
+   commitment_deadline
+   created_at
+       |
+       | 1 - N
+       v
+ticket_status_log
+-----------------
+PK log_id
+FK ticket_id
+   status
+   changed_at
+
+issue_category
+--------------
+PK category_id
+   category_name
+       |
+       | 1 - N
+       v
+ticket.category_id
+```
+
+Không thêm `ticket.customer_id`, vì khách hàng được xác định qua thiết bị. Không thêm các cột chưa có trong cấu trúc chuẩn như `customer.email`, `customer.segment` hoặc `ticket.customer_id`.
+
+## 4.3. SQL DDL tham chiếu cho PostgreSQL 18
+
+**Lưu ý quan trọng:** Đây là DDL tham chiếu được chuyển sang cú pháp PostgreSQL và đồng bộ theo cấu trúc dữ liệu của dự án. Không chạy trực tiếp toàn bộ đoạn này trên database đang có dữ liệu. Hãy đối chiếu từng cột, kiểu dữ liệu, giá trị mặc định và constraint với database thực tế trước khi dùng để khởi tạo một môi trường mới.
 
 ```sql
-CREATE DATABASE IF NOT EXISTS smartcrm
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE smartcrm;
+-- Database smart_crm được tạo và quản lý riêng trong PostgreSQL.
+-- Chọn database smart_crm trước khi chạy DDL.
 
 CREATE TABLE customer (
-    customer_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    customer_id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
     full_name VARCHAR(150) NOT NULL,
     phone VARCHAR(20) NOT NULL UNIQUE
 );
 
 CREATE TABLE device (
-    device_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    device_id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
     customer_id BIGINT NOT NULL,
     serial_imei VARCHAR(100) NOT NULL UNIQUE,
     warranty_end_date DATE,
+
     CONSTRAINT fk_device_customer
         FOREIGN KEY (customer_id)
         REFERENCES customer(customer_id)
 );
 
 CREATE TABLE issue_category (
-    category_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    category_id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
     category_name VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE ticket (
-    ticket_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ticket_id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
     ticket_code VARCHAR(50) NOT NULL UNIQUE,
     device_id BIGINT NOT NULL,
-    category_id BIGINT NULL,
+    category_id BIGINT,
     description TEXT NOT NULL,
     priority VARCHAR(20) NOT NULL DEFAULT 'Trung bình',
     status VARCHAR(30) NOT NULL DEFAULT 'Mới',
-    commitment_deadline DATETIME NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    commitment_deadline TIMESTAMP WITHOUT TIME ZONE,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_ticket_device
         FOREIGN KEY (device_id)
@@ -504,10 +748,11 @@ CREATE TABLE ticket (
 );
 
 CREATE TABLE ticket_status_log (
-    log_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    log_id BIGINT GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
     ticket_id BIGINT NOT NULL,
     status VARCHAR(30) NOT NULL,
-    changed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    changed_at TIMESTAMP WITHOUT TIME ZONE NOT NULL
+        DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_status_log_ticket
         FOREIGN KEY (ticket_id)
@@ -530,15 +775,27 @@ CREATE INDEX idx_ticket_status_deadline
     ON ticket(status, commitment_deadline);
 ```
 
-**Ghi chú triển khai:**
+### 4.3.1. Các điểm cần đối chiếu trước khi áp dụng DDL
 
-1. `customer.phone` và `device.serial_imei` có chỉ mục từ ràng buộc UNIQUE.
-2. `ticket.ticket_code` phải được tạo theo quy tắc mã phiếu của ứng dụng và bảo đảm duy nhất.
-3. `commitment_deadline` là thời điểm được Service tính toán; không nên cho người dùng sửa trực tiếp.
-4. Khi tạo phiếu thành công, ứng dụng cần ghi thêm bản ghi trạng thái ban đầu “Mới” vào `ticket_status_log`.
-5. Các thay đổi trạng thái cần được ghi nhận trong cùng giao dịch phù hợp với thao tác cập nhật phiếu.
-6. Quy tắc SLA loại trừ Chủ nhật cần được triển khai ở tầng Service. DDL không tự tính quy tắc này.
-7. CHECK được hỗ trợ trong các phiên bản MySQL hiện đại; cần kiểm tra phiên bản MySQL thực tế trước khi triển khai.
+1. **Kiểu cột định danh:** kiểm tra cột ID trong database hiện tại có `IDENTITY`, sequence hoặc `DEFAULT nextval(...)` hay không. DDL tham chiếu sử dụng `GENERATED BY DEFAULT AS IDENTITY`; không được thay đổi tùy tiện kiểu sinh ID đang hoạt động.
+2. **Kiểu thời gian:** database đang hiển thị `timestamp without time zone`. Backend hiện trả các thời điểm có hậu tố `Z`; cần thống nhất quy ước lưu và chuyển đổi thời gian UTC giữa Node.js và PostgreSQL để tránh sai lệch giờ.
+3. **Ràng buộc:** cần xác nhận các constraint UNIQUE và CHECK đã có trong database thực tế. Nếu chưa có, bổ sung sau khi kiểm tra dữ liệu trùng hoặc dữ liệu không hợp lệ.
+4. **Lịch sử trạng thái:** phải xác minh repository có ghi vào `ticket_status_log` khi tạo phiếu và cập nhật trạng thái hay không.
+5. **Chỉ mục:** `idx_ticket_status_deadline` là chỉ mục đề xuất cho truy vấn lọc trạng thái và hạn cam kết. Kiểm tra xem chỉ mục tương đương đã tồn tại trước khi tạo.
+6. **Không xóa bảng:** không dùng `DROP TABLE`, không tạo lại database và không chạy lại toàn bộ DDL trên môi trường hiện có chỉ để đồng bộ tài liệu.
+
+## 4.4. Nguyên tắc đồng bộ dữ liệu
+
+- ERD, DDL và repository phải sử dụng thống nhất tên bảng và tên cột.
+- Repository hiện truy vấn các cột `ticket_code`, `device_id`, `category_id`, `description`, `priority`, `status`, `commitment_deadline` và `created_at`.
+- Bảng `issue_category` sử dụng `category_id`, không dùng `issue_category_id`.
+- Bảng `ticket_status_log` sử dụng `log_id`, `ticket_id`, `status` và `changed_at`.
+- Không thêm `ticket.customer_id`; liên kết khách hàng thông qua thiết bị.
+- Cột `category_id` cho phép NULL.
+- Dữ liệu trạng thái và mức ưu tiên phải thống nhất giữa Service, SQL và SRS.
+- Quy tắc SLA được xử lý ở Service; không phụ thuộc vào DDL.
+- Các thao tác tạo phiếu và ghi trạng thái ban đầu phải được xử lý nhất quán.
+- Nếu thay đổi DDL, cần cập nhật lại ERD, tài liệu SRS và các truy vấn Repository có liên quan.
 
 ---
 
@@ -546,50 +803,48 @@ CREATE INDEX idx_ticket_status_deadline
 
 ## 5.1. Màn hình 1 – Tra cứu khách hàng và thiết bị
 
-**Số điện thoại khách hàng**
+### Khu vực tra cứu khách hàng
 
 - Trường nhập số điện thoại.
-- Gợi ý: Nhập số điện thoại để tra cứu.
-- Hệ thống chuẩn hóa và kiểm tra định dạng trước khi tìm kiếm.
+- Nút **Tra cứu khách hàng**.
+- Khu vực hiển thị họ tên và số điện thoại.
+- Nút **Tạo khách hàng mới** khi chưa có hồ sơ và người dùng có quyền.
 
-**Kết quả khách hàng**
+### Khu vực tra cứu thiết bị
 
-- Họ tên khách hàng.
-- Số điện thoại, hiển thị đầy đủ hoặc che một phần tùy quyền.
+- Trường nhập serial/IMEI.
+- Nút **Tra cứu thiết bị**.
+- Khu vực hiển thị thiết bị và ngày hết hạn bảo hành.
 
-**Serial/IMEI**
-
-- Trường nhập serial/IMEI thiết bị.
-- Hiển thị thông tin thiết bị phù hợp sau khi tra cứu.
-
-**Tình trạng bảo hành**
+### Tình trạng bảo hành
 
 - Còn bảo hành.
 - Hết bảo hành.
 - Chưa xác minh bảo hành.
 
-**Nút thao tác**
+### Nguyên tắc giao diện
 
-- [Tra cứu khách hàng]
-- [Tra cứu thiết bị]
-- [Tạo khách hàng mới] nếu chưa tồn tại và người dùng có quyền.
+- Hiển thị thông báo khi không tìm thấy dữ liệu.
+- Không tạo khách hàng hoặc thiết bị trùng.
+- Không tự kết luận còn bảo hành khi thiếu `warranty_end_date`.
+- Che một phần số điện thoại theo quyền truy cập.
+- Không hiển thị email, địa chỉ hoặc ngày mua nếu các trường đó chưa có trong DDL.
 
-Màn hình chỉ hiển thị các dữ liệu được định nghĩa trong DDL. Không hiển thị email, địa chỉ, ngày mua hoặc nơi mua vì các trường này chưa nằm trong cấu trúc dữ liệu hiện tại.
+Màn hình này là thiết kế nghiệp vụ. Cần xác minh API Customer và Device trước khi kết luận đã triển khai hoàn chỉnh.
 
 ## 5.2. Màn hình 2 – Tiếp nhận và phân loại yêu cầu
 
-**Khách hàng**
-
-- Chọn khách hàng từ kết quả tra cứu.
+### Thông tin đầu vào
 
 **Thiết bị**
 
-- Chọn thiết bị đã xác định bằng serial/IMEI.
+- Chọn thiết bị đã xác định.
+- Dữ liệu thiết bị phải hợp lệ trước khi tạo phiếu.
 
 **Mô tả lỗi**
 
-- Nhập nội dung khách hàng mô tả.
-- Đây là trường bắt buộc.
+- Trường nhập nội dung khách hàng mô tả.
+- Bắt buộc nhập.
 
 **Nhóm sự cố**
 
@@ -600,29 +855,41 @@ Màn hình chỉ hiển thị các dữ liệu được định nghĩa trong DDL
 - Nước vào.
 - Khác.
 
+Danh mục thực tế cần được lấy từ bảng `issue_category`, không nên chỉ viết cố định trên giao diện nếu hệ thống yêu cầu quản lý danh mục bằng dữ liệu.
+
 **Mức ưu tiên**
 
 - Cao.
 - Trung bình.
 - Thấp.
 
-Giá trị mặc định là Trung bình.
+Mức mặc định là Trung bình.
 
 **Hạn cam kết**
 
-- Hệ thống tự tính theo mức ưu tiên.
-- Trường chỉ đọc, không cho phép sửa trực tiếp.
+- Tự động tính từ thời điểm tiếp nhận và mức ưu tiên.
+- Hiển thị dạng chỉ đọc.
+- Không cho phép người dùng sửa trực tiếp.
 
-**Nút thao tác**
+### Nút thao tác
 
-- [Tạo phiếu bảo hành]
-- [Hủy]
+- **Tạo phiếu bảo hành**
+- **Hủy**
 
-Khi tạo phiếu thành công, hệ thống sinh mã phiếu duy nhất, đặt trạng thái ban đầu là “Mới”, lưu dữ liệu và ghi nhận lịch sử trạng thái ban đầu.
+### Kết quả sau khi tạo
+
+- Hiển thị mã phiếu.
+- Hiển thị trạng thái “Mới”.
+- Hiển thị mức ưu tiên và hạn cam kết.
+- Thông báo tạo phiếu thành công hoặc lỗi.
+
+Các trường và thao tác trên phải được ánh xạ với API `POST /tickets`. Chỉ hiển thị kết quả thành công sau khi backend xác nhận đã lưu phiếu.
 
 ## 5.3. Màn hình 3 – Danh sách phiếu bảo hành
 
-**Bộ lọc trạng thái**
+### Bộ lọc
+
+**Trạng thái**
 
 - Tất cả.
 - Mới.
@@ -632,61 +899,52 @@ Khi tạo phiếu thành công, hệ thống sinh mã phiếu duy nhất, đặt
 - Hoàn tất.
 - Đã đóng.
 
-**Bộ lọc nhóm sự cố**
+**Nhóm sự cố**
 
 - Tất cả.
-- Màn hình.
-- Pin.
-- Sạc.
-- Phần mềm.
-- Nước vào.
-- Khác.
+- Các nhóm lấy từ danh mục `issue_category`.
 
-**Bộ lọc mức ưu tiên**
+**Mức ưu tiên**
 
 - Tất cả.
 - Cao.
 - Trung bình.
 - Thấp.
 
-**Danh sách phiếu**
+### Danh sách phiếu
 
 Mỗi dòng hiển thị:
 
 - Mã phiếu.
-- Khách hàng.
-- Thiết bị.
+- Thông tin khách hàng.
+- Thông tin thiết bị.
 - Trạng thái.
 - Nhóm sự cố.
 - Mức ưu tiên.
 - Hạn cam kết.
 - Ngày tiếp nhận.
 
-Danh sách hiển thị tối đa 20 phiếu mỗi trang.
+Thông tin khách hàng được lấy qua quan hệ `ticket → device → customer`. Không yêu cầu `ticket.customer_id`.
 
-**Cảnh báo hạn**
+### Cảnh báo hạn
 
 - Đánh dấu phiếu sắp đến hạn.
-- Đánh dấu phiếu đã quá hạn.
-- Không đánh dấu phiếu ở trạng thái Hoàn tất hoặc Đã đóng.
+- Đánh dấu phiếu quá hạn.
+- Không cảnh báo phiếu Hoàn tất hoặc Đã đóng.
 
-**Khi không có kết quả**
+Điều kiện cảnh báo được tính theo QT-13. Chức năng này chỉ được xác nhận hoàn thành khi đã có logic xử lý và kết quả kiểm thử.
 
-Hiển thị thông báo: “Không có phiếu phù hợp”.
+### Trạng thái không có dữ liệu
 
-**Nút thao tác**
+Hiển thị thông báo “Không có phiếu phù hợp”.
 
-- [Lọc danh sách]
-- [Xóa bộ lọc]
+### Nút thao tác
 
-### Nguyên tắc đồng bộ Wireframe – DDL
+- **Lọc danh sách**
+- **Xóa bộ lọc**
+- **Xem chi tiết**
 
-- Bảng `customer` chỉ dùng `customer_id`, `full_name`, `phone`.
-- Bảng `device` chỉ dùng `device_id`, `customer_id`, `serial_imei`, `warranty_end_date`.
-- Bảng `issue_category` chỉ dùng `category_id`, `category_name`.
-- Bảng `ticket` chỉ dùng các cột đã khai báo trong DDL.
-- Bảng `ticket_status_log` lưu `log_id`, `ticket_id`, `status`, `changed_at`.
-- Không hiển thị email, địa chỉ, ngày mua, nơi mua hoặc `ticket.customer_id` vì các trường này không có trong DDL chuẩn.
+Danh sách có thể hỗ trợ phân trang, với mục tiêu tối đa 20 phiếu mỗi trang. Cần kiểm tra API hiện tại trước khi mô tả đây là chức năng đã triển khai.
 
 ---
 
@@ -694,14 +952,14 @@ Hiển thị thông báo: “Không có phiếu phù hợp”.
 
 | Công cụ | Mục đích sử dụng | Phần áp dụng | Cách kiểm chứng |
 |---|---|---|---|
-| Gemini (AI) | Hỗ trợ đề xuất cấu trúc DDL, rà soát câu lệnh SQL và gợi ý cách tổ chức nội dung. | Mục 4 – ERD và SQL DDL. | Đối chiếu thủ công giữa ERD, DDL và SRS; kiểm tra PK, FK, kiểu dữ liệu, ràng buộc và tính nhất quán của các cột. |
-| ChatGPT | Hỗ trợ rà soát cách trình bày SRS, tính nhất quán giữa User Story, FR, NFR và quy tắc nghiệp vụ. | Mục 1, Mục 2 và Mục 3. | Đối chiếu nội dung với yêu cầu đề tài, kiểm tra mã yêu cầu, bảng truy vết và xác nhận lại với thiết kế thực tế. |
+| Gemini | Hỗ trợ đề xuất cấu trúc SQL, rà soát câu lệnh và tổ chức dữ liệu. | Mục 4 – ERD và DDL. | Đối chiếu với database thực tế, kiểm tra PK, FK, kiểu dữ liệu và ràng buộc. |
+| ChatGPT | Hỗ trợ rà soát SRS, thống nhất User Story, FR, NFR, Use Case và quy tắc nghiệp vụ. | Mục 1, Mục 2, Mục 3 và Mục 5. | Đối chiếu với mã nguồn, API, cấu trúc database và kết quả kiểm thử. |
 
 ### Cam kết sử dụng AI
 
-Tôi chịu trách nhiệm kiểm tra, chỉnh sửa và xác nhận tính đúng đắn của nội dung trước khi nộp. Công cụ AI chỉ được sử dụng để hỗ trợ quá trình thực hiện, không thay thế trách nhiệm của người thực hiện. Các nội dung về yêu cầu, thiết kế và cơ sở dữ liệu được đối chiếu với cấu trúc dự án và kết quả kiểm thử thực tế.
+Tôi chịu trách nhiệm kiểm tra, chỉnh sửa và xác nhận tính đúng đắn của nội dung trước khi nộp. Công cụ AI chỉ được sử dụng để hỗ trợ quá trình thực hiện, không thay thế trách nhiệm của người thực hiện. Các yêu cầu và thiết kế được đối chiếu với mã nguồn, cấu trúc cơ sở dữ liệu và kết quả kiểm thử thực tế.
 
 **Họ và tên:** Bùi Hoàng Khang  
 **MSSV:** 2374802010207  
 **Ngày:** 19/10/2026  
-**Chữ ký:** ........................................
+
