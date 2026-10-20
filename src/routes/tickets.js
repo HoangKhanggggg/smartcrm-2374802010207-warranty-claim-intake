@@ -1,5 +1,7 @@
+
 const router = require('express').Router();
 const svc = require('../services/ticketService');
+const { toTicketView } = require('../utils/ticketMapper');
 
 const wrap = (fn) => async (req, res) => {
   try {
@@ -14,28 +16,28 @@ const wrap = (fn) => async (req, res) => {
 };
 
 router.post('/', wrap(async (req, res) => {
-  const data = await svc.createTicket(req.body);
-  res.status(201).json({ data });
+  const row = await svc.createTicket(req.body);
+  res.status(201).json({ data: toTicketView(row) });
 }));
 
 router.get('/', wrap(async (req, res) => {
-  const data = await svc.listTickets(req.query);
-  res.json({ data });
+  const rows = await svc.listTickets(req.query);
+  res.json({ data: rows.map(toTicketView) });
 }));
 
 router.get('/:id', wrap(async (req, res) => {
-  const data = await svc.getTicket(Number(req.params.id));
-  res.json({ data });
+  const row = await svc.getTicket(Number(req.params.id));
+  res.json({ data: toTicketView(row) });
 }));
 
 router.patch('/:id', wrap(async (req, res) => {
-  const data = await svc.updateTicket(Number(req.params.id), req.body);
-  res.json({ data });
+  const row = await svc.updateTicket(Number(req.params.id), req.body);
+  res.json({ data: toTicketView(row) });
 }));
 
 router.delete('/:id', wrap(async (req, res) => {
-  const data = await svc.closeTicket(Number(req.params.id));
-  res.json({ data });
+  const row = await svc.closeTicket(Number(req.params.id));
+  res.json({ data: toTicketView(row) });
 }));
 
 module.exports = router;
