@@ -34,11 +34,10 @@ PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=your_password
+DB_PASSWORD=123456
 DB_NAME=smart_crm
 ```
 
-**Lưu ý:** Thay `your_password` bằng mật khẩu PostgreSQL trên máy của bạn. Không commit file `.env` chứa thông tin đăng nhập lên GitHub.
 
 ### Cài đặt và chạy ứng dụng
 
@@ -63,11 +62,13 @@ smartcrm-2374802010207-warranty-claim-intake/
 │   └── schema.sql
 ├── docs/
 │   ├── srs.md
-│   ├── usecase.drawio
-│   ├── architecture.drawio
-│   ├── erd.drawio
-│   ├── wireframe.drawio
+│   ├── usecase.drawio / usecase.png
+│   ├── architecture.drawio / architecture.png
+│   ├── erd.drawio / erd.png
+│   ├── wireframe01.png, wireframe02.png, wireframe03.png
+│   ├── thay-doi-thiet-ke.md
 │   ├── ai-declaration.md
+│   ├── kq-*.png, api-get-tickets.png   (ảnh kết quả kiểm thử)
 │   └── export/
 ├── src/
 │   ├── app.js
@@ -83,13 +84,13 @@ smartcrm-2374802010207-warranty-claim-intake/
 │       ├── AppError.js
 │       └── sla.js
 ├── tests/
+├── BT1_2374802010207_BuiHoangKhang.pdf
 ├── .env.example
 ├── .gitignore
 ├── package.json
 └── README.md
 ```
 
-Cấu trúc trên mô tả các thành phần chính dự kiến của dự án. Một số file hoặc thư mục có thể chưa được tạo hoặc chưa hoàn thiện trong repository hiện tại.
 
 ## 4. Cơ sở dữ liệu
 
@@ -187,10 +188,12 @@ Các tài liệu phục vụ phân tích và thiết kế phần mềm gồm:
 - `docs/usecase.drawio`: Sơ đồ Use Case.
 - `docs/architecture.drawio`: Sơ đồ kiến trúc hệ thống.
 - `docs/erd.drawio`: Sơ đồ thực thể – liên kết dữ liệu.
-- `docs/wireframe.drawio`: Thiết kế giao diện.
+- `docs/wireframe01.png`, `wireframe02.png`, `wireframe03.png`: Wireframe ba màn hình.
+- `docs/thay-doi-thiet-ke.md`: Ghi nhận các thay đổi thiết kế theo nhận xét.
+- `BT1_2374802010207_BuiHoangKhang.pdf`: Báo cáo BT1 nộp bài.
 - `db/schema.sql`: Cấu trúc cơ sở dữ liệu.
 - `docs/ai-declaration.md`: Khai báo sử dụng công cụ AI.
-- `docs/export/`: Lưu ảnh PNG xuất từ các sơ đồ.
+- `docs/*.png`: Ảnh xuất từ các sơ đồ và ảnh kết quả kiểm thử; `docs/export/` lưu bản xuất wireframe.
 
 Các file `.drawio` có thể mở và chỉnh sửa bằng diagrams.net:
 
@@ -208,9 +211,9 @@ Cần bảo đảm nội dung tài liệu, sơ đồ, SQL DDL và cấu trúc da
 - [ ] Kiểm thử API chi tiết, cập nhật và đóng phiếu.
 - [ ] Hoàn thiện CRUD khách hàng và thiết bị.
 - [ ] Viết unit test cho lớp service.
-- [ ] Rà soát SRS và sơ đồ thiết kế.
-- [ ] Đối chiếu ERD với SQL DDL và database thực tế.
-- [ ] Bổ sung ảnh sơ đồ và kết quả kiểm thử vào `docs/`.
+- [x] Rà soát SRS và sơ đồ thiết kế.
+- [x] Đối chiếu ERD với SQL DDL và database thực tế.
+- [x] Bổ sung ảnh sơ đồ và kết quả kiểm thử vào `docs/`.
 - [ ] Kiểm tra PDF BT1 đã nộp trên VLU E-learning.
 
 **Trạng thái chung:** Dự án đã kiểm thử thành công API đọc danh sách và tạo phiếu bảo hành. Các chức năng còn lại và tài liệu thiết kế tiếp tục được hoàn thiện trước khi nộp bài.
