@@ -207,14 +207,14 @@ Cần bảo đảm nội dung tài liệu, sơ đồ, SQL DDL và cấu trúc da
 - [x] Có 5 bảng database chính.
 - [x] API GET `/tickets` trả về HTTP 200.
 - [x] API POST `/tickets` trả về HTTP 201.
-- [ ] Kiểm tra lịch sử trạng thái trong `ticket_status_log`.
-- [ ] Kiểm thử API chi tiết, cập nhật và đóng phiếu.
+- [x] Kiểm tra lịch sử trạng thái trong `ticket_status_log`.
+- [x] Kiểm thử API chi tiết, cập nhật và đóng phiếu.
 - [ ] Hoàn thiện CRUD khách hàng và thiết bị.
 - [ ] Viết unit test cho lớp service.
 - [x] Rà soát SRS và sơ đồ thiết kế.
 - [x] Đối chiếu ERD với SQL DDL và database thực tế.
 - [x] Bổ sung ảnh sơ đồ và kết quả kiểm thử vào `docs/`.
-- [ ] Kiểm tra PDF BT1 đã nộp trên VLU E-learning.
+- [x] Kiểm tra PDF BT1 đã nộp trên VLU E-learning.
 
 **Trạng thái chung:** Dự án đã kiểm thử thành công API đọc danh sách và tạo phiếu bảo hành. Các chức năng còn lại và tài liệu thiết kế tiếp tục được hoàn thiện trước khi nộp bài.
 
@@ -227,6 +227,6 @@ Ví dụ:
 ```powershell
 git status
 git add README.md
-git commit -m "docs: update project README"
+git commit -m "docs: README mục 2 và mục 6"
 git push
 ```
