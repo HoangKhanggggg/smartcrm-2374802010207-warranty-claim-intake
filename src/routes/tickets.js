@@ -22,7 +22,7 @@ router.post('/', wrap(async (req, res) => {
 
 router.get('/', wrap(async (req, res) => {
   const rows = await svc.listTickets(req.query);
-  res.json({ data: rows.map(toTicketView) });
+  res.json({ data: rows.map((row) => toTicketView(row)) });
 }));
 
 router.get('/:id', wrap(async (req, res) => {

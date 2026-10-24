@@ -36,7 +36,7 @@ async function createTicket({
   const now = new Date();
   const deadline = computeDeadline(priority, now);
 
-  return repo.create({
+  const created = await repo.create({
     ticketCode: `BH-${Date.now()}`,
     deviceId,
     categoryId,
@@ -45,6 +45,8 @@ async function createTicket({
     status: 'Mới',
     commitmentDeadline: deadline.toISOString()
   });
+
+  return getTicket(created.ticket_id);
 }
 
 async function listTickets(query) {
@@ -60,7 +62,7 @@ async function listTickets(query) {
 }
 
 async function getTicket(id) {
-  const ticket = await repo.findById(id);
+  const ticket = await repo.findDetailById(id);
 
   if (!ticket) {
     throw new AppError('KHONG_TIM_THAY_PHIEU', 404);

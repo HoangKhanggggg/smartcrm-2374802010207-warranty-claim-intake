@@ -21,17 +21,13 @@ const migrate = async () => {
   const client = await pool.connect();
 
   try {
-    const migrationPath = path.join(
-      __dirname,
-      'migrations',
-      '001_create_tables.sql'
-    );
+    const dir = path.join(__dirname, 'migrations');
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.sql')).sort();
 
-    const sql = fs.readFileSync(migrationPath, 'utf8');
-
-    await client.query(sql);
-
-    console.log('Đã chạy migration PostgreSQL thành công.');
+    for (const file of files) {
+      await client.query(fs.readFileSync(path.join(dir, file), 'utf8'));
+      console.log(`Đã chạy migration: ${file}`);
+    }
   } finally {
     client.release();
   }

@@ -24,23 +24,31 @@ const findById = async (id) => {
   return result.rows[0] || null;
 };
 
+const BASE_SELECT = `
+  SELECT t.*, c.full_name AS customer_name, c.phone AS customer_phone,
+         d.serial_imei, ic.category_name
+  FROM ticket t
+  JOIN device d ON d.device_id = t.device_id
+  JOIN customer c ON c.customer_id = d.customer_id
+  LEFT JOIN issue_category ic ON ic.category_id = t.category_id`;
+
 const list = async ({ status, categoryId, priority, limit = 20, offset = 0 }) => {
   const conditions = [];
   const values = [];
 
   if (status) {
     values.push(status);
-    conditions.push(`status = $${values.length}`);
+    conditions.push(`t.status = $${values.length}`);
   }
 
   if (categoryId) {
     values.push(categoryId);
-    conditions.push(`category_id = $${values.length}`);
+    conditions.push(`t.category_id = $${values.length}`);
   }
 
   if (priority) {
     values.push(priority);
-    conditions.push(`priority = $${values.length}`);
+    conditions.push(`t.priority = $${values.length}`);
   }
 
   values.push(limit);
@@ -54,13 +62,60 @@ const list = async ({ status, categoryId, priority, limit = 20, offset = 0 }) =>
     : '';
 
   const result = await db.query(
-    `SELECT * FROM ticket
+    `${BASE_SELECT}
      ${where}
-     ORDER BY ticket_id DESC
+     ORDER BY t.ticket_id DESC
      LIMIT ${limitParam} OFFSET ${offsetParam}`,
     values
   );
 
+  return result.rows;
+};
+
+const findDetailById = async (id) => {
+  const result = await db.query(`${BASE_SELECT} WHERE t.ticket_id = $1`, [id]);
+  return result.rows[0] || null;
+};
+
+const findCustomerByPhone = async (phone) => {
+  const result = await db.query('SELECT * FROM customer WHERE phone = $1', [phone]);
+  return result.rows[0] || null;
+};
+
+const createCustomer = async ({ fullName, phone }) => {
+  const result = await db.query(
+    'INSERT INTO customer (full_name, phone) VALUES ($1, $2) RETURNING *',
+    [fullName, phone]
+  );
+  return result.rows[0];
+};
+
+const findDeviceBySerial = async (serial) => {
+  const result = await db.query(
+    `SELECT d.*, c.full_name AS customer_name, c.phone AS customer_phone
+     FROM device d JOIN customer c ON c.customer_id = d.customer_id
+     WHERE d.serial_imei = $1`,
+    [serial]
+  );
+  return result.rows[0] || null;
+};
+
+const findCustomerById = async (id) => {
+  const result = await db.query('SELECT * FROM customer WHERE customer_id = $1', [id]);
+  return result.rows[0] || null;
+};
+
+const createDevice = async ({ customerId, serialImei, warrantyEndDate }) => {
+  const result = await db.query(
+    `INSERT INTO device (customer_id, serial_imei, warranty_end_date)
+     VALUES ($1, $2, $3) RETURNING *`,
+    [customerId, serialImei, warrantyEndDate || null]
+  );
+  return result.rows[0];
+};
+
+const listCategories = async () => {
+  const result = await db.query('SELECT * FROM issue_category ORDER BY category_id');
   return result.rows;
 };
 
@@ -159,6 +214,13 @@ module.exports = {
   findDevice,
   findCategory,
   findById,
+  findDetailById,
+  findCustomerByPhone,
+  findCustomerById,
+  createCustomer,
+  findDeviceBySerial,
+  createDevice,
+  listCategories,
   list,
   create,
   update
