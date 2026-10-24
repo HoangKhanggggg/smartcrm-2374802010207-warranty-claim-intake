@@ -1,0 +1,35 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Arial, sans-serif; background: #f5f7f9; color: #243447; }
+.container { max-width: 1100px; margin: 24px auto; padding: 24px; background: #fff; border-radius: 12px; }
+h1 { color: #16794b; margin: 0; }
+h2 { color: #2a6db3; }
+label { display: block; margin: 12px 0; font-weight: 600; }
+input, select, textarea { display: block; width: 100%; max-width: 420px; margin-top: 4px; padding: 8px; border: 1px solid #c3ccd5; border-radius: 6px; font: inherit; }
+button { padding: 8px 14px; margin: 8px 8px 8px 0; border: none; border-radius: 6px; background: #16794b; color: #fff; cursor: pointer; font: inherit; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.primary { background: #2a6db3; }
+.tabs { display: flex; gap: 4px; margin: 16px 0; border-bottom: 2px solid #e1e6eb; }
+.tabs button { background: #e8eef4; color: #243447; border-radius: 6px 6px 0 0; margin: 0; }
+.tabs button.active { background: #2a6db3; color: #fff; }
+.tabs .logout { margin-left: auto; background: #8a949e; color: #fff; }
+.panel { padding: 8px 0; }
+.panel.narrow { max-width: 420px; }
+.subpanel { background: #fff8e1; padding: 12px; border-radius: 8px; margin: 8px 0; }
+.result { background: #eef6f1; padding: 8px 12px; border-radius: 6px; }
+.field-error, .state-error { color: #b3261e; }
+.state { padding: 12px; border-radius: 6px; }
+.state-error { background: #fdecea; }
+.state-empty { background: #fff8e1; color: #6b5a00; }
+.state-loading { color: #555; }
+.badge { padding: 2px 8px; border-radius: 10px; font-size: 12px; background: #e1e6eb; }
+.badge.CON_BAO_HANH { background: #d6f0df; }
+.badge.HET_BAO_HANH, .badge.QUA_HAN { background: #f8d4d0; }
+.badge.CHUA_XAC_MINH, .badge.SAP_DEN_HAN { background: #ffe9b3; }
+.filters { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 8px; border-bottom: 1px solid #e1e6eb; text-align: left; font-size: 14px; }
+th { background: #2a6db3; color: #fff; }
+tr.due-QUA_HAN { background: #fff3f2; }
+tr.due-SAP_DEN_HAN { background: #fffaf0; }
+.pager { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
