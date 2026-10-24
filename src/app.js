@@ -1,21 +1,31 @@
 
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const { migrate } = require('./db');
 
 const app = express();
 
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+}));
+
 app.use(express.json());
 
-// API kiểm tra HTTP, không truy vấn database
+// API kiểm tra HTTP
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-// Khai báo các routes
-app.use('/tickets', require('./routes/tickets'));
+// Khai báo routes
+app.use('/auth', require('./routes/auth'));
 
-// Hàm khởi động server an toàn
+// Các API nghiệp vụ yêu cầu đăng nhập
+const requireAuth = require('./middleware/requireAuth');
+app.use('/tickets', requireAuth, require('./routes/tickets'));
+app.use('/', requireAuth, require('./routes/lookup'));
+
+// Hàm khởi động server
 const startServer = async () => {
   try {
     await migrate();
