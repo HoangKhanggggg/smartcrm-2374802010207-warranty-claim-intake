@@ -7,7 +7,7 @@ const wrap = (fn) => async (req, res) => {
   try {
     await fn(req, res);
   } catch (error) {
-    console.error(error);
+    if (!error.status) console.error(error);
 
     res.status(error.status || 500).json({
       error: error.code || 'LOI_HE_THONG'
@@ -16,7 +16,7 @@ const wrap = (fn) => async (req, res) => {
 };
 
 router.post('/', wrap(async (req, res) => {
-  const row = await svc.createTicket(req.body);
+  const row = await svc.createTicket(req.body || {});
   res.status(201).json({ data: toTicketView(row) });
 }));
 
@@ -31,7 +31,7 @@ router.get('/:id', wrap(async (req, res) => {
 }));
 
 router.patch('/:id', wrap(async (req, res) => {
-  const row = await svc.updateTicket(Number(req.params.id), req.body);
+  const row = await svc.updateTicket(Number(req.params.id), req.body || {});
   res.json({ data: toTicketView(row) });
 }));
 

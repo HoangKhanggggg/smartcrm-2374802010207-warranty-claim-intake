@@ -37,7 +37,7 @@ async function createTicket({
   const deadline = computeDeadline(priority, now);
 
   const created = await repo.create({
-    ticketCode: `BH-${Date.now()}`,
+    ticketCode: `BH-${Date.now()}${Math.floor(Math.random() * 90 + 10)}`,
     deviceId,
     categoryId,
     description: String(description).trim(),
@@ -50,6 +50,10 @@ async function createTicket({
 }
 
 async function listTickets(query) {
+  if (query.categoryId && !/^\d+$/.test(String(query.categoryId))) {
+    throw new AppError('DU_LIEU_KHONG_HOP_LE');
+  }
+
   const page = Math.max(parseInt(query.page, 10) || 1, 1);
 
   return repo.list({
@@ -62,6 +66,10 @@ async function listTickets(query) {
 }
 
 async function getTicket(id) {
+  if (!Number.isInteger(id) || id < 1) {
+    throw new AppError('KHONG_TIM_THAY_PHIEU', 404);
+  }
+
   const ticket = await repo.findDetailById(id);
 
   if (!ticket) {

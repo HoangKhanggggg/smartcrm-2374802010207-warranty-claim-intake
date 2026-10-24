@@ -61,3 +61,16 @@ describe('lookupService', () => {
       .rejects.toMatchObject({ code: 'SERIAL_DA_TON_TAI', status: 409 });
   });
 });
+
+describe('ticketService – dữ liệu truy vấn sai không gây lỗi hệ thống', () => {
+  test('mã nhóm sự cố không phải số bị từ chối khi lọc danh sách', async () => {
+    await expect(ticketService.listTickets({ categoryId: 'abc' }))
+      .rejects.toMatchObject({ code: 'DU_LIEU_KHONG_HOP_LE', status: 400 });
+    expect(repo.list).not.toHaveBeenCalled();
+  });
+
+  test('mã phiếu không phải số nguyên dương trả KHONG_TIM_THAY_PHIEU', async () => {
+    await expect(ticketService.getTicket(NaN)).rejects.toMatchObject({ code: 'KHONG_TIM_THAY_PHIEU', status: 404 });
+    expect(repo.findDetailById).not.toHaveBeenCalled();
+  });
+});
