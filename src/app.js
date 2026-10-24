@@ -31,7 +31,7 @@ const startServer = async () => {
     await migrate();
     console.log('Khởi tạo cơ sở dữ liệu PostgreSQL thành công.');
 
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 3001;
 
     app.listen(PORT, () => {
       console.log(`Server CRM đang chạy tại http://localhost:${PORT}`);
