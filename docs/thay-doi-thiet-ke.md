@@ -142,3 +142,44 @@ Sau khi rà soát phản hồi BT1, các quyết định trên được sử d�
 - `.env.example`
 
 Mục tiêu là bảo đảm SRS, sơ đồ, cơ sở dữ liệu và mã nguồn được thống nhất trước khi hiện thực module cốt lõi trong Sprint 1.
+
+
+---
+
+# Sau Sprint 2 (Buổi 10 – Workshop module mở rộng và giao diện)
+
+**Ngày:** 24/10/2026
+
+## TD-13 — Cắt phân quyền theo vai trò (QT-11)
+
+- **Quyết định:** HOÃN.
+- **Lý do:** Thời gian buổi 10 ưu tiên cho luồng chính, test và README.
+- **Ảnh hưởng:** Chỉ có một tài khoản mẫu (cấu hình trong `.env`). API vẫn yêu cầu đăng nhập (trả 401) nhưng chưa phân biệt nhân viên tiếp nhận và quản lý. NFR03 mới đáp ứng một phần.
+
+## TD-14 — Che số điện thoại cho mọi người dùng (QT-12)
+
+- **Quyết định:** ĐƠN GIẢN HOÁ.
+- **Lý do:** Chưa có vai trò nên chưa phân biệt được người được xem đầy đủ.
+- **Ảnh hưởng:** API luôn trả `phoneMasked` (dạng `0912***678`), không trả số đầy đủ.
+
+## TD-15 — Hạn cam kết ở màn hình 2 hiển thị sau khi tạo phiếu
+
+- **Quyết định:** ĐƠN GIẢN HOÁ.
+- **Lý do:** Tránh nhân đôi logic SLA ở frontend (nguy cơ lệch quy tắc QT-04).
+- **Ảnh hưởng:** Ô hạn cam kết ở màn hình 2 chỉ đọc, hiển thị "Hệ thống tự tính khi tạo phiếu"; giá trị thật hiện ngay sau khi tạo. US06-AC1 đáp ứng một phần.
+
+## TD-16 — Bổ sung `POST /devices` và `POST /auth/login`
+
+- **Quyết định:** BỔ SUNG.
+- **Lý do:** Khách mới chưa có thiết bị sẽ làm đứt luồng chính nếu không đăng ký được thiết bị (US02); đăng nhập cần cho yêu cầu 401 của buổi 10.
+- **Ảnh hưởng:** Thêm 2 endpoint; màn hình 1 có khối "Đăng ký thiết bị" khi serial chưa tồn tại.
+
+## TD-17 — Phân trang tối giản
+
+- **Quyết định:** ĐƠN GIẢN HOÁ.
+- **Ảnh hưởng:** Danh sách chỉ có nút Trước/Sau (20 phiếu/trang), chưa hiển thị tổng số trang/bản ghi.
+
+## TD-18 — Hoãn các màn hình ngoài 3 wireframe
+
+- **Quyết định:** HOÃN.
+- **Ảnh hưởng:** Chưa có màn hình chi tiết phiếu và cập nhật trạng thái trên giao diện (API `PATCH`, `DELETE` đã sẵn sàng); chưa có CRUD khách hàng/thiết bị ngoài luồng tiếp nhận.
