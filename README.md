@@ -6,38 +6,165 @@
 - **Dự án:** Smart CRM – Mekong Mobile.
 - **Track:** Software Engineering (SE).
 - **Repository:** `smartcrm-2374802010207-warranty-claim-intake`.
-- **Chức năng chính:** Tra cứu khách hàng và thiết bị, tiếp nhận phiếu bảo hành, xem và lọc danh sách phiếu.
+- **Chức năng chính:** Tra cứu khách hàng và thiết bị, tiếp nhận và phân loại phiếu bảo hành, xem và lọc danh sách phiếu.
+
+---
 
 ## 2. Yêu cầu môi trường
 
 - Node.js 20 trở lên (kèm npm).
-- PostgreSQL 14 trở lên, có tài khoản `postgres` / mật khẩu `123456` (hoặc sửa trong `.env`).
+- PostgreSQL 14 trở lên.
 - Git.
+- Trình duyệt web hiện đại.
 
-Công nghệ: Express.js + `pg` (backend), PostgreSQL, React + Vite (frontend), Jest (unit test).
+### Công nghệ sử dụng
 
-## 3. Các bước dựng hệ thống (mỗi bước một lệnh)
+- **Backend:** Node.js + Express.js.
+- **Database:** PostgreSQL.
+- **Frontend:** React + Vite.
+- **Test:** Jest.
+- **API:** REST API.
+- **Kiến trúc backend:** Routes → Services → Repositories.
 
-Chạy từ thư mục gốc của repository. Trên Windows PowerShell, thay `cp` bằng `copy`.
+---
 
-| Bước | Lệnh | Kết quả mong đợi |
-|---|---|---|
-| 1. Tải mã nguồn | `git clone https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake.git && cd smartcrm-2374802010207-warranty-claim-intake` | Có thư mục dự án |
-| 2. Tạo file cấu hình | `cp .env.example .env` | Có file `.env` (backend chạy cổng 3001) |
-| 3. Tạo cơ sở dữ liệu | `psql -U postgres -c "CREATE DATABASE smart_crm;"` | `CREATE DATABASE` (hoặc tạo bằng pgAdmin) |
-| 4. Cài thư viện backend | `npm install` | Không báo lỗi |
-| 5. Chạy backend (tự tạo bảng và nạp dữ liệu mẫu) | `npm start` | In `Server CRM đang chạy tại http://localhost:3001` |
-| 6. Cài thư viện frontend (terminal mới) | `npm install --prefix src/frontend` | Không báo lỗi |
-| 7. Chạy frontend | `npm run dev --prefix src/frontend` | Mở được `http://localhost:5173` |
-| 8. Chạy unit test | `npm test` | Dòng `Tests: N passed` |
+## 3. Cấu hình môi trường
 
-Đăng nhập bằng tài khoản mẫu: **nhanvien / 123456** (đổi trong `.env`: `APP_USER`, `APP_PASSWORD`).
+Từ thư mục gốc của repository, tạo file `.env` từ `.env.example`.
 
-Nếu đổi cổng backend, đặt `VITE_API_URL=http://localhost:<cổng>` khi chạy frontend.
+### Windows PowerShell
 
-### Chạy thử luồng chính trên giao diện
+```powershell
+Copy-Item .env.example .env
+```
 
-Dữ liệu mẫu có sẵn (được nạp tự động ở bước 5):
+Sau đó mở `.env` và điền thông tin cấu hình PostgreSQL và tài khoản ứng dụng.
+
+Ví dụ:
+
+```env
+PORT=3001
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password
+DB_NAME=smart_crm
+
+APP_USER=nhanvien
+APP_PASSWORD=your_app_password
+
+AUTH_SECRET=change-this-secret
+```
+
+> Không commit file `.env` lên GitHub. Repository chỉ lưu `.env.example`.
+
+---
+
+## 4. Các bước dựng hệ thống
+
+Chạy các lệnh từ thư mục gốc của repository.
+
+### Bước 1 – Tải mã nguồn
+
+```powershell
+git clone https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake.git
+cd smartcrm-2374802010207-warranty-claim-intake
+```
+
+### Bước 2 – Tạo file cấu hình
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Sau đó chỉnh các thông tin PostgreSQL trong `.env`.
+
+### Bước 3 – Tạo database
+
+Có thể tạo database bằng PostgreSQL/pgAdmin:
+
+```text
+smart_crm
+```
+
+Hoặc sử dụng:
+
+```powershell
+psql -U postgres -c "CREATE DATABASE smart_crm;"
+```
+
+### Bước 4 – Cài thư viện backend
+
+```powershell
+npm install
+```
+
+### Bước 5 – Chạy backend
+
+```powershell
+npm start
+```
+
+Backend sử dụng cổng:
+
+```text
+http://localhost:3001
+```
+
+Khi khởi động, hệ thống tự chạy migration và chuẩn bị dữ liệu mẫu.
+
+### Bước 6 – Cài thư viện frontend
+
+Mở terminal mới:
+
+```powershell
+npm install --prefix src/frontend
+```
+
+### Bước 7 – Chạy frontend
+
+```powershell
+npm run dev --prefix src/frontend
+```
+
+Frontend mặc định chạy tại:
+
+```text
+http://localhost:5173
+```
+
+### Bước 8 – Chạy unit test
+
+Từ thư mục gốc:
+
+```powershell
+npm test
+```
+
+Kết quả kiểm thử hiện tại:
+
+```text
+Test Suites: 7 passed, 7 total
+Tests:       32 passed, 32 total
+```
+
+---
+
+## 5. Chạy thử luồng chính trên giao diện
+
+Hệ thống hiện có **3 màn hình chính**.
+
+### Màn hình 1 – Tra cứu
+
+Chức năng:
+
+- Tra cứu khách hàng theo số điện thoại.
+- Tra cứu thiết bị theo Serial/IMEI.
+- Kiểm tra tình trạng bảo hành.
+- Chuyển sang màn hình tiếp nhận phiếu.
+
+Ví dụ dữ liệu mẫu:
 
 | Khách hàng | Số điện thoại | Serial / IMEI | Bảo hành |
 |---|---|---|---|
@@ -45,77 +172,525 @@ Dữ liệu mẫu có sẵn (được nạp tự động ở bước 5):
 | Trần Thị Bình | 0987654321 | `356938035643809` | Hết bảo hành |
 | Lê Hoàng Cường | 0901234567 | `SN-C003-2026` | Chưa xác minh |
 
-1. Đăng nhập → màn **1. Tra cứu**: nhập `+84 901.234.567` → **Tra cứu khách** → nhập `SN-C003-2026` → **Tra cứu thiết bị**.
-2. **Tiếp tục tạo phiếu** → màn **2. Tiếp nhận**: nhập mô tả lỗi, chọn nhóm sự cố và mức ưu tiên → **Tạo phiếu bảo hành**.
-3. **Xem danh sách phiếu** → màn **3**: phiếu mới nằm đầu danh sách; thử các bộ lọc.
+Luồng thử:
 
-Ảnh minh chứng toàn luồng: `docs/e2e-*.png`; biên bản chạy: `docs/e2e-luong-chinh.md`.
+```text
+Nhập số điện thoại
+        ↓
+Tra cứu khách hàng
+        ↓
+Nhập Serial / IMEI
+        ↓
+Tra cứu thiết bị
+        ↓
+Kiểm tra tình trạng bảo hành
+        ↓
+Tiếp tục tạo phiếu
+```
 
-## 4. Cấu trúc repository
+---
+
+### Màn hình 2 – Tiếp nhận và phân loại yêu cầu
+
+Chức năng:
+
+- Hiển thị khách hàng đã tra cứu.
+- Hiển thị thiết bị.
+- Hiển thị tình trạng bảo hành.
+- Nhập mô tả lỗi.
+- Chọn nhóm sự cố.
+- Chọn mức ưu tiên.
+- Hệ thống tự tính hạn cam kết.
+- Tạo phiếu bảo hành.
+
+Các nhóm sự cố:
+
+```text
+Màn hình
+Pin
+Sạc
+Phần mềm
+Nước vào
+Khác
+```
+
+Mức ưu tiên:
+
+```text
+Cao
+Trung bình
+Thấp
+```
+
+Thời gian SLA:
+
+```text
+Cao        → 24 giờ
+Trung bình → 72 giờ
+Thấp       → 120 giờ
+```
+
+---
+
+### Màn hình 3 – Danh sách phiếu
+
+Chức năng:
+
+- Hiển thị danh sách phiếu bảo hành.
+- Hiển thị mã phiếu.
+- Hiển thị khách hàng.
+- Hiển thị thiết bị.
+- Hiển thị trạng thái.
+- Hiển thị nhóm sự cố.
+- Hiển thị mức ưu tiên.
+- Hiển thị hạn cam kết.
+- Hiển thị ngày tiếp nhận.
+- Lọc theo trạng thái.
+- Lọc theo nhóm sự cố.
+- Lọc theo mức ưu tiên.
+- Phân trang.
+
+Danh sách sử dụng API backend thật, không phải dữ liệu giao diện tĩnh.
+
+---
+
+## 6. Cấu trúc repository
 
 ```text
 .
-├── db/schema.sql                  # DDL gốc từ BT1
-├── docs/                          # SRS, sơ đồ, wireframe, ảnh kết quả, nhật ký thay đổi thiết kế
+├── db/
+│   └── schema.sql
+│
+├── docs/
+│   ├── SRS
+│   ├── sơ đồ Use Case
+│   ├── sơ đồ Architecture
+│   ├── ERD
+│   ├── Wireframe
+│   ├── ảnh minh chứng
+│   ├── e2e-luong-chinh.md
+│   └── thay-doi-thiet-ke.md
+│
 ├── src/
-│   ├── app.js                     # Khởi động Express, đăng ký route
-│   ├── db/                        # Kết nối PostgreSQL + migrations/ (001 bảng, 002 dữ liệu mẫu)
-│   ├── middleware/requireAuth.js  # Kiểm tra token, trả 401
-│   ├── routes/                    # tickets.js, lookup.js (khách/thiết bị/nhóm sự cố), auth.js
-│   ├── services/                  # Quy tắc nghiệp vụ (ticketService, lookupService)
-│   ├── repositories/              # Truy vấn SQL
-│   ├── utils/                     # sla (QT-04), phone (QT-02), warranty (QT-05), due (QT-13), auth, mapper
-│   └── frontend/                  # React + Vite
-│       └── src/{api,components,hooks,pages}
-├── tests/                         # Unit test (Jest)
+│   ├── app.js
+│   │
+│   ├── db/
+│   │   └── migrations/
+│   │
+│   ├── middleware/
+│   │   └── requireAuth.js
+│   │
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── lookup.js
+│   │   └── tickets.js
+│   │
+│   ├── services/
+│   │   ├── lookupService.js
+│   │   └── ticketService.js
+│   │
+│   ├── repositories/
+│   │
+│   ├── utils/
+│   │   ├── auth
+│   │   ├── phone
+│   │   ├── sla
+│   │   ├── warranty
+│   │   ├── due
+│   │   └── ticketMapper
+│   │
+│   └── frontend/
+│       ├── public/
+│       └── src/
+│           ├── api/
+│           ├── components/
+│           ├── hooks/
+│           └── pages/
+│
+├── tests/
+│
 ├── .env.example
-└── package.json
+├── .gitignore
+├── package.json
+└── README.md
 ```
 
-## 5. Cơ sở dữ liệu
+---
 
-Database `smart_crm` gồm 5 bảng: `customer`, `device`, `issue_category`, `ticket`, `ticket_status_log`.
-Khi chạy `npm start`, hệ thống chạy lần lượt các file trong `src/db/migrations/`; các lệnh đều idempotent nên chạy lại không nhân đôi dữ liệu.
+## 7. Cơ sở dữ liệu
 
-## 6. API
+Database:
 
-Mọi API (trừ `/health` và `/auth/login`) cần header `Authorization: Bearer <token>`; thiếu hoặc sai token trả `401`.
-Dữ liệu trả về bọc trong `{ "data": ... }`, khoá dạng camelCase (hợp đồng mô tả trong `src/utils/ticketMapper.js`).
+```text
+smart_crm
+```
+
+Gồm 5 bảng chính:
+
+```text
+customer
+device
+issue_category
+ticket
+ticket_status_log
+```
+
+Quan hệ chính:
+
+```text
+customer
+   │
+   └──< device
+          │
+          └──< ticket
+                  │
+                  └──< ticket_status_log
+```
+
+Ticket liên kết khách hàng gián tiếp thông qua:
+
+```text
+device.customer_id
+```
+
+Không tạo thêm `ticket.customer_id` để tránh dư thừa dữ liệu.
+
+Khi chạy:
+
+```powershell
+npm start
+```
+
+backend tự chạy migration.
+
+Các migration được thiết kế để có thể chạy lại mà không tạo trùng dữ liệu.
+
+---
+
+## 8. API
+
+Ngoại trừ:
+
+```text
+GET /health
+POST /auth/login
+```
+
+các API còn lại yêu cầu:
+
+```http
+Authorization: Bearer <token>
+```
+
+Nếu thiếu hoặc token không hợp lệ, backend trả:
+
+```text
+401 Unauthorized
+```
+
+### Các API chính
 
 | Phương thức | Endpoint | Chức năng |
 |---|---|---|
-| POST | `/auth/login` | Đăng nhập, trả token |
-| GET | `/customers?phone=` | Tra khách theo SĐT (chuẩn hoá về 10 chữ số) |
-| POST | `/customers` | Tạo khách mới (SĐT đã có thì trả hồ sơ cũ) |
-| GET | `/devices?serial=` | Tra thiết bị kèm `warrantyStatus` |
-| POST | `/devices` | Đăng ký thiết bị cho khách |
-| GET | `/categories` | Danh mục nhóm sự cố |
-| GET | `/tickets` | Danh sách phiếu (20/trang, lọc `status`, `categoryId`, `priority`, `page`) |
+| POST | `/auth/login` | Đăng nhập |
+| GET | `/customers?phone=` | Tra cứu khách hàng |
+| POST | `/customers` | Tạo khách hàng |
+| GET | `/devices?serial=` | Tra cứu thiết bị |
+| POST | `/devices` | Tạo thiết bị |
+| GET | `/categories` | Lấy danh mục nhóm sự cố |
+| GET | `/tickets` | Danh sách phiếu |
 | POST | `/tickets` | Tạo phiếu |
-| GET | `/tickets/:id` | Chi tiết phiếu |
-| PATCH | `/tickets/:id` | Cập nhật phân loại, ưu tiên, trạng thái |
-| DELETE | `/tickets/:id` | Đóng phiếu (không xoá vật lý) |
+| GET | `/tickets/:id` | Xem chi tiết phiếu |
+| PATCH | `/tickets/:id` | Cập nhật phiếu |
+| DELETE | `/tickets/:id` | Đóng phiếu |
 
-## 7. Kiểm thử
+Dữ liệu API được chuẩn hóa theo dạng:
 
-```bash
-npm test
+```json
+{
+  "data": {}
+}
 ```
 
-Các test tập trung vào lớp nghiệp vụ, không cần cơ sở dữ liệu thật: chuẩn hoá SĐT (QT-02), hạn cam kết (QT-04), bảo hành (QT-05), phiếu sắp/quá hạn (QT-13), token đăng nhập, mapper và các service (dùng repository giả).
+Các thuộc tính trả về cho frontend sử dụng camelCase.
 
-## 8. Tài liệu thiết kế
+---
 
-- `docs/srs.md`, `docs/usecase.*`, `docs/architecture.*`, `docs/erd.*`, `docs/wireframe0*.png`.
-- `docs/thay-doi-thiet-ke.md`: nhật ký điều chỉnh thiết kế (BT1 và Sprint 2, gồm các hạng mục đã cắt).
-- `docs/e2e-luong-chinh.md` và `docs/e2e-*.png`: minh chứng chạy toàn luồng.
-- `docs/ai-declaration.md`: khai báo sử dụng công cụ AI.
+## 9. Xác thực người dùng
 
-## 9. Trạng thái thực hiện
+Hệ thống hiện đã triển khai **Authentication – xác thực người dùng**.
 
-- [x] Backend 3 lớp: tickets, khách hàng, thiết bị, nhóm sự cố.
-- [x] Frontend 3 màn hình gọi API thật, có đăng nhập và xử lý 401.
-- [x] Ba trạng thái đang tải / rỗng / lỗi (kèm thử lại) bằng `DataState`.
-- [x] Luồng chính chạy end-to-end trên dữ liệu mẫu.
-- [x] Unit test cho quy tắc nghiệp vụ.
-- [ ] Phân quyền theo vai trò (QT-11) – hoãn, xem `docs/thay-doi-thiet-ke.md`.
+Luồng:
+
+```text
+Đăng nhập
+   ↓
+POST /auth/login
+   ↓
+Backend kiểm tra tài khoản
+   ↓
+Trả token
+   ↓
+Frontend lưu token
+   ↓
+Gửi Bearer token khi gọi API
+```
+
+Frontend có xử lý trường hợp token hết hạn hoặc không hợp lệ:
+
+```text
+API trả 401
+   ↓
+Xóa token
+   ↓
+Thông báo phiên đăng nhập hết hạn
+   ↓
+Yêu cầu đăng nhập lại
+```
+
+---
+
+## 10. Trạng thái giao diện
+
+Frontend sử dụng component `DataState` để xử lý các trạng thái:
+
+```text
+Loading
+Empty
+Error
+```
+
+Khi xảy ra lỗi có thể thực hiện thao tác thử lại.
+
+Frontend cũng tách phần gọi API thành:
+
+```text
+src/frontend/src/api/
+```
+
+Các trang giao diện không gọi `fetch()` trực tiếp.
+
+---
+
+## 11. Kiểm thử
+
+Chạy:
+
+```powershell
+npm test -- --runInBand
+```
+
+Kết quả hiện tại:
+
+```text
+Test Suites: 7 passed, 7 total
+Tests:       32 passed, 32 total
+```
+
+Các nhóm kiểm thử gồm:
+
+- Chuẩn hóa số điện thoại.
+- Tính SLA.
+- Tính hạn cam kết.
+- Kiểm tra bảo hành.
+- Xử lý phiếu sắp/quá hạn.
+- Xác thực token.
+- Ticket mapper.
+- Service nghiệp vụ.
+
+Các test nghiệp vụ không yêu cầu kết nối database thật.
+
+---
+
+## 12. Kiểm tra Frontend
+
+### Build production
+
+```powershell
+cd src/frontend
+npm run build
+```
+
+Kết quả hiện tại:
+
+```text
+✓ built successfully
+```
+
+### Lint
+
+```powershell
+npm run lint
+```
+
+Kết quả hiện tại:
+
+```text
+Found 0 warnings and 0 errors.
+```
+
+---
+
+## 13. Tài liệu thiết kế và minh chứng
+
+Các tài liệu được lưu trong thư mục:
+
+```text
+docs/
+```
+
+Bao gồm:
+
+```text
+docs/srs.md
+docs/usecase.*
+docs/architecture.*
+docs/erd.*
+docs/wireframe0*.png
+docs/thay-doi-thiet-ke.md
+docs/e2e-luong-chinh.md
+docs/e2e-*.png
+docs/ai-declaration.md
+```
+
+Trong đó:
+
+- `srs.md`: đặc tả yêu cầu.
+- `usecase.*`: Use Case.
+- `architecture.*`: kiến trúc hệ thống.
+- `erd.*`: mô hình dữ liệu.
+- `wireframe*.png`: thiết kế giao diện.
+- `e2e-luong-chinh.md`: biên bản chạy luồng chính.
+- `e2e-*.png`: ảnh minh chứng.
+- `thay-doi-thiet-ke.md`: nhật ký thay đổi thiết kế.
+- `ai-declaration.md`: khai báo sử dụng công cụ AI.
+
+---
+
+## 14. Trạng thái thực hiện
+
+### Đã hoàn thành
+
+- [x] Backend Express.
+- [x] Kiến trúc backend Routes → Services → Repositories.
+- [x] PostgreSQL.
+- [x] Migration và dữ liệu mẫu.
+- [x] Tra cứu khách hàng.
+- [x] Tra cứu thiết bị.
+- [x] Kiểm tra bảo hành.
+- [x] Tạo phiếu bảo hành.
+- [x] Phân loại sự cố.
+- [x] Tính SLA.
+- [x] Tính hạn cam kết.
+- [x] Danh sách phiếu.
+- [x] Lọc danh sách phiếu.
+- [x] Phân trang.
+- [x] Frontend React + Vite.
+- [x] 3 màn hình chính.
+- [x] Gọi API thật từ frontend.
+- [x] Đăng nhập và xác thực bằng token.
+- [x] Xử lý token hết hạn / HTTP 401.
+- [x] Loading / Empty / Error state.
+- [x] Luồng End-to-End.
+- [x] Unit test.
+- [x] 32/32 test pass.
+- [x] Frontend build thành công.
+- [x] Frontend lint 0 warning / 0 error.
+- [x] Ảnh minh chứng luồng chính.
+- [x] README và tài liệu thiết kế.
+
+### Chưa hoàn thành
+
+- [ ] **Phân quyền theo vai trò (QT-11).**
+
+QT-11 yêu cầu kiểm tra quyền **tại server**:
+
+```text
+Nhân viên tiếp nhận
+→ được tra cứu
+→ được tạo phiếu
+
+Quản lý
+→ được xem danh sách
+→ được lọc danh sách
+→ được xem phiếu sắp hạn / quá hạn
+```
+
+Hiện tại hệ thống đã có **Authentication (xác thực)** nhưng chưa hoàn thiện **Authorization (phân quyền theo role)**.
+
+Do đó QT-11 được ghi nhận là **chưa hoàn thành / tạm hoãn**, không đánh dấu `[x]` cho đến khi backend có kiểm tra role thực tế.
+
+---
+
+## 15. Trạng thái Sprint 2 / Buổi 10
+
+Các chức năng chính của Sprint 2 đã được hiện thực hóa:
+
+```text
+Tra cứu khách hàng
+        ↓
+Tra cứu thiết bị
+        ↓
+Kiểm tra bảo hành
+        ↓
+Tiếp nhận và phân loại yêu cầu
+        ↓
+Tạo phiếu bảo hành
+        ↓
+Danh sách phiếu
+        ↓
+Lọc và phân trang
+```
+
+Kết quả kiểm tra hiện tại:
+
+```text
+Frontend build  : PASS
+Frontend lint   : 0 warning / 0 error
+Unit tests      : 32/32 PASS
+E2E             : Đã chạy và có ảnh minh chứng
+```
+
+Phần còn lại cần hoàn thiện là:
+
+```text
+QT-11 – Phân quyền theo vai trò
+```
+
+---
+
+## 16. Git và Repository
+
+Repository:
+
+```text
+smartcrm-2374802010207-warranty-claim-intake
+```
+
+Các thay đổi được quản lý bằng Git và sử dụng Conventional Commits.
+
+Ví dụ:
+
+```text
+feat: ...
+fix: ...
+docs: ...
+chore: ...
+test: ...
+```
+
+Trước khi push cần kiểm tra:
+
+```powershell
+git status
+git --no-pager diff --check
+npm test -- --runInBand
+```
+
+Đảm bảo:
+
+```text
+working tree clean
+```
+
+và commit đã được push lên `origin/main`.
