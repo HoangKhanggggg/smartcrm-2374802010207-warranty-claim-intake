@@ -12,10 +12,16 @@
 
 ## 2. Yêu cầu môi trường
 
-- Node.js 20 trở lên (kèm npm).
-- PostgreSQL 14 trở lên.
+- Node.js 20 trở lên.
+- npm 10 trở lên.
+- PostgreSQL 18.
 - Git.
-- Trình duyệt web hiện đại.
+
+### Runtime thực tế đã kiểm thử
+- Node.js: 24.12.0
+- npm: 11.6.2
+- PostgreSQL: 18.6
+- Git: 2.56.0.windows.2
 
 ### Công nghệ sử dụng
 
