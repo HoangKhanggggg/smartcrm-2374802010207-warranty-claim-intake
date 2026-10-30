@@ -1,3 +1,4 @@
+
 const repo = require('../repositories/ticketRepository');
 const AppError = require('../utils/AppError');
 const { computeDeadline, HOURS } = require('../utils/sla');
@@ -11,31 +12,62 @@ const STATUSES = [
   'Đã đóng'
 ];
 
+// Tạo phiếu bảo hành
 async function createTicket({
   deviceId,
   categoryId,
   description,
   priority = 'Trung bình'
 }) {
-  if (!description || !String(description).trim() || !deviceId) {
+  // Kiểm tra dữ liệu bắt buộc
+  if (
+    !description ||
+    !String(description).trim() ||
+    !Number.isInteger(Number(deviceId)) ||
+    Number(deviceId) < 1
+  ) {
     throw new AppError('DU_LIEU_KHONG_HOP_LE');
   }
 
+  // Chuẩn hóa ID
+  deviceId = Number(deviceId);
+
+  if (categoryId !== undefined && categoryId !== null && categoryId !== '') {
+    categoryId = Number(categoryId);
+
+    if (!Number.isInteger(categoryId) || categoryId < 1) {
+      throw new AppError('DU_LIEU_KHONG_HOP_LE');
+    }
+  } else {
+    categoryId = null;
+  }
+
+  // Kiểm tra mức ưu tiên
   if (!HOURS[priority]) {
     throw new AppError('DU_LIEU_KHONG_HOP_LE');
   }
 
-  if (!await repo.findDevice(deviceId)) {
+  // Kiểm tra thiết bị tồn tại
+  const device = await repo.findDevice(deviceId);
+
+  if (!device) {
     throw new AppError('KHONG_TIM_THAY_THIET_BI', 404);
   }
 
-  if (categoryId && !await repo.findCategory(categoryId)) {
-    throw new AppError('DU_LIEU_KHONG_HOP_LE');
+  // Kiểm tra nhóm lỗi tồn tại
+  if (categoryId !== null) {
+    const category = await repo.findCategory(categoryId);
+
+    if (!category) {
+      throw new AppError('DU_LIEU_KHONG_HOP_LE');
+    }
   }
 
+  // Tính thời hạn cam kết SLA
   const now = new Date();
   const deadline = computeDeadline(priority, now);
 
+  // Tạo phiếu trong database
   const created = await repo.create({
     ticketCode: `BH-${Date.now()}${Math.floor(Math.random() * 90 + 10)}`,
     deviceId,
@@ -46,11 +78,22 @@ async function createTicket({
     commitmentDeadline: deadline.toISOString()
   });
 
-  return getTicket(created.ticket_id);
+  // Kiểm tra dữ liệu trả về sau khi INSERT
+  if (!created || !created.ticket_id) {
+    console.error('Lỗi: Repository không trả về ticket_id:', created);
+    throw new AppError('KHONG_THE_TAO_PHIEU', 500);
+  }
+
+  // Đọc lại phiếu vừa tạo
+  return getTicket(Number(created.ticket_id));
 }
 
+// Lấy danh sách phiếu bảo hành
 async function listTickets(query) {
-  if (query.categoryId && !/^\d+$/.test(String(query.categoryId))) {
+  if (
+    query.categoryId &&
+    !/^\d+$/.test(String(query.categoryId))
+  ) {
     throw new AppError('DU_LIEU_KHONG_HOP_LE');
   }
 
@@ -65,6 +108,7 @@ async function listTickets(query) {
   });
 }
 
+// Lấy chi tiết phiếu bảo hành
 async function getTicket(id) {
   if (!Number.isInteger(id) || id < 1) {
     throw new AppError('KHONG_TIM_THAY_PHIEU', 404);
@@ -79,6 +123,7 @@ async function getTicket(id) {
   return ticket;
 }
 
+// Cập nhật phiếu bảo hành
 async function updateTicket(id, body) {
   const ticket = await getTicket(id);
 
@@ -93,8 +138,20 @@ async function updateTicket(id, body) {
     throw new AppError('DU_LIEU_KHONG_HOP_LE');
   }
 
-  if (categoryId && !await repo.findCategory(categoryId)) {
-    throw new AppError('DU_LIEU_KHONG_HOP_LE');
+  if (
+    categoryId !== null &&
+    categoryId !== undefined &&
+    categoryId !== ''
+  ) {
+    if (!Number.isInteger(Number(categoryId)) || Number(categoryId) < 1) {
+      throw new AppError('DU_LIEU_KHONG_HOP_LE');
+    }
+
+    const category = await repo.findCategory(Number(categoryId));
+
+    if (!category) {
+      throw new AppError('DU_LIEU_KHONG_HOP_LE');
+    }
   }
 
   const deadline = priority !== ticket.priority
@@ -112,8 +169,11 @@ async function updateTicket(id, body) {
   return getTicket(id);
 }
 
+// Đóng phiếu bảo hành
 async function closeTicket(id) {
-  return updateTicket(id, { status: 'Đã đóng' });
+  return updateTicket(id, {
+    status: 'Đã đóng'
+  });
 }
 
 module.exports = {

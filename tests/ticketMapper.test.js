@@ -50,4 +50,21 @@ describe('toTicketView', () => {
       'Dữ liệu ticket không hợp lệ'
     );
   });
+  test('Dữ liệu sai: từ chối ngày giờ không hợp lệ', () => {
+    const row = {
+      ticket_id: '5',
+      ticket_code: 'BH-005',
+      device_id: '1',
+      category_id: null,
+      description: 'Kiểm tra thiết bị',
+      priority: 'Cao',
+      status: 'Mới',
+      commitment_deadline: 'invalid-date',
+      created_at: '2026-10-20T08:00:00.000Z'
+    };
+
+    expect(() => toTicketView(row)).toThrow(
+      'Ngày giờ ticket không hợp lệ'
+    );
+  });
 });
