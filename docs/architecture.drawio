@@ -1,1 +1,152 @@
-<mxfile host="app.diagrams.net"><diagram id="Architecture L02" name="Architecture L02"><mxGraphModel dx="1100" dy="700" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1000"><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="L0" value="&lt;b&gt;Client / Frontend (Presentation)&lt;/b&gt;&lt;br/&gt;Màn hình tra cứu KH/thiết bị | Màn hình tiếp nhận | Danh sách phiếu" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCE9F5;strokeColor=#333333;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1"><mxGeometry x="60" y="40" width="700" height="80" as="geometry"/></mxCell><mxCell id="L1" value="&lt;b&gt;Node.js + Express – REST API (Routes / Controller)&lt;/b&gt;&lt;br/&gt;CustomerController | DeviceController | CategoryController | TicketController" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EDF7;strokeColor=#333333;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1"><mxGeometry x="60" y="170" width="700" height="80" as="geometry"/></mxCell><mxCell id="L2" value="&lt;b&gt;Service (Business Logic)&lt;/b&gt;&lt;br/&gt;CustomerService | DeviceService | TicketService – chuẩn hóa SĐT, kiểm tra bảo hành, sinh mã phiếu, tính hạn cam kết (SLA), nhận diện sắp/quá hạn" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#333333;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1"><mxGeometry x="60" y="300" width="700" height="80" as="geometry"/></mxCell><mxCell id="L3" value="&lt;b&gt;Repository (Data Access)&lt;/b&gt;&lt;br/&gt;CustomerRepository | DeviceRepository | TicketRepository | CategoryRepository | StatusLogRepository" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#333333;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1"><mxGeometry x="60" y="430" width="700" height="80" as="geometry"/></mxCell><mxCell id="L4" value="&lt;b&gt;PostgreSQL 18&lt;/b&gt;&lt;br/&gt;customer | device | issue_category | ticket | ticket_status_log" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CBAD;strokeColor=#333333;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1"><mxGeometry x="60" y="560" width="700" height="80" as="geometry"/></mxCell><mxCell id="a0" value="HTTP / JSON" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;" edge="1" parent="1" source="L0" target="L1"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="a1" value="Gọi hàm" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;" edge="1" parent="1" source="L1" target="L2"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="a2" value="Gọi hàm" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;" edge="1" parent="1" source="L2" target="L3"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="a3" value="SQL (node-postgres)" style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;" edge="1" parent="1" source="L3" target="L4"><mxGeometry relative="1" as="geometry"/></mxCell><mxCell id="oos" value="NGOÀI PHẠM VI L02: phân công kỹ thuật viên, quản lý kỹ thuật viên, sửa chữa, quản lý linh kiện, thanh toán." style="text;html=1;align=center;whiteSpace=wrap;fontStyle=2;fontColor=#C00000;fontSize=12;" vertex="1" parent="1"><mxGeometry x="60" y="695" width="700" height="30" as="geometry"/></mxCell><mxCell id="legend" value="&lt;b&gt;Chú thích kiến trúc&lt;/b&gt;&lt;br/&gt;• Client/Frontend: nhận thao tác và hiển thị kết quả.&lt;br/&gt;• Controller (Express): nhận HTTP request, trả HTTP response, kiểm tra quyền theo vai trò.&lt;br/&gt;• Service: thực hiện quy tắc nghiệp vụ của L02.&lt;br/&gt;• Repository: đọc/ghi PostgreSQL (SELECT, INSERT, UPDATE, JOIN, lọc, transaction khi cần).&lt;br/&gt;• Mũi tên hai chiều: luồng gọi và dữ liệu trả về giữa hai lớp liền kề.&lt;br/&gt;• PostgreSQL 18: 5 bảng của L02." style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;" vertex="1" parent="1"><mxGeometry x="60" y="735" width="700" height="130" as="geometry"/></mxCell></root></mxGraphModel></diagram></mxfile>
+
+<mxfile host="app.diagrams.net">
+  <diagram id="Architecture L02" name="Architecture L02">
+    <mxGraphModel dx="1200" dy="950" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" page="1" pageScale="1" pageWidth="1169" pageHeight="1100">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- FRONTEND -->
+        <mxCell
+          id="L0"
+          value="&lt;b&gt;Client / Frontend (Presentation)&lt;/b&gt;&lt;br/&gt;React + Vite&lt;br/&gt;Màn hình đăng nhập | Tra cứu khách hàng/thiết bị | Tiếp nhận bảo hành | Danh sách phiếu"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCE9F5;strokeColor=#333333;strokeWidth=1.5;fontSize=12;"
+          vertex="1"
+          parent="1">
+          <mxGeometry x="60" y="40" width="760" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- ROUTES / CONTROLLER -->
+        <mxCell
+          id="L1"
+          value="&lt;b&gt;Node.js + Express – REST API&lt;/b&gt;&lt;br/&gt;Routes / Controller&lt;br/&gt;auth.js | lookup.js | tickets.js"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8EDF7;strokeColor=#333333;strokeWidth=1.5;fontSize=12;"
+          vertex="1"
+          parent="1">
+          <mxGeometry x="60" y="175" width="760" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- AUTHENTICATION MIDDLEWARE -->
+        <mxCell
+          id="AUTH"
+          value="&lt;b&gt;Authentication Middleware&lt;/b&gt;&lt;br/&gt;requireAuth.js&lt;br/&gt;Xác thực Bearer Token | Trả HTTP 401 khi chưa đăng nhập hoặc token không hợp lệ"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCE4D6;strokeColor=#333333;strokeWidth=1.5;fontSize=12;"
+          vertex="1"
+          parent="1">
+          <mxGeometry x="60" y="300" width="760" height="75" as="geometry"/>
+        </mxCell>
+
+        <!-- SERVICE -->
+        <mxCell
+          id="L2"
+          value="&lt;b&gt;Service Layer (Business Logic)&lt;/b&gt;&lt;br/&gt;lookupService.js | ticketService.js&lt;br/&gt;Chuẩn hóa SĐT | Kiểm tra bảo hành | Phân loại sự cố | Tính SLA | Sinh mã phiếu | Xác định dueState"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E2EFDA;strokeColor=#333333;strokeWidth=1.5;fontSize=12;"
+          vertex="1"
+          parent="1">
+          <mxGeometry x="60" y="410" width="760" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- REPOSITORY -->
+        <mxCell
+          id="L3"
+          value="&lt;b&gt;Repository Layer (Data Access)&lt;/b&gt;&lt;br/&gt;ticketRepository.js&lt;br/&gt;Truy cập dữ liệu khách hàng, thiết bị, danh mục, phiếu bảo hành và lịch sử trạng thái&lt;br/&gt;SELECT | INSERT | UPDATE | JOIN | Transaction"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#333333;strokeWidth=1.5;fontSize=12;"
+          vertex="1"
+          parent="1">
+          <mxGeometry x="60" y="545" width="760" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- DATABASE -->
+        <mxCell
+          id="L4"
+          value="&lt;b&gt;PostgreSQL 18&lt;/b&gt;&lt;br/&gt;customer | device | issue_category | ticket | ticket_status_log&lt;br/&gt;Migration: 001_create_tables.sql | Seed: 002_seed.sql"
+          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CBAD;strokeColor=#333333;strokeWidth=1.5;fontSize=12;"
+          vertex="1"
+          parent="1">
+          <mxGeometry x="60" y="680" width="760" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- FRONTEND TO API -->
+        <mxCell
+          id="a0"
+          value="HTTP / JSON"
+          style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;"
+          edge="1"
+          parent="1"
+          source="L0"
+          target="L1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- API TO AUTHENTICATION -->
+        <mxCell
+          id="a_auth"
+          value="Request bảo vệ"
+          style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;"
+          edge="1"
+          parent="1"
+          source="L1"
+          target="AUTH">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- AUTHENTICATION TO SERVICE -->
+        <mxCell
+          id="a_auth_service"
+          value="Token hợp lệ"
+          style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;"
+          edge="1"
+          parent="1"
+          source="AUTH"
+          target="L2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- SERVICE TO REPOSITORY -->
+        <mxCell
+          id="a2"
+          value="Gọi repository"
+          style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;"
+          edge="1"
+          parent="1"
+          source="L2"
+          target="L3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- REPOSITORY TO DATABASE -->
+        <mxCell
+          id="a3"
+          value="SQL / node-postgres"
+          style="endArrow=classic;startArrow=classic;html=1;strokeWidth=1.5;labelBackgroundColor=#FFFFFF;fontSize=11;"
+          edge="1"
+          parent="1"
+          source="L3"
+          target="L4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- SCOPE -->
+        <mxCell
+          id="oos"
+          value="&lt;b&gt;NGOÀI PHẠM VI L02&lt;/b&gt;: Phân công kỹ thuật viên | Quản lý kỹ thuật viên | Sửa chữa | Quản lý linh kiện | Thanh toán"
+          style="text;html=1;align=center;whiteSpace=wrap;fontStyle=2;fontColor=#C00000;fontSize=12;"
+          vertex="1"
+          parent="1">
+          <mxGeometry x="60" y="800" width="760" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- LEGEND -->
+        <mxCell
+          id="legend"
+          value="&lt;b&gt;Chú thích kiến trúc&lt;/b&gt;&lt;br/&gt;• Frontend React + Vite: nhận thao tác và hiển thị kết quả.&lt;br/&gt;• Routes / Controller Express: tiếp nhận HTTP request, kiểm tra dữ liệu đầu vào và trả HTTP response.&lt;br/&gt;• Middleware requireAuth.js: xác thực Bearer token và bảo vệ các API cần đăng nhập.&lt;br/&gt;• Service: xử lý quy tắc nghiệp vụ L02 như chuẩn hóa SĐT, kiểm tra bảo hành, SLA và dueState.&lt;br/&gt;• Repository: truy cập PostgreSQL thông qua node-postgres.&lt;br/&gt;• PostgreSQL 18: lưu trữ 5 bảng dữ liệu của L02.&lt;br/&gt;• Migration và seed nằm trong src/db/migrations.&lt;br/&gt;• Hệ thống đã có Authentication, chưa triển khai Authorization theo vai trò (QT-11)."
+          style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;"
+          vertex="1"
+          parent="1">
+          <mxGeometry x="60" y="850" width="760" height="150" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

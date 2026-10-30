@@ -1,7 +1,7 @@
 # Biên bản chạy toàn luồng (end-to-end)
 
 - **Ngày chạy:** 24/10/2026
-- **Môi trường:** PostgreSQL 16, Node.js 22, backend `http://localhost:3001`, frontend `http://localhost:5173`.
+- **Môi trường:** PostgreSQL 18.6, Node.js 24.12.0, npm 11.6.2, backend `http://localhost:3001`, frontend `http://localhost:5173`.
 - **Dữ liệu:** dữ liệu mẫu thật nạp bằng `src/db/migrations/002_seed.sql` (3 khách, 3 thiết bị, 6 nhóm sự cố).
 - **Luồng chính (UC01 → UC03 → UC07):** đăng nhập → tra khách theo SĐT → tra thiết bị theo serial → nhập mô tả, chọn nhóm và ưu tiên → tạo phiếu → xem danh sách.
 
@@ -17,7 +17,7 @@
 | 8. Tắt backend | Tắt server, mở tab 3 | Thông báo "Không kết nối được máy chủ" + nút **Thử lại** | `e2e-6-loi-tat-backend.png` |
 | 9. Token sai/hết hạn | Làm hỏng token trong trình duyệt | Nhận 401, token bị xoá, về trang đăng nhập kèm thông báo | – |
 
-Kiểm tra bổ sung: `grep -rn "fetch(" src/frontend/src/pages` cho kết quả rỗng; chạy lại migration không nhân đôi dữ liệu mẫu.
+Kiểm tra bổ sung: không sử dụng `fetch()` trực tiếp trong các page; frontend gọi API thông qua lớp API client. Chạy lại migration không nhân đôi dữ liệu mẫu.
 
 ## Lỗi tích hợp gặp phải và cách xử lý
 
