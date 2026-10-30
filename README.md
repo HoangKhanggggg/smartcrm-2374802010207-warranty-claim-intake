@@ -2,7 +2,7 @@
 
 Hệ thống tiếp nhận và quản lý yêu cầu bảo hành cho Mekong Mobile.
 
-**Đồ án:** Chuyên đề tốt nghiệp 1
+**Đồ án:** Chuyên đề tốt nghiệp 1  
 - **Tên đề tài:** Hệ thống tiếp nhận và quản lý yêu cầu bảo hành.
 - **Dự án:** Smart CRM – Mekong Mobile.
 - **Track:** Software Engineering (SE).
@@ -40,6 +40,7 @@ Hệ thống tập trung vào quy trình:
 - Xem, lọc và phân trang danh sách phiếu.
 
 **Ngoài phạm vi:**
+
 - Phân công kỹ thuật viên.
 - Quản lý quá trình sửa chữa.
 - Quản lý linh kiện.
@@ -49,18 +50,18 @@ Hệ thống tập trung vào quy trình:
 
 ## 2. Công nghệ sử dụng
 
-| Thành phần                 | Công nghệ          |
-| -------------------------- | ------------------ |
-| Backend                    | Node.js            |
-| Backend Framework          | Express.js         |
-| Frontend                   | React              |
-| Frontend Tool              | Vite               |
-| Database                   | PostgreSQL 18      |
-| API                        | REST API           |
-| Kiểm thử Backend           | Jest               |
-| Kiểm tra mã nguồn Frontend | Oxlint             |
-| Quản lý mã nguồn           | Git, GitHub        |
-| IDE                        | Visual Studio Code |
+| Thành phần | Công nghệ |
+|---|---|
+| Backend | Node.js |
+| Backend Framework | Express.js |
+| Frontend | React |
+| Frontend Tool | Vite |
+| Database | PostgreSQL 18 |
+| API | REST API |
+| Kiểm thử Backend | Jest |
+| Kiểm tra mã nguồn Frontend | Oxlint |
+| Quản lý mã nguồn | Git, GitHub |
+| IDE | Visual Studio Code |
 
 ### Kiến trúc Backend
 
@@ -81,13 +82,13 @@ Routes → Services → Repositories → Database
 
 Cài đặt các công cụ sau:
 
-| Công cụ            | Phiên bản yêu cầu                  |
-| ------------------ | ---------------------------------- |
-| Node.js            | 20 trở lên                         |
-| npm                | 10 trở lên                         |
-| PostgreSQL         | 18                                 |
-| Git                | Phiên bản phù hợp với hệ điều hành |
-| Visual Studio Code | Phiên bản hiện hành                |
+| Công cụ | Phiên bản yêu cầu |
+|---|---|
+| Node.js | 20 trở lên |
+| npm | 10 trở lên |
+| PostgreSQL | 18 |
+| Git | Phiên bản phù hợp với hệ điều hành |
+| Visual Studio Code | Phiên bản hiện hành |
 
 ### Runtime đã được ghi nhận trong quá trình phát triển
 
@@ -251,9 +252,9 @@ Mở địa chỉ trên trình duyệt để sử dụng hệ thống.
 
 Cần mở đồng thời hai Terminal:
 
-| Terminal   | Lệnh                                | Chức năng          |
-| ---------- | ----------------------------------- | ------------------ |
-| Terminal 1 | `npm start`                         | Khởi động Backend  |
+| Terminal | Lệnh | Chức năng |
+|---|---|---|
+| Terminal 1 | `npm start` | Khởi động Backend |
 | Terminal 2 | `npm run dev --prefix src/frontend` | Khởi động Frontend |
 
 Backend phải hoạt động trước khi thực hiện các chức năng cần gọi API.
@@ -301,11 +302,11 @@ Tiếp tục tạo phiếu
 
 Dữ liệu mẫu được khởi tạo từ migration seed.
 
-| Khách hàng     | Số điện thoại | Serial / IMEI     | Tình trạng    |
-| -------------- | ------------- | ----------------- | ------------- |
-| Nguyễn Văn An  | 0912345678    | `SN-A001-2026`    | Còn bảo hành  |
-| Trần Thị Bình  | 0987654321    | `356938035643809` | Hết bảo hành  |
-| Lê Hoàng Cường | 0901234567    | `SN-C003-2026`    | Chưa xác minh |
+| Khách hàng | Số điện thoại | Serial / IMEI | Tình trạng |
+|---|---|---|---|
+| Nguyễn Văn An | 0912345678 | `SN-A001-2026` | Còn bảo hành |
+| Trần Thị Bình | 0987654321 | `356938035643809` | Hết bảo hành |
+| Lê Hoàng Cường | 0901234567 | `SN-C003-2026` | Chưa xác minh |
 
 ### 5.2. Màn hình tiếp nhận và phân loại yêu cầu
 
@@ -342,10 +343,10 @@ Thấp
 Thời gian SLA:
 
 | Mức ưu tiên | Thời gian SLA |
-| ----------- | ------------: |
-| Cao         |        24 giờ |
-| Trung bình  |        72 giờ |
-| Thấp        |       120 giờ |
+|---|---:|
+| Cao | 24 giờ |
+| Trung bình | 72 giờ |
+| Thấp | 120 giờ |
 
 ### 5.3. Màn hình danh sách phiếu
 
@@ -489,7 +490,7 @@ Backend tự thực hiện migration khi khởi động bằng lệnh:
 npm start
 ```
 
-Các migration hiện tại sử dụng những cấu trúc hỗ trợ chạy lại an toàn đối với các đối tượng và dữ liệu đã tồn tại. Khi thay đổi cấu trúc database trong tương lai, nên tạo migration mới thay vì sửa migration đã được sử dụng.
+Khi thay đổi cấu trúc database trong tương lai, nên tạo migration mới thay vì sửa migration đã được sử dụng.
 
 ---
 
@@ -522,20 +523,20 @@ Nếu token thiếu hoặc không hợp lệ, Backend trả về:
 
 ### 8.2. Danh sách API chính
 
-| Phương thức | Endpoint            | Chức năng                   |
-| ----------- | ------------------- | --------------------------- |
-| GET         | `/health`           | Kiểm tra trạng thái Backend |
-| POST        | `/auth/login`       | Đăng nhập                   |
-| GET         | `/customers?phone=` | Tra cứu khách hàng          |
-| POST        | `/customers`        | Tạo khách hàng              |
-| GET         | `/devices?serial=`  | Tra cứu thiết bị            |
-| POST        | `/devices`          | Tạo thiết bị                |
-| GET         | `/categories`       | Lấy danh mục nhóm sự cố     |
-| GET         | `/tickets`          | Lấy danh sách phiếu         |
-| POST        | `/tickets`          | Tạo phiếu                   |
-| GET         | `/tickets/:id`      | Xem chi tiết phiếu          |
-| PATCH       | `/tickets/:id`      | Cập nhật phiếu              |
-| DELETE      | `/tickets/:id`      | Đóng phiếu                  |
+| Phương thức | Endpoint | Chức năng |
+|---|---|---|
+| GET | `/health` | Kiểm tra trạng thái Backend |
+| POST | `/auth/login` | Đăng nhập |
+| GET | `/customers?phone=` | Tra cứu khách hàng |
+| POST | `/customers` | Tạo khách hàng |
+| GET | `/devices?serial=` | Tra cứu thiết bị |
+| POST | `/devices` | Tạo thiết bị |
+| GET | `/categories` | Lấy danh mục nhóm sự cố |
+| GET | `/tickets` | Lấy danh sách phiếu |
+| POST | `/tickets` | Tạo phiếu |
+| GET | `/tickets/:id` | Xem chi tiết phiếu |
+| PATCH | `/tickets/:id` | Cập nhật phiếu |
+| DELETE | `/tickets/:id` | Đóng phiếu |
 
 ### 8.3. Định dạng dữ liệu
 
@@ -604,11 +605,11 @@ Yêu cầu đăng nhập lại
 
 Frontend sử dụng component `DataState` để xử lý các trạng thái:
 
-| Trạng thái | Ý nghĩa          |
-| ---------- | ---------------- |
-| Loading    | Đang tải dữ liệu |
-| Empty      | Không có dữ liệu |
-| Error      | Xảy ra lỗi       |
+| Trạng thái | Ý nghĩa |
+|---|---|
+| Loading | Đang tải dữ liệu |
+| Empty | Không có dữ liệu |
+| Error | Xảy ra lỗi |
 
 Khi xảy ra lỗi, giao diện có thể cung cấp thao tác thử lại.
 
@@ -661,14 +662,23 @@ Các nhóm kiểm thử được ghi nhận trong dự án:
 
 Các test nghiệp vụ đã được thiết kế để kiểm tra logic mà không cần kết nối database thật.
 
-### 11.3. Kết quả kiểm thử được ghi nhận
+### 11.3. Kết quả kiểm thử
+
+Kết quả kiểm thử được ghi nhận tại môi trường local:
 
 ```text
 Test Suites: 7 passed, 7 total
-Tests:       32 passed, 32 total
+Tests:       34 passed, 34 total
+Snapshots:   0 total
 ```
 
-Kết quả trên là số liệu được ghi nhận trong quá trình phát triển; cần chạy lại lệnh kiểm thử để xác nhận trên môi trường hiện tại.
+Lệnh kiểm thử:
+
+```bash
+npm test -- --runInBand
+```
+
+Kết quả trên là kết quả chạy kiểm thử do người phát triển ghi nhận. Khi kiểm thử lại trên môi trường khác, cần chạy lệnh trên để xác nhận.
 
 ---
 
@@ -714,17 +724,17 @@ docs/
 
 Các tài liệu chính:
 
-| Tài liệu               | Nội dung                    |
-| ---------------------- | --------------------------- |
-| `srs.md`               | Đặc tả yêu cầu phần mềm     |
-| `usecase.*`            | Sơ đồ Use Case              |
-| `architecture.*`       | Thiết kế kiến trúc hệ thống |
-| `erd.*`                | Mô hình dữ liệu             |
-| `wireframe*.png`       | Thiết kế giao diện          |
-| `e2e-luong-chinh.md`   | Mô tả kiểm thử luồng chính  |
-| `e2e-*.png`            | Ảnh minh chứng              |
-| `thay-doi-thiet-ke.md` | Nhật ký thay đổi thiết kế   |
-| `ai-declaration.md`    | Khai báo sử dụng công cụ AI |
+| Tài liệu | Nội dung |
+|---|---|
+| `srs.md` | Đặc tả yêu cầu phần mềm |
+| `usecase.*` | Sơ đồ Use Case |
+| `architecture.*` | Thiết kế kiến trúc hệ thống |
+| `erd.*` | Mô hình dữ liệu |
+| `wireframe*.png` | Thiết kế giao diện |
+| `e2e-luong-chinh.md` | Mô tả kiểm thử luồng chính |
+| `e2e-*.png` | Ảnh minh chứng |
+| `thay-doi-thiet-ke.md` | Nhật ký thay đổi thiết kế |
+| `ai-declaration.md` | Khai báo sử dụng công cụ AI |
 
 ---
 
@@ -748,7 +758,7 @@ Các tài liệu chính:
 - [x] Phân trang.
 - [x] Frontend React + Vite.
 - [x] Ba màn hình chính.
-- [x] Gọi API thật từ Frontend.
+- [x] Gọi API từ Frontend.
 - [x] Đăng nhập và xác thực bằng token.
 - [x] Xử lý token hết hạn / HTTP 401.
 - [x] Loading / Empty / Error state.
@@ -820,6 +830,10 @@ Repository:
 smartcrm-2374802010207-warranty-claim-intake
 ```
 
+GitHub:
+
+https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake
+
 Các thay đổi được quản lý bằng Git và GitHub.
 
 ### 16.1. Kiểm tra trạng thái
@@ -855,7 +869,7 @@ chore: cập nhật cấu hình môi trường
 refactor: tối ưu xử lý nghiệp vụ phiếu bảo hành
 ```
 
-Trước khi push, cần kiểm tra:
+### 16.5. Kiểm tra trước khi push
 
 - Các thay đổi đã được kiểm thử.
 - Không đưa `.env` hoặc mật khẩu lên GitHub.
@@ -889,5 +903,5 @@ Khi triển khai ở môi trường khác, cần cấu hình lại các biến m
 
 ---
 
-**Smart CRM – Mekong Mobile**
+**Smart CRM – Mekong Mobile**  
 **Chuyên đề tốt nghiệp 1 – Software Engineering (SE)**
