@@ -1,3 +1,19 @@
+# Dependencies
 node_modules/
+
+# Environment variables
 .env
-*.sqlite
+.env.*
+!.env.example
+
+# Build output
+dist/
+src/frontend/dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
