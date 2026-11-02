@@ -2,7 +2,7 @@
 
 Hệ thống tiếp nhận và quản lý yêu cầu bảo hành cho Mekong Mobile.
 
-**Đồ án:** Chuyên đề tốt nghiệp 1  
+**Đồ án:** Chuyên đề tốt nghiệp 1
 - **Tên đề tài:** Hệ thống tiếp nhận và quản lý yêu cầu bảo hành.
 - **Dự án:** Smart CRM – Mekong Mobile.
 - **Track:** Software Engineering (SE).
@@ -385,7 +385,7 @@ smartcrm-2374802010207-warranty-claim-intake/
 │   ├── wireframe*.png
 │   ├── e2e-luong-chinh.md
 │   ├── thay-doi-thiet-ke.md
-│   └── ai-declaration.md
+│   └── ai-disclosure.md
 │
 ├── src/
 │   ├── app.js
@@ -667,8 +667,8 @@ Các test nghiệp vụ đã được thiết kế để kiểm tra logic mà kh
 Kết quả kiểm thử được ghi nhận tại môi trường local:
 
 ```text
-Test Suites: 7 passed, 7 total
-Tests:       34 passed, 34 total
+Test Suites: 9 passed, 9 total
+Tests:       42 passed, 42 total
 Snapshots:   0 total
 ```
 
@@ -734,7 +734,7 @@ Các tài liệu chính:
 | `e2e-luong-chinh.md` | Mô tả kiểm thử luồng chính |
 | `e2e-*.png` | Ảnh minh chứng |
 | `thay-doi-thiet-ke.md` | Nhật ký thay đổi thiết kế |
-| `ai-declaration.md` | Khai báo sử dụng công cụ AI |
+| `ai-disclosure.md` | Khai báo sử dụng công cụ AI |
 
 ---
 
@@ -903,5 +903,5 @@ Khi triển khai ở môi trường khác, cần cấu hình lại các biến m
 
 ---
 
-**Smart CRM – Mekong Mobile**  
+**Smart CRM – Mekong Mobile**
 **Chuyên đề tốt nghiệp 1 – Software Engineering (SE)**
