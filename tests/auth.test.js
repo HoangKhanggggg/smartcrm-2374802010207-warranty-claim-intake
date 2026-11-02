@@ -1,3 +1,4 @@
+process.env.AUTH_SECRET = 'test-only-secret-at-least-32-characters-long';
 const { createToken, verifyToken } = require('../src/utils/auth');
 
 describe('token đăng nhập', () => {
