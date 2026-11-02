@@ -1,13 +1,12 @@
 const { verifyToken } = require('../utils/auth');
+const AppError = require('../utils/AppError');
 
-// Thiếu hoặc sai token -> 401 để frontend xoá token và quay về trang đăng nhập.
 function requireAuth(req, res, next) {
   const header = req.headers.authorization || '';
   const token = header.startsWith('Bearer ') ? header.slice(7) : '';
   const user = verifyToken(token);
 
-  if (!user) return res.status(401).json({ error: 'CHUA_DANG_NHAP' });
-
+  if (!user) return next(new AppError('CHUA_DANG_NHAP', 401));
   req.user = user;
   next();
 }

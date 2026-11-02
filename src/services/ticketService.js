@@ -80,7 +80,6 @@ async function createTicket({
 
   // Kiểm tra dữ liệu trả về sau khi INSERT
   if (!created || !created.ticket_id) {
-    console.error('Lỗi: Repository không trả về ticket_id:', created);
     throw new AppError('KHONG_THE_TAO_PHIEU', 500);
   }
 
