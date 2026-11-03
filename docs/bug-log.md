@@ -1,73 +1,71 @@
 # Bug Log – Smart CRM L02
 
-## BUG-01 – Backend không khởi động do lỗi mật khẩu PostgreSQL
+## BUG-01 – Tính sai hạn cam kết SLA khi thời điểm kết thúc rơi vào Chủ nhật
 
-1. **Triệu chứng:** Backend không khởi động và báo:
-   `SASL: SCRAM-SERVER-FIRST-MESSAGE: client password must be a string`.
+**Mức độ:** MAJOR
 
-2. **Cách tái lập:** Chạy `npm start` khi biến `DB_PASSWORD` chưa được nạp đúng từ file `.env`.
+1. **Triệu chứng:** Hạn cam kết của phiếu có thể được tính sai khi thời điểm kết thúc SLA rơi vào Chủ nhật. Kết quả phụ thuộc vào múi giờ của máy chủ, không bảo đảm quy tắc nghiệp vụ theo giờ Việt Nam.
 
-3. **Khoanh vùng:** Kiểm tra cấu hình môi trường và quá trình khởi tạo PostgreSQL connection pool.
+2. **Cách tái lập:** Tạo thời điểm bắt đầu xử lý và mức ưu tiên sao cho hạn SLA ban đầu rơi vào Chủ nhật. Kiểm tra hạn cam kết được tính bằng hàm `computeDeadline()` trong `src/utils/sla.js`.
 
-4. **Nguyên nhân gốc:** Biến môi trường chứa mật khẩu PostgreSQL không được truyền vào kết nối dưới dạng chuỗi hợp lệ.
+3. **Khoanh vùng:** Kiểm tra hàm `computeDeadline()` và các phép tính ngày trong `src/utils/sla.js`; đối chiếu với các kiểm thử trong `tests/sla.test.js`.
 
-5. **Cách sửa:** Kiểm tra lại `.env`, tên biến `DB_PASSWORD` và cấu hình `dotenv` trước khi tạo kết nối PostgreSQL.
+4. **Nguyên nhân gốc:** Phiên bản cũ sử dụng `getDay()` và `setDate()` theo múi giờ cục bộ của máy chủ để xác định Chủ nhật. Vì vậy, kết quả có thể không nhất quán với múi giờ Việt Nam (UTC+7).
 
-6. **Xác nhận:** Chạy lại `npm start`, migration chạy thành công và backend khởi động tại port 3001.
+5. **Cách sửa:** Chuyển sang xác định ngày theo UTC+7 bằng cách cộng độ lệch múi giờ trước khi kiểm tra ngày trong tuần. Nếu hạn rơi vào Chủ nhật, cộng thêm 24 giờ để chuyển sang Thứ Hai cùng giờ.
 
-7. **Commit:** Commit cấu hình môi trường và dependency của dự án.
+6. **Xác nhận:** Kiểm thử SLA trong `tests/sla.test.js` đã PASS. Đã bổ sung kiểm thử ranh giới Chủ nhật theo giờ Việt Nam. Toàn bộ bộ kiểm thử tại lần chạy ngày 03/11/2026 đạt 46/46 test PASS.
 
+7. **Commit sửa lỗi:** [a0bbaca – Sửa SLA theo giờ Việt Nam và xử lý dữ liệu sai](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/a0bbacac40f783a624633f3358ca26aa3e213249)
 
-## BUG-02 – Port backend bị xung đột
+---
 
-1. **Triệu chứng:** Backend không thể chạy khi port mặc định bị tiến trình khác sử dụng.
+## BUG-02 – Chưa kiểm tra đầy đủ mã thiết bị và mã nhóm sự cố khi tạo phiếu
 
-2. **Cách tái lập:** Khởi động ứng dụng trong môi trường đang có tiến trình chiếm port 3000.
+**Mức độ:** MINOR
 
-3. **Khoanh vùng:** Kiểm tra cấu hình port trong `src/app.js` và trạng thái các port đang sử dụng.
+1. **Triệu chứng:** Dữ liệu `deviceId` hoặc `categoryId` không đúng định dạng số nguyên dương chưa được kiểm tra đầy đủ trước khi thực hiện các thao tác nghiệp vụ tạo phiếu.
 
-4. **Nguyên nhân gốc:** Port 3000 bị tiến trình khác chiếm.
+2. **Cách tái lập:** Gửi yêu cầu tạo phiếu với `deviceId` hoặc `categoryId` không phải số nguyên dương, ví dụ `"abc"`, `-1` hoặc `1.5`.
 
-5. **Cách sửa:** Chuẩn hóa backend chạy trên port 3001 thông qua biến `PORT`.
+3. **Khoanh vùng:** Kiểm tra hàm `createTicket()` trong `src/services/ticketService.js` và các kiểm thử nghiệp vụ trong `tests/services.test.js`.
 
-6. **Xác nhận:** Backend chạy thành công tại:
-   `http://localhost:3001`.
+4. **Nguyên nhân gốc:** Hàm tạo phiếu trước đây chưa kiểm tra đầy đủ kiểu dữ liệu và giá trị hợp lệ của `deviceId` và `categoryId` trước khi thực hiện các thao tác nghiệp vụ.
 
-7. **Commit:** Commit thay đổi cấu hình port backend.
+5. **Cách sửa:** Bổ sung kiểm tra `deviceId` và `categoryId` phải là số nguyên dương. Nếu dữ liệu không hợp lệ, Service trả lỗi `DU_LIEU_KHONG_HOP_LE` và không tiếp tục truy vấn hoặc tạo phiếu.
 
+6. **Xác nhận:** Trong Buổi 13, bổ sung hai kiểm thử hồi quy cho trường hợp `deviceId = "abc"` và `categoryId = "abc"` trong `tests/services.test.js`. Cả hai trường hợp đều được từ chối và không gọi Repository để truy vấn hoặc lưu phiếu. Toàn bộ bộ kiểm thử tại lần chạy ngày 03/11/2026 đạt 46/46 test PASS.
 
-## BUG-03 – Frontend không thể gọi backend khi API URL không đúng
+7. **Commit sửa lỗi:** [3642d0e – Sửa lỗi tạo phiếu và bổ sung kiểm thử nghiệp vụ](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/3642d0ea40d3758d1831c51e5b3968d27c664c71)
 
-1. **Triệu chứng:** Giao diện frontend không lấy được dữ liệu từ backend.
+---
 
-2. **Cách tái lập:** Chạy frontend nhưng cấu hình API URL không trỏ tới backend đang chạy.
+## BUG-03 – Request tạo phiếu không có body có thể gây lỗi hệ thống
 
-3. **Khoanh vùng:** Kiểm tra `src/frontend/src/api/client.js` và request trong trình duyệt.
+**Mức độ:** MINOR
 
-4. **Nguyên nhân gốc:** Frontend cần sử dụng đúng URL backend.
+1. **Triệu chứng:** Khi gửi yêu cầu POST `/tickets` không có phần thân request (request body), phiên bản cũ có thể phát sinh lỗi `TypeError` khi Service nhận giá trị `undefined`, dẫn đến phản hồi HTTP 500 thay vì lỗi dữ liệu đầu vào.
 
-5. **Cách sửa:** Chuẩn hóa:
-   `VITE_API_URL`
-   và giá trị mặc định:
-   `http://localhost:3001`.
+2. **Cách tái lập:** Gửi HTTP POST đến `/tickets` với Content-Type `application/json` nhưng không cung cấp nội dung JSON.
 
-6. **Xác nhận:** Frontend gọi được các API `/auth/login`, `/customers`, `/devices`, `/categories` và `/tickets`.
+3. **Khoanh vùng:** Kiểm tra endpoint POST `/tickets` được khai báo trong `src/routes/tickets.js` và hàm `createTicket()` trong `src/services/ticketService.js`.
 
-7. **Commit:** Commit hoàn thiện cấu hình môi trường và dependency.
+4. **Nguyên nhân gốc:** Route truyền trực tiếp `req.body` vào Service. Khi request không có body, `req.body` có thể là `undefined`; hàm Service sử dụng destructuring tham số nên có thể phát sinh lỗi khi nhận giá trị này.
 
+5. **Cách sửa:** Bổ sung giá trị mặc định `req.body || {}` khi gọi Service tại endpoint POST `/tickets`, giúp Service nhận object rỗng và thực hiện kiểm tra dữ liệu đầu vào theo quy tắc nghiệp vụ.
 
-## BUG-04 – Lỗi xử lý phiên đăng nhập hết hạn
+6. **Xác nhận:** Bổ sung kiểm thử API trong `tests/tickets.routes.test.js` bằng Supertest. Kiểm thử xác nhận route truyền object rỗng đến Service và API trả HTTP 400 với mã `DU_LIEU_KHONG_HOP_LE`. Kiểm thử API PASS; toàn bộ bộ kiểm thử tại lần chạy ngày 03/11/2026 đạt 46/46 test PASS. Service được giả lập trong kiểm thử này nên đây là kiểm thử ở mức API route, không phải kiểm thử tích hợp PostgreSQL.
 
-1. **Triệu chứng:** API trả HTTP 401 khi token không còn hợp lệ.
+7. **Commit sửa lỗi:** [a0bbaca – Sửa SLA theo giờ Việt Nam và xử lý dữ liệu sai](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/a0bbacac40f783a624633f3358ca26aa3e213249)
 
-2. **Cách tái lập:** Gửi request với token không hợp lệ hoặc token đã hết hạn.
+---
 
-3. **Khoanh vùng:** Kiểm tra `src/frontend/src/api/client.js`.
+## Tổng kết Bug Log
 
-4. **Nguyên nhân gốc:** Frontend cần xử lý thống nhất response 401 từ backend.
+| Mã lỗi | Mức độ | Trạng thái |
+|---|---|---|
+| BUG-01 | MAJOR | Đã sửa, kiểm thử PASS |
+| BUG-02 | MINOR | Đã sửa, kiểm thử hồi quy PASS |
+| BUG-03 | MINOR | Đã sửa, kiểm thử API route PASS |
 
-5. **Cách sửa:** Xóa token khỏi `localStorage` và phát sự kiện `smartcrm:unauthorized`.
-
-6. **Xác nhận:** Khi backend trả 401, frontend xóa phiên đăng nhập và yêu cầu đăng nhập lại.
-
-7. **Commit:** Commit xử lý authentication và unauthorized response.
+**Kết quả kiểm thử toàn bộ tại lần chạy ngày 03/11/2026:** 10 test suites, 46 tests, 0 test thất bại.

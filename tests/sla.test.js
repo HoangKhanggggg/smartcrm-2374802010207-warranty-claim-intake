@@ -22,4 +22,9 @@ describe('computeDeadline — QT-04', () => {
   test('từ chối mức ưu tiên không tồn tại', () => {
     expect(() => computeDeadline('Khẩn cấp')).toThrow('PRIORITY_INVALID');
   });
+  test('xử lý đúng ranh giới Chủ nhật theo giờ Việt Nam khi máy chủ dùng UTC', () => {
+    const saturday = new Date('2026-10-23T17:00:00Z');
+    const d = computeDeadline('Cao', saturday);
+    expect(d.toISOString()).toBe('2026-10-25T17:00:00.000Z');
+  });
 });

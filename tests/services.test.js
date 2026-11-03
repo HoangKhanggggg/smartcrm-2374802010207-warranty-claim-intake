@@ -64,6 +64,37 @@ describe('ticketService.createTicket', () => {
     expect(repo.create).not.toHaveBeenCalled();
   });
 
+  test('deviceId không phải số nguyên dương thì bị từ chối', async () => {
+    await expect(
+      ticketService.createTicket({
+        deviceId: 'abc',
+        description: 'Màn hình bị sọc'
+      })
+    ).rejects.toMatchObject({
+      code: 'DU_LIEU_KHONG_HOP_LE'
+    });
+
+    // Không được truy vấn thiết bị hoặc lưu phiếu.
+    expect(repo.findDevice).not.toHaveBeenCalled();
+    expect(repo.create).not.toHaveBeenCalled();
+  });
+
+  test('categoryId không phải số nguyên dương thì bị từ chối', async () => {
+    await expect(
+      ticketService.createTicket({
+        deviceId: 1,
+        categoryId: 'abc',
+        description: 'Màn hình bị sọc'
+      })
+    ).rejects.toMatchObject({
+      code: 'DU_LIEU_KHONG_HOP_LE'
+    });
+
+    // Không được truy vấn thiết bị hoặc lưu phiếu.
+    expect(repo.findDevice).not.toHaveBeenCalled();
+    expect(repo.create).not.toHaveBeenCalled();
+  });
+
   test('thiết bị không tồn tại trả mã KHONG_TIM_THAY_THIET_BI', async () => {
     repo.findDevice.mockResolvedValue(null);
 
