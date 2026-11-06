@@ -182,7 +182,7 @@ Mục tiêu là bảo đảm SRS, sơ đồ, cơ sở dữ liệu và mã nguồ
 ## TD-18 — Hoãn các màn hình ngoài 3 wireframe
 
 - **Quyết định:** HOÃN.
-- **Ảnh hưởng:** Chưa có màn hình chi tiết phiếu và cập nhật trạng thái trên giao diện (API `PATCH`, `DELETE` đã sẵn sàng); chưa có CRUD khách hàng/thiết bị ngoài luồng tiếp nhận.
+- **Ảnh hưởng:** Chưa có màn hình chi tiết phiếu và cập nhật trạng thái trên giao diện; chưa hoàn thiện CRUD khách hàng/thiết bị ngoài luồng tiếp nhận. Backend đã có API PATCH /tickets/:id để cập nhật phiếu và DELETE /tickets/:id để đóng phiếu bằng cách chuyển trạng thái sang Đã đóng. Endpoint DELETE không xóa vật lý bản ghi trong cơ sở dữ liệu, phù hợp với quy tắc nghiệp vụ không xóa vật lý của L02.
 ---
 
 # Sau phản hồi Bài tập 2
@@ -198,8 +198,8 @@ Mục tiêu là bảo đảm SRS, sơ đồ, cơ sở dữ liệu và mã nguồ
 - **Phản hồi của GV:** Mục 4 của PDF còn để nội dung mẫu `[Điền sau khi chạy] [PASS/FAIL]`, chưa có minh chứng kiểm thử. Tiêu chí C4 chưa đạt.
 - **Quyết định:** CHẤP NHẬN.
 - **Lý do:** Kết quả kiểm thử phải thể hiện việc hệ thống đã được kiểm chứng thực tế. Chỉ có mã nguồn kiểm thử mà không có kết quả và minh chứng chưa đủ để chứng minh khả năng hoạt động của module.
-- **Ảnh hưởng:** Thực hiện các trường hợp kiểm thử, ghi nhận kết quả thực tế, đối chiếu kết quả mong đợi và cập nhật PASS/FAIL vào bảng kết quả kiểm thử trong PDF. Bổ sung ảnh minh chứng tương ứng.
-- **Trạng thái:** Đang xử lý.
+- **Ảnh hưởng:** Sử dụng kết quả kiểm thử thực tế đã thực hiện, cập nhật bảng kết quả trong PDF với trạng thái PASS/FAIL, kết quả mong đợi, kết quả thực tế và ảnh minh chứng tương ứng. Đối chiếu với docs/test-report.md để bảo đảm số liệu nhất quán.
+- **Trạng thái:** Đã bổ sung kết quả kiểm thử và ảnh minh chứng trong repo; còn đối chiếu, cập nhật PDF BT2.
 
 ## TD-20 — Loại bỏ nội dung hướng dẫn mẫu trong PDF
 
