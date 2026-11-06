@@ -1,0 +1,28 @@
+
+name: Smart CRM - CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài đặt Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Cài đặt dependencies
+        run: npm ci
+
+      - name: Chạy kiểm thử Jest
+        run: npm test -- --runInBand
