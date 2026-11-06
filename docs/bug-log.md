@@ -6,15 +6,15 @@
 
 1. **Triệu chứng:** Hạn cam kết của phiếu có thể được tính sai khi thời điểm kết thúc SLA rơi vào Chủ nhật. Kết quả phụ thuộc vào múi giờ của máy chủ, không bảo đảm quy tắc nghiệp vụ theo giờ Việt Nam.
 
-2. **Cách tái lập:** Tạo thời điểm bắt đầu xử lý và mức ưu tiên sao cho hạn SLA ban đầu rơi vào Chủ nhật. Kiểm tra hạn cam kết được tính bằng hàm `computeDeadline()` trong `src/utils/sla.js`.
+2. **Cách tái lập:** Tạo một thời điểm bắt đầu SLA sao cho thời điểm kết thúc sau khi cộng thời gian SLA rơi vào Chủ nhật theo giờ Việt Nam. Ví dụ: với mức ưu tiên Cao (SLA 24 giờ), bắt đầu lúc 00:00 Thứ Bảy thì hạn cam kết ban đầu rơi vào 00:00 Chủ nhật. Quan sát hạn cam kết được tính sau khi áp dụng quy tắc chuyển sang Thứ Hai.
 
-3. **Khoanh vùng:** Kiểm tra hàm `computeDeadline()` và các phép tính ngày trong `src/utils/sla.js`; đối chiếu với các kiểm thử trong `tests/sla.test.js`.
+3. **Khoanh vùng:** Kiểm tra hàm `computeDeadline()` trong `src/utils/sla.js` và các phép tính ngày liên quan; đối chiếu với các kiểm thử trong `tests/sla.test.js`.
 
 4. **Nguyên nhân gốc:** Phiên bản cũ sử dụng `getDay()` và `setDate()` theo múi giờ cục bộ của máy chủ để xác định Chủ nhật. Vì vậy, kết quả có thể không nhất quán với múi giờ Việt Nam (UTC+7).
 
 5. **Cách sửa:** Chuyển sang xác định ngày theo UTC+7 bằng cách cộng độ lệch múi giờ trước khi kiểm tra ngày trong tuần. Nếu hạn rơi vào Chủ nhật, cộng thêm 24 giờ để chuyển sang Thứ Hai cùng giờ.
 
-6. **Xác nhận:** Kiểm thử SLA trong `tests/sla.test.js` đã PASS. Đã bổ sung kiểm thử ranh giới Chủ nhật theo giờ Việt Nam. Toàn bộ bộ kiểm thử tại lần chạy ngày 03/11/2026 đạt 46/46 test PASS.
+6. **Xác nhận:** Trong Buổi 13, bổ sung kiểm thử hồi quy trong `tests/sla.test.js` để kiểm tra trường hợp thời gian kết thúc SLA rơi vào Chủ nhật theo giờ Việt Nam khi máy chủ sử dụng múi giờ UTC. Kết quả mong đợi là hạn cam kết được chuyển sang Thứ Hai cùng giờ. Kiểm thử SLA PASS trong lần chạy ngày 06/11/2026.
 
 7. **Commit sửa lỗi:** [a0bbaca – Sửa SLA theo giờ Việt Nam và xử lý dữ liệu sai](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/a0bbacac40f783a624633f3358ca26aa3e213249)
 
@@ -34,7 +34,7 @@
 
 5. **Cách sửa:** Bổ sung kiểm tra `deviceId` và `categoryId` phải là số nguyên dương. Nếu dữ liệu không hợp lệ, Service trả lỗi `DU_LIEU_KHONG_HOP_LE` và không tiếp tục truy vấn hoặc tạo phiếu.
 
-6. **Xác nhận:** Trong Buổi 13, bổ sung hai kiểm thử hồi quy cho trường hợp `deviceId = "abc"` và `categoryId = "abc"` trong `tests/services.test.js`. Cả hai trường hợp đều được từ chối và không gọi Repository để truy vấn hoặc lưu phiếu. Toàn bộ bộ kiểm thử tại lần chạy ngày 03/11/2026 đạt 46/46 test PASS.
+6. **Xác nhận:** Trong Buổi 13, bổ sung hai kiểm thử hồi quy cho trường hợp `deviceId = "abc"` và `categoryId = "abc"` trong `tests/services.test.js`. Cả hai trường hợp đều được từ chối và không gọi Repository để truy vấn hoặc lưu phiếu. Toàn bộ bộ kiểm thử tại lần chạy ngày 06/11/2026 đạt 46/46 test PASS.
 
 7. **Commit sửa lỗi:** [3642d0e – Sửa lỗi tạo phiếu và bổ sung kiểm thử nghiệp vụ](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/3642d0ea40d3758d1831c51e5b3968d27c664c71)
 
@@ -54,7 +54,7 @@
 
 5. **Cách sửa:** Bổ sung giá trị mặc định `req.body || {}` khi gọi Service tại endpoint POST `/tickets`, giúp Service nhận object rỗng và thực hiện kiểm tra dữ liệu đầu vào theo quy tắc nghiệp vụ.
 
-6. **Xác nhận:** Bổ sung kiểm thử API trong `tests/tickets.routes.test.js` bằng Supertest. Kiểm thử xác nhận route truyền object rỗng đến Service và API trả HTTP 400 với mã `DU_LIEU_KHONG_HOP_LE`. Kiểm thử API PASS; toàn bộ bộ kiểm thử tại lần chạy ngày 03/11/2026 đạt 46/46 test PASS. Service được giả lập trong kiểm thử này nên đây là kiểm thử ở mức API route, không phải kiểm thử tích hợp PostgreSQL.
+6. **Xác nhận:** Bổ sung kiểm thử API trong `tests/tickets.routes.test.js` bằng Supertest. Kiểm thử xác nhận route truyền object rỗng đến Service và API trả HTTP 400 với mã `DU_LIEU_KHONG_HOP_LE`. Kiểm thử API PASS trong lần chạy ngày 06/11/2026. Service được giả lập trong kiểm thử này nên đây là kiểm thử ở mức API route, không phải kiểm thử tích hợp PostgreSQL. Toàn bộ bộ kiểm thử đạt 46/46 test PASS.
 
 7. **Commit sửa lỗi:** [a0bbaca – Sửa SLA theo giờ Việt Nam và xử lý dữ liệu sai](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/a0bbacac40f783a624633f3358ca26aa3e213249)
 
@@ -64,8 +64,15 @@
 
 | Mã lỗi | Mức độ | Trạng thái |
 |---|---|---|
-| BUG-01 | MAJOR | Đã sửa, kiểm thử PASS |
-| BUG-02 | MINOR | Đã sửa, kiểm thử hồi quy PASS |
+| BUG-01 | MAJOR | Đã sửa, kiểm thử hồi quy SLA PASS |
+| BUG-02 | MINOR | Đã sửa, kiểm thử hồi quy nghiệp vụ PASS |
 | BUG-03 | MINOR | Đã sửa, kiểm thử API route PASS |
 
-**Kết quả kiểm thử toàn bộ tại lần chạy ngày 03/11/2026:** 10 test suites, 46 tests, 0 test thất bại.
+**Kết quả kiểm thử toàn bộ tại lần chạy ngày 06/11/2026:**
+
+- Số lượng Test Suites: 10
+- Tổng số kiểm thử: 46
+- Số kiểm thử thất bại: 0
+- Kết quả: 46/46 test PASS
+
+**Ghi chú:** Các liên kết commit thể hiện những commit đã thực hiện trong quá trình phát triển. BUG-01 và BUG-03 cùng tham chiếu một commit vì hai thay đổi được ghi nhận trong cùng commit sửa lỗi.
