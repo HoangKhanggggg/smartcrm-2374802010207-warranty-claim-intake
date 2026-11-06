@@ -183,3 +183,40 @@ Mục tiêu là bảo đảm SRS, sơ đồ, cơ sở dữ liệu và mã nguồ
 
 - **Quyết định:** HOÃN.
 - **Ảnh hưởng:** Chưa có màn hình chi tiết phiếu và cập nhật trạng thái trên giao diện (API `PATCH`, `DELETE` đã sẵn sàng); chưa có CRUD khách hàng/thiết bị ngoài luồng tiếp nhận.
+---
+
+# Sau phản hồi Bài tập 2
+
+**Ngày ghi nhận:** 06/11/2026
+**Sinh viên:** Bùi Hoàng Khang
+**MSSV:** 2374802010207
+**Đề tài:** Smart CRM – Mekong Mobile
+**Module:** L02 – Tiếp nhận và phân loại yêu cầu bảo hành
+
+## TD-19 — Bổ sung kết quả kiểm thử thực tế vào PDF
+
+- **Phản hồi của GV:** Mục 4 của PDF còn để nội dung mẫu `[Điền sau khi chạy] [PASS/FAIL]`, chưa có minh chứng kiểm thử. Tiêu chí C4 chưa đạt.
+- **Quyết định:** CHẤP NHẬN.
+- **Lý do:** Kết quả kiểm thử phải thể hiện việc hệ thống đã được kiểm chứng thực tế. Chỉ có mã nguồn kiểm thử mà không có kết quả và minh chứng chưa đủ để chứng minh khả năng hoạt động của module.
+- **Ảnh hưởng:** Thực hiện các trường hợp kiểm thử, ghi nhận kết quả thực tế, đối chiếu kết quả mong đợi và cập nhật PASS/FAIL vào bảng kết quả kiểm thử trong PDF. Bổ sung ảnh minh chứng tương ứng.
+- **Trạng thái:** Đang xử lý.
+
+## TD-20 — Loại bỏ nội dung hướng dẫn mẫu trong PDF
+
+- **Phản hồi của GV:** PDF còn nhiều câu hướng dẫn dạng mẫu chưa được xóa.
+- **Quyết định:** CHẤP NHẬN.
+- **Lý do:** Tài liệu bàn giao phải phản ánh kết quả thực hiện thực tế của đồ án, không để lại nội dung hướng dẫn dành cho quá trình soạn thảo.
+- **Ảnh hưởng:** Rà soát toàn bộ PDF, loại bỏ các câu hướng dẫn mẫu, nội dung trong ngoặc vuông và các phần chưa hoàn thiện. Thay thế bằng nội dung thực tế có thể kiểm chứng.
+- **Trạng thái:** Đang xử lý.
+
+## TD-21 — Kiểm tra và hoàn thiện tệp khai báo sử dụng AI
+
+- **Phản hồi của GV:** Repository thiếu `docs/ai-disclosure.md`.
+- **Quyết định:** CHẤP NHẬN.
+- **Lý do:** Repository cần có thông tin minh bạch về việc sử dụng công cụ AI trong quá trình thực hiện đồ án.
+- **Ảnh hưởng:** Kiểm tra và hoàn thiện `docs/ai-disclosure.md`, nêu rõ công cụ AI đã sử dụng, phạm vi hỗ trợ và trách nhiệm kiểm chứng nội dung của sinh viên. Bảo đảm tệp được quản lý và bàn giao trong repository.
+- **Trạng thái:** Cần kiểm tra nội dung và xác nhận.
+
+**Kết luận sau phản hồi Bài tập 2:**
+
+Các thay đổi tập trung vào việc hoàn thiện minh chứng kiểm thử, chuẩn hóa tài liệu PDF và bảo đảm khai báo sử dụng AI. Những kết quả PASS/FAIL chỉ được ghi nhận sau khi thực hiện kiểm thử thực tế.
