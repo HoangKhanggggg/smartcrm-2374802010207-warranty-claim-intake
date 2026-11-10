@@ -1,12 +1,14 @@
 const repo = require('../repositories/ticketRepository');
 const AppError = require('../utils/AppError');
-const { normalizePhone, maskPhone } = require('../utils/phone');
+const { normalizePhone } = require('../utils/phone');
 const { checkWarranty, toWarrantyStatus } = require('../utils/warranty');
 
+// QT-12: API tra cứu khách hàng chỉ cho Nhân viên tiếp nhận,
+// vì vậy trả số điện thoại đầy đủ để đối chiếu thông tin.
 const toCustomerView = (row) => ({
   customerId: Number(row.customer_id),
   fullName: row.full_name,
-  phoneMasked: maskPhone(row.phone)
+  phone: row.phone
 });
 
 const toDeviceView = (row, today = new Date()) => {
@@ -41,9 +43,15 @@ async function createCustomer({ fullName, phone: rawPhone }) {
   }
 
   const existing = await repo.findCustomerByPhone(phone);
-  if (existing) return { customer: toCustomerView(existing), created: false };
+  if (existing) {
+    return { customer: toCustomerView(existing), created: false };
+  }
 
-  const row = await repo.createCustomer({ fullName: String(fullName).trim(), phone });
+  const row = await repo.createCustomer({
+    fullName: String(fullName).trim(),
+    phone
+  });
+
   return { customer: toCustomerView(row), created: true };
 }
 
@@ -65,11 +73,17 @@ async function createDevice({ customerId, serialImei, warrantyEndDate }) {
   if (!await repo.findCustomerById(customerId)) {
     throw new AppError('KHONG_TIM_THAY_KHACH_HANG', 404);
   }
+
   if (await repo.findDeviceBySerial(s)) {
     throw new AppError('SERIAL_DA_TON_TAI', 409);
   }
 
-  const row = await repo.createDevice({ customerId, serialImei: s, warrantyEndDate });
+  const row = await repo.createDevice({
+    customerId,
+    serialImei: s,
+    warrantyEndDate
+  });
+
   return toDeviceView(row);
 }
 
@@ -81,4 +95,10 @@ async function listCategories() {
   }));
 }
 
-module.exports = { findCustomer, createCustomer, findDevice, createDevice, listCategories };
+module.exports = {
+  findCustomer,
+  createCustomer,
+  findDevice,
+  createDevice,
+  listCategories
+};
