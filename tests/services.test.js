@@ -121,7 +121,8 @@ describe('lookupService', () => {
     const c = await lookupService.findCustomer('+84 912 345 678');
 
     expect(repo.findCustomerByPhone).toHaveBeenCalledWith('0912345678');
-    expect(c.phoneMasked).toBe('0912***678');
+    expect(c.phone).toBe('0912345678');
+expect(c.phoneMasked).toBeUndefined();
   });
 
   test('tra khách: SĐT có chữ cái bị từ chối và không truy vấn (US01-AC3)', async () => {
