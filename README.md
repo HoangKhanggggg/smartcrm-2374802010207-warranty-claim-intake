@@ -1,13 +1,12 @@
 # WARRANTY APP – SMART CRM
 
-**Hệ thống tiếp nhận và quản lý yêu cầu bảo hành – Mekong Mobile**
+## Hệ thống tiếp nhận và quản lý yêu cầu bảo hành – Mekong Mobile
 
-Đồ án: Chuyên đề tốt nghiệp 1
-Ngành: Công nghệ thông tin
-Chuyên ngành: Software Engineering (SE)
-Trường: Đại học Văn Lang
-
-Repository: [smartcrm-2374802010207-warranty-claim-intake](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake)
+**Đồ án:** Chuyên đề tốt nghiệp 1
+**Ngành:** Công nghệ thông tin
+**Chuyên ngành:** Software Engineering (SE)
+**Trường:** Đại học Văn Lang
+**Repository:** [smartcrm-2374802010207-warranty-claim-intake](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake)
 
 ---
 
@@ -15,20 +14,20 @@ Repository: [smartcrm-2374802010207-warranty-claim-intake](https://github.com/Ho
 
 1. Giới thiệu dự án
 2. Phạm vi thực hiện
-3. Công nghệ sử dụng
+3. Công nghệ và kiến trúc
 4. Yêu cầu môi trường
 5. Tải source code
 6. Cài đặt và cấu hình PostgreSQL
-7. Cấu hình Backend
+7. Cấu hình biến môi trường
 8. Cài đặt và khởi động Backend
 9. Cài đặt và khởi động Frontend
 10. Kiểm tra hệ thống sau khi khởi động
-11. Hướng dẫn sử dụng chức năng
+11. Hướng dẫn sử dụng theo vai trò
 12. Tài khoản đăng nhập và dữ liệu mẫu
 13. Cấu trúc repository
 14. Thiết kế cơ sở dữ liệu
 15. REST API
-16. Xác thực người dùng
+16. Xác thực và phân quyền
 17. Kiểm thử Backend
 18. Build và kiểm tra Frontend
 19. Xử lý lỗi thường gặp
@@ -42,24 +41,17 @@ Repository: [smartcrm-2374802010207-warranty-claim-intake](https://github.com/Ho
 
 Smart CRM – Mekong Mobile là hệ thống hỗ trợ tiếp nhận và quản lý yêu cầu bảo hành thiết bị.
 
-Dự án tập trung xây dựng luồng nghiệp vụ L02 – Tiếp nhận và phân loại yêu cầu bảo hành.
-
-Các chức năng chính:
-
-- Tra cứu khách hàng.
-- Tạo khách hàng mới.
-- Tra cứu thiết bị bằng Serial/IMEI.
-- Ghi nhận thiết bị.
-- Kiểm tra tình trạng bảo hành.
-- Tiếp nhận yêu cầu bảo hành.
-- Phân loại nhóm sự cố.
-- Xác định mức độ ưu tiên.
-- Tính thời hạn cam kết theo SLA.
-- Quản lý, tìm kiếm, lọc và phân trang danh sách phiếu.
+Dự án tập trung xây dựng module L02 – **Tiếp nhận và phân loại yêu cầu bảo hành**, hỗ trợ nhân viên tiếp nhận ghi nhận thông tin khách hàng, thiết bị, tình trạng bảo hành và tạo phiếu bảo hành theo quy tắc nghiệp vụ.
 
 ## 1.1. Mục tiêu
 
-Xây dựng một hệ thống Web có khả năng hỗ trợ nhân viên tiếp nhận thực hiện quy trình bảo hành một cách thống nhất, đồng thời lưu trữ thông tin khách hàng, thiết bị và phiếu bảo hành trong cơ sở dữ liệu PostgreSQL.
+- Chuẩn hóa quy trình tiếp nhận yêu cầu bảo hành.
+- Hỗ trợ tra cứu và tạo thông tin khách hàng.
+- Ghi nhận thiết bị thông qua Serial/IMEI.
+- Kiểm tra tình trạng bảo hành.
+- Phân loại nhóm sự cố và mức ưu tiên.
+- Tự động tính thời hạn cam kết theo SLA.
+- Hỗ trợ quản lý theo dõi, tìm kiếm và lọc danh sách phiếu.
 
 ## 1.2. Luồng nghiệp vụ tổng thể
 
@@ -67,19 +59,19 @@ Xây dựng một hệ thống Web có khả năng hỗ trợ nhân viên tiếp
 Tra cứu khách hàng
         |
         v
-Tra cứu thiết bị
+Tạo khách hàng nếu chưa tồn tại
+        |
+        v
+Tra cứu / ghi nhận thiết bị
         |
         v
 Kiểm tra tình trạng bảo hành
         |
         v
-Tiếp nhận yêu cầu
-        |
-        v
 Nhập mô tả lỗi
         |
         v
-Phân loại nhóm sự cố
+Chọn nhóm sự cố
         |
         v
 Chọn mức ưu tiên
@@ -91,10 +83,7 @@ Tính hạn cam kết SLA
 Tạo phiếu bảo hành
         |
         v
-Hiển thị danh sách phiếu
-        |
-        v
-Tìm kiếm, lọc và phân trang
+Quản lý xem và lọc danh sách phiếu
 ```
 
 ---
@@ -103,8 +92,9 @@ Tìm kiếm, lọc và phân trang
 
 ## 2.1. Trong phạm vi
 
-- Tra cứu và tạo khách hàng.
-- Ghi nhận và tra cứu thiết bị.
+- Tra cứu khách hàng.
+- Tạo khách hàng mới.
+- Tra cứu và ghi nhận thiết bị.
 - Kiểm tra thời hạn bảo hành.
 - Tiếp nhận và tạo phiếu bảo hành.
 - Phân loại nhóm sự cố.
@@ -114,6 +104,8 @@ Tìm kiếm, lọc và phân trang
 - Lọc theo trạng thái, nhóm sự cố và mức ưu tiên.
 - Phân trang danh sách phiếu.
 - Ghi nhận lịch sử thay đổi trạng thái phiếu.
+- Xác thực và phân quyền theo vai trò.
+- Che số điện thoại theo quy tắc phân quyền.
 
 ## 2.2. Ngoài phạm vi
 
@@ -124,30 +116,39 @@ Tìm kiếm, lọc và phân trang
 - Quản lý bản ghi phê duyệt của quản lý.
 - Phân quyền theo trung tâm.
 
+Các chức năng ngoài phạm vi trên không được xem là chức năng đã triển khai của module L02.
+
 ---
 
-# 3. CÔNG NGHỆ SỬ DỤNG
+# 3. CÔNG NGHỆ VÀ KIẾN TRÚC
+
+## 3.1. Công nghệ sử dụng
 
 | Thành phần | Công nghệ |
 |---|---|
-| Backend | Node.js |
+| Backend Runtime | Node.js |
 | Backend Framework | Express.js |
 | Frontend | React |
 | Frontend Tool | Vite |
 | Database | PostgreSQL 18 |
+| Database Driver | node-postgres (`pg`) |
 | API | REST API |
-| Kiểm thử Backend | Jest |
+| Kiểm thử Backend | Jest, Supertest |
 | Kiểm tra mã nguồn Frontend | Oxlint |
 | Quản lý mã nguồn | Git, GitHub |
 | IDE | Visual Studio Code |
 | Quản lý Database | pgAdmin 4 |
+| Kiểm tra API | Postman |
 
-## 3.1. Kiến trúc Backend
+## 3.2. Kiến trúc Backend
 
 Backend được tổ chức theo kiến trúc phân lớp:
 
 ```text
 Routes
+   |
+   v
+Controllers / Route Handlers
    |
    v
 Services
@@ -159,40 +160,61 @@ Repositories
 PostgreSQL
 ```
 
-Giải thích:
+Vai trò của các lớp:
 
-- **Routes:** Tiếp nhận HTTP request và định tuyến API.
+- **Routes:** Khai báo endpoint và tiếp nhận HTTP request.
+- **Controllers / Route Handlers:** Điều phối request và response.
 - **Services:** Xử lý nghiệp vụ và kiểm tra dữ liệu.
-- **Repositories:** Thực hiện truy vấn dữ liệu.
+- **Repositories:** Thực hiện truy vấn cơ sở dữ liệu.
 - **PostgreSQL:** Lưu trữ dữ liệu hệ thống.
 
-Các truy vấn dữ liệu sử dụng parameterized query nhằm hạn chế nguy cơ SQL Injection.
+Các truy vấn sử dụng parameterized query nhằm hạn chế nguy cơ SQL Injection.
+
+## 3.3. Kiến trúc tổng thể
+
+```text
+React + Vite
+     |
+     | HTTP / REST API
+     v
+Node.js + Express
+     |
+     | Routes
+     v
+Services
+     |
+     | Repositories
+     v
+PostgreSQL 18
+```
+
+Frontend và Backend chạy độc lập trên hai cổng khác nhau trong môi trường phát triển.
 
 ---
 
 # 4. YÊU CẦU MÔI TRƯỜNG
 
-Trước khi cài đặt, cần chuẩn bị các công cụ sau:
+Trước khi cài đặt dự án, cần chuẩn bị các công cụ sau:
 
-| Công cụ | Phiên bản |
+| Công cụ | Phiên bản đề nghị |
 |---|---|
 | Node.js | 20 trở lên |
-| npm | 10 trở lên |
+| npm | Đi kèm Node.js |
 | PostgreSQL | 18 |
-| Git | Phiên bản phù hợp với hệ điều hành |
+| Git | Phiên bản phù hợp hệ điều hành |
 | Visual Studio Code | Phiên bản hiện hành |
-| pgAdmin 4 | Phiên bản tương thích PostgreSQL 18 |
+| pgAdmin 4 | Phiên bản tương thích PostgreSQL |
 
-Phiên bản môi trường đã được ghi nhận trong quá trình phát triển:
+Các phiên bản đã được ghi nhận trong môi trường phát triển của dự án:
 
 - Node.js: 24.12.0
 - npm: 11.6.2
 - PostgreSQL: 18.6
 - Git: 2.56.0.windows.2
 
-Các phiên bản trên là môi trường đã được ghi nhận, không phải yêu cầu bắt buộc duy nhất.
+Đây là thông tin môi trường đã sử dụng, không phải yêu cầu bắt buộc duy nhất.
 
-## 4.1. Kiểm tra công cụ đã cài đặt
+## 4.1. Kiểm tra công cụ
 
 Mở Windows CMD hoặc Terminal trong Visual Studio Code:
 
@@ -202,13 +224,13 @@ npm -v
 git --version
 ```
 
-Kiểm tra PostgreSQL:
+Kiểm tra PostgreSQL CLI:
 
 ```cmd
 psql --version
 ```
 
-Nếu CMD không nhận lệnh `psql`, có thể sử dụng pgAdmin 4 để quản lý cơ sở dữ liệu.
+Nếu CMD không nhận lệnh `psql`, có thể sử dụng pgAdmin 4 để quản lý PostgreSQL.
 
 ---
 
@@ -216,9 +238,7 @@ Nếu CMD không nhận lệnh `psql`, có thể sử dụng pgAdmin 4 để qu�
 
 ## 5.1. Clone repository
 
-Mở Windows CMD hoặc Terminal trong Visual Studio Code.
-
-Di chuyển đến thư mục muốn lưu dự án, sau đó chạy:
+Mở Windows CMD tại thư mục muốn lưu dự án:
 
 ```cmd
 git clone https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake.git
@@ -236,21 +256,25 @@ Mở dự án bằng Visual Studio Code:
 code .
 ```
 
-Nếu lệnh `code .` không hoạt động, mở Visual Studio Code, chọn:
-
-**File → Open Folder**
-
-Sau đó chọn thư mục dự án vừa tải về.
+Nếu lệnh `code .` không hoạt động, mở Visual Studio Code, chọn **File → Open Folder**, sau đó chọn thư mục dự án.
 
 ## 5.2. Kiểm tra cấu trúc thư mục
 
-Sau khi clone, thư mục gốc cần có các thành phần chính:
+Sau khi clone, thư mục gốc có các thành phần chính:
 
 ```text
 smartcrm-2374802010207-warranty-claim-intake/
 │
 ├── docs/
 ├── src/
+│   ├── db/
+│   ├── middleware/
+│   ├── repositories/
+│   ├── routes/
+│   ├── services/
+│   ├── utils/
+│   └── frontend/
+│
 ├── tests/
 │
 ├── .env.example
@@ -268,19 +292,16 @@ Không cần tải riêng Backend hoặc Frontend vì cả hai đã nằm trong 
 
 ## 6.1. Khởi động PostgreSQL
 
-Mở pgAdmin 4.
+Mở pgAdmin 4 và kết nối đến PostgreSQL 18 bằng tài khoản đã tạo trong quá trình cài đặt.
 
-Kết nối đến PostgreSQL 18 bằng tài khoản PostgreSQL đã được tạo trong quá trình cài đặt.
-
-Thông tin kết nối mặc định thường sử dụng:
+Thông tin kết nối thường dùng trong môi trường phát triển:
 
 ```text
 Host: localhost
 Port: 5432
 Username: postgres
+Password: Mật khẩu PostgreSQL trên máy
 ```
-
-Mật khẩu sử dụng mật khẩu PostgreSQL được thiết lập trên máy tính.
 
 ## 6.2. Tạo database
 
@@ -297,31 +318,37 @@ smart_crm
 
 5. Nhấn Save.
 
-Hoặc tạo database bằng SQL:
-
-Mở Query Tool kết nối đến database `postgres`, chạy:
+Hoặc mở Query Tool kết nối đến database `postgres` và chạy:
 
 ```sql
 CREATE DATABASE smart_crm;
 ```
 
-Nếu database `smart_crm` đã tồn tại thì không cần tạo lại.
+Nếu database đã tồn tại thì không cần tạo lại.
 
-**Lưu ý:** Không chạy câu lệnh `CREATE DATABASE` trong Windows CMD. Đây là câu lệnh SQL, cần thực hiện trong pgAdmin Query Tool hoặc thông qua PostgreSQL CLI.
+**Lưu ý:** `CREATE DATABASE` là câu lệnh SQL. Thực hiện trong pgAdmin Query Tool hoặc PostgreSQL CLI, không nhập trực tiếp như một lệnh Windows CMD.
 
-## 6.3. Cấu trúc database
+## 6.3. Khởi tạo cấu trúc dữ liệu
 
-Sau khi Backend khởi động thành công, hệ thống tự động thực thi các migration để tạo bảng và dữ liệu mẫu.
+Sau khi cấu hình kết nối đúng, Backend thực hiện các migration được tích hợp trong dự án khi khởi động.
 
-Không cần tự tạo thủ công năm bảng.
+Các file migration:
+
+```text
+src/db/migrations/
+├── 001_create_tables.sql
+└── 002_seed.sql
+```
+
+Không cần tự tạo thủ công năm bảng nếu quá trình migration đã chạy thành công.
 
 ---
 
-# 7. CẤU HÌNH BACKEND
+# 7. CẤU HÌNH BIẾN MÔI TRƯỜNG
 
 ## 7.1. Tạo file `.env`
 
-Tại thư mục gốc dự án, mở Terminal và chạy:
+Tại thư mục gốc dự án, mở CMD và chạy:
 
 ```cmd
 copy .env.example .env
@@ -331,19 +358,17 @@ Nếu file `.env` đã tồn tại thì không cần tạo lại hoặc ghi đè
 
 ## 7.2. Tạo AUTH_SECRET
 
-Backend yêu cầu khóa bí mật `AUTH_SECRET` có độ dài tối thiểu 32 ký tự.
+Backend yêu cầu `AUTH_SECRET` có độ dài tối thiểu 32 ký tự.
 
-Mở CMD tại thư mục dự án và chạy:
+Mở CMD tại thư mục gốc dự án và chạy:
 
 ```cmd
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 ```
 
-Node.js sẽ tạo ra một chuỗi ngẫu nhiên.
+Sao chép chuỗi ngẫu nhiên được tạo ra để cấu hình trong file `.env`.
 
-Sao chép chuỗi vừa tạo để sử dụng trong file `.env`.
-
-Không chia sẻ chuỗi này và không đưa lên GitHub.
+Không chia sẻ khóa bí mật này và không đưa lên GitHub.
 
 ## 7.3. Cấu hình file `.env`
 
@@ -361,59 +386,59 @@ PORT=3001
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=your_postgres_password
+DB_PASSWORD=your_database_password
 DB_NAME=smart_crm
 
-APP_USER=nhanvien
-APP_PASSWORD=your_app_password
+STAFF_USER=your_staff_username
+STAFF_PASSWORD=replace_with_staff_password
 
-AUTH_SECRET=paste_generated_secret_here
+MANAGER_USER=your_manager_username
+MANAGER_PASSWORD=replace_with_manager_password
+
+AUTH_SECRET=replace_with_random_secret_at_least_32_characters
+
 LOG_LEVEL=INFO
 ```
 
-Giải thích các biến môi trường:
+Thay các giá trị minh họa bằng thông tin thực tế của máy đang cài đặt.
 
 | Biến | Ý nghĩa |
 |---|---|
 | PORT | Cổng chạy Backend |
 | DB_HOST | Địa chỉ máy chủ PostgreSQL |
-| DB_PORT | Cổng kết nối PostgreSQL |
+| DB_PORT | Cổng PostgreSQL |
 | DB_USER | Tài khoản PostgreSQL |
 | DB_PASSWORD | Mật khẩu PostgreSQL |
 | DB_NAME | Tên database |
-| APP_USER | Tài khoản đăng nhập ứng dụng |
-| APP_PASSWORD | Mật khẩu đăng nhập ứng dụng |
+| STAFF_USER | Tên đăng nhập nhân viên tiếp nhận |
+| STAFF_PASSWORD | Mật khẩu nhân viên tiếp nhận |
+| MANAGER_USER | Tên đăng nhập quản lý trung tâm |
+| MANAGER_PASSWORD | Mật khẩu quản lý trung tâm |
 | AUTH_SECRET | Khóa bí mật ký và xác minh token |
 | LOG_LEVEL | Mức ghi log |
-
-Thay các giá trị minh họa bằng thông tin thực tế:
-
-- `DB_PASSWORD`: Mật khẩu PostgreSQL trên máy đang cài đặt.
-- `APP_USER`: Tài khoản đăng nhập ứng dụng do người triển khai thiết lập.
-- `APP_PASSWORD`: Mật khẩu đăng nhập ứng dụng do người triển khai thiết lập.
-- `AUTH_SECRET`: Chuỗi ngẫu nhiên được tạo ở bước 7.2.
 
 **Lưu ý quan trọng:**
 
 1. `DB_PASSWORD` là mật khẩu tài khoản PostgreSQL, không phải mật khẩu đăng nhập ứng dụng.
-2. `APP_USER` và `APP_PASSWORD` là thông tin đăng nhập ứng dụng được cấu hình qua biến môi trường.
-3. `AUTH_SECRET` không được để trống và phải có tối thiểu 32 ký tự.
-4. Không sử dụng nguyên các giá trị minh họa nếu chưa thay bằng thông tin thực tế.
-5. Không đưa file `.env` lên GitHub.
+2. `STAFF_USER` và `STAFF_PASSWORD` là tài khoản ứng dụng của nhân viên tiếp nhận.
+3. `MANAGER_USER` và `MANAGER_PASSWORD` là tài khoản ứng dụng của quản lý trung tâm.
+4. `AUTH_SECRET` phải có tối thiểu 32 ký tự.
+5. Không sử dụng nguyên các giá trị minh họa khi chạy thật.
+6. Không đưa file `.env` lên GitHub.
 
 ---
 
 # 8. CÀI ĐẶT VÀ KHỞI ĐỘNG BACKEND
 
-## 8.1. Cài đặt thư viện
+## 8.1. Cài đặt thư viện Backend
 
-Tại Terminal thứ nhất, bảo đảm đang ở thư mục gốc dự án:
+Tại thư mục gốc dự án, chạy:
 
 ```cmd
 npm install
 ```
 
-Lệnh này cài đặt các dependencies được khai báo trong `package.json`.
+Lệnh này cài đặt các thư viện được khai báo trong `package.json`.
 
 ## 8.2. Khởi động Backend
 
@@ -423,35 +448,15 @@ Chạy:
 npm start
 ```
 
-Khi khởi động, Backend thực hiện:
-
-1. Đọc cấu hình từ `.env`.
-2. Kiểm tra cấu hình cần thiết.
-3. Kết nối PostgreSQL.
-4. Đọc các file migration.
-5. Tạo cấu trúc bảng nếu chưa tồn tại.
-6. Khởi tạo dữ liệu mẫu.
-7. Khởi động Express Server.
-
-Các file migration:
+Backend sử dụng file khởi động:
 
 ```text
-src/db/migrations/
-├── 001_create_tables.sql
-└── 002_seed.sql
+src/app.js
 ```
 
-Kết quả khởi động mong đợi:
+Khi khởi động, hệ thống đọc cấu hình môi trường, kết nối PostgreSQL và thực hiện quá trình khởi tạo cơ sở dữ liệu theo cơ chế migration đã triển khai.
 
-```text
-Đã chạy migration 001_create_tables.sql
-Đã chạy migration 002_seed.sql
-Khởi tạo cơ sở dữ liệu PostgreSQL thành công.
-Server CRM đang chạy
-http://localhost:3001
-```
-
-Backend chạy tại:
+Backend mặc định chạy tại:
 
 ```text
 http://localhost:3001
@@ -459,17 +464,13 @@ http://localhost:3001
 
 Giữ Terminal thứ nhất hoạt động trong suốt quá trình sử dụng hệ thống.
 
-**Lưu ý:** Nếu cổng 3001 đã được chương trình khác sử dụng, cần giải phóng cổng hoặc điều chỉnh biến `PORT` trong `.env` và cấu hình kết nối tương ứng của Frontend.
-
 ---
 
 # 9. CÀI ĐẶT VÀ KHỞI ĐỘNG FRONTEND
 
 ## 9.1. Cài đặt thư viện Frontend
 
-Mở Terminal thứ hai trong Visual Studio Code.
-
-Tại thư mục gốc dự án, chạy:
+Mở Terminal thứ hai tại thư mục gốc dự án và chạy:
 
 ```cmd
 npm install --prefix src/frontend
@@ -489,7 +490,7 @@ Frontend mặc định chạy tại:
 http://localhost:5173
 ```
 
-Mở trình duyệt và truy cập địa chỉ trên.
+Mở trình duyệt và truy cập địa chỉ trên để sử dụng hệ thống.
 
 ## 9.3. Tổng kết chạy hệ thống
 
@@ -500,7 +501,7 @@ Cần mở đồng thời hai Terminal:
 | Terminal 1 | `npm start` | Khởi động Backend |
 | Terminal 2 | `npm run dev --prefix src/frontend` | Khởi động Frontend |
 
-Backend phải hoạt động trước khi sử dụng các chức năng cần gọi API.
+Backend cần hoạt động trước khi sử dụng các chức năng gọi API.
 
 ## 9.4. Dừng hệ thống
 
@@ -524,21 +525,17 @@ Mở Terminal mới và chạy:
 curl http://localhost:3001/health
 ```
 
-Kết quả mong đợi:
+Kết quả mong đợi có trạng thái:
 
 ```json
 {
-  "status": "ok",
-  "requestId": "..."
+  "status": "ok"
 }
 ```
 
-Trong đó:
+Response thực tế có thể chứa thêm thông tin như `requestId`.
 
-- `status`: Trạng thái hoạt động của Backend.
-- `requestId`: Mã định danh của request.
-
-Nếu nhận được phản hồi trên, Backend đã hoạt động và Health Check API có thể truy cập.
+Nếu API trả về trạng thái hoạt động thành công, Backend đã có thể tiếp nhận request.
 
 ## 10.2. Kiểm tra Frontend
 
@@ -550,25 +547,35 @@ http://localhost:5173
 
 Giao diện Smart CRM – Mekong Mobile sẽ được hiển thị.
 
-## 10.3. Kiểm tra nghiệp vụ
+## 10.3. Kiểm tra luồng nghiệp vụ
 
-Thực hiện thử quy trình:
+Thực hiện kiểm tra theo trình tự:
 
-1. Đăng nhập bằng tài khoản đã cấu hình trong `.env`.
-2. Tra cứu khách hàng bằng số điện thoại mẫu.
+1. Đăng nhập bằng tài khoản nhân viên tiếp nhận.
+2. Tra cứu khách hàng bằng số điện thoại.
 3. Tra cứu thiết bị bằng Serial/IMEI.
 4. Kiểm tra tình trạng bảo hành.
 5. Nhập mô tả lỗi.
 6. Chọn nhóm sự cố.
 7. Chọn mức ưu tiên.
-8. Tạo phiếu bảo hành.
-9. Kiểm tra phiếu vừa tạo trong danh sách.
+8. Kiểm tra hạn cam kết SLA.
+9. Tạo phiếu bảo hành.
+10. Đăng xuất tài khoản nhân viên.
+11. Đăng nhập bằng tài khoản quản lý trung tâm.
+12. Mở Danh sách phiếu và kiểm tra phiếu vừa tạo.
 
 ---
 
-# 11. HƯỚNG DẪN SỬ DỤNG CHỨC NĂNG
+# 11. HƯỚNG DẪN SỬ DỤNG THEO VAI TRÒ
 
-Hệ thống hiện có ba màn hình nghiệp vụ chính.
+Giao diện được hiển thị theo vai trò đăng nhập.
+
+| Vai trò | Chức năng được hiển thị |
+|---|---|
+| Nhân viên tiếp nhận | Tra cứu, Tiếp nhận |
+| Quản lý trung tâm | Danh sách phiếu |
+
+Theo QT-12, số điện thoại hiển thị đầy đủ với nhân viên tiếp nhận và được che với quản lý trung tâm.
 
 ## 11.1. Màn hình tra cứu
 
@@ -578,27 +585,6 @@ Chức năng:
 - Tra cứu thiết bị theo Serial/IMEI.
 - Kiểm tra tình trạng bảo hành.
 - Chuyển sang màn hình tiếp nhận phiếu.
-
-Luồng thực hiện:
-
-```text
-Nhập số điện thoại
-        |
-        v
-Tra cứu khách hàng
-        |
-        v
-Nhập Serial / IMEI
-        |
-        v
-Tra cứu thiết bị
-        |
-        v
-Kiểm tra tình trạng bảo hành
-        |
-        v
-Tiếp tục tạo phiếu
-```
 
 ## 11.2. Màn hình tiếp nhận và phân loại yêu cầu
 
@@ -628,7 +614,7 @@ Chức năng:
 - Trung bình
 - Thấp
 
-Mặc định: Trung bình.
+Mức ưu tiên mặc định: **Trung bình**.
 
 ### Thời gian SLA
 
@@ -638,31 +624,27 @@ Mặc định: Trung bình.
 | Trung bình | 72 giờ |
 | Thấp | 120 giờ |
 
-Hạn cam kết được hệ thống tự động tính toán theo mức ưu tiên.
-
-Không cho phép người dùng tự sửa hạn cam kết.
+Hạn cam kết được hệ thống tự động tính theo mức ưu tiên. Người dùng không được tự sửa hạn cam kết.
 
 Nếu hạn cam kết rơi vào Chủ nhật, hệ thống dời sang cùng giờ Thứ Hai.
 
 ## 11.3. Màn hình danh sách phiếu
 
+Màn hình dành cho vai trò quản lý trung tâm.
+
 Chức năng:
 
-- Hiển thị danh sách phiếu bảo hành.
-- Hiển thị mã phiếu.
-- Hiển thị khách hàng.
-- Hiển thị thiết bị.
-- Hiển thị trạng thái.
-- Hiển thị nhóm sự cố.
-- Hiển thị mức ưu tiên.
-- Hiển thị hạn cam kết.
-- Hiển thị ngày tiếp nhận.
+- Xem danh sách phiếu bảo hành.
+- Xem thông tin khách hàng và thiết bị.
+- Xem trạng thái phiếu.
+- Xem nhóm sự cố và mức ưu tiên.
+- Xem hạn cam kết.
 - Lọc theo trạng thái.
 - Lọc theo nhóm sự cố.
 - Lọc theo mức ưu tiên.
-- Phân trang.
+- Phân trang danh sách.
 
-Số lượng hiển thị mặc định: 20 phiếu/trang.
+Số lượng mặc định: **20 phiếu/trang**.
 
 Khi không có kết quả phù hợp, giao diện hiển thị:
 
@@ -679,62 +661,51 @@ Không có phiếu phù hợp
 Tài khoản ứng dụng được thiết lập trong file `.env`:
 
 ```env
-APP_USER=nhanvien
-APP_PASSWORD=your_app_password
+STAFF_USER=your_staff_username
+STAFF_PASSWORD=replace_with_staff_password
+
+MANAGER_USER=your_manager_username
+MANAGER_PASSWORD=replace_with_manager_password
 ```
 
-Người triển khai sử dụng chính giá trị đã cấu hình để đăng nhập.
+Người cài đặt sử dụng chính các giá trị đã cấu hình để đăng nhập.
 
-Ví dụ:
+- Tài khoản nhân viên: sử dụng `STAFF_USER` và `STAFF_PASSWORD`.
+- Tài khoản quản lý: sử dụng `MANAGER_USER` và `MANAGER_PASSWORD`.
 
-- Tên đăng nhập: `nhanvien`
-- Mật khẩu: Giá trị `APP_PASSWORD` do người triển khai thiết lập.
+Đây là tài khoản ứng dụng, không phải tài khoản PostgreSQL và không được tạo từ dữ liệu seed.
 
-Đây không phải tài khoản khách hàng và không được tạo từ dữ liệu seed PostgreSQL.
-
-Không công khai mật khẩu thực tế trong README.
+Không công khai mật khẩu thật trong README.
 
 ## 12.2. Dữ liệu mẫu
 
-Dữ liệu mẫu được khởi tạo từ file:
+Dữ liệu mẫu được khai báo trong file:
 
 ```text
 src/db/migrations/002_seed.sql
 ```
 
-README hiện ghi nhận các dữ liệu mẫu sau:
+Có thể mở file này để kiểm tra các khách hàng, thiết bị và nhóm sự cố được khởi tạo.
 
-| Khách hàng | Số điện thoại | Serial / IMEI | Tình trạng |
-|---|---|---|---|
-| Nguyễn Văn An | 0912345678 | SN-A001-2026 | Còn bảo hành |
-| Trần Thị Bình | 0987654321 | 356938035643809 | Hết bảo hành |
-| Lê Hoàng Cường | 0901234567 | SN-C003-2026 | Chưa xác minh |
-
-Nếu dữ liệu thực tế trong file seed thay đổi, cần cập nhật lại bảng này để bảo đảm README thống nhất với chương trình.
+Thông tin trong README cần được cập nhật nếu dữ liệu seed thay đổi.
 
 ## 12.3. Lưu ý khi chạy lại migration
 
-Các migration hiện tại sử dụng các câu lệnh tạo bảng và seed có xử lý dữ liệu đã tồn tại.
+Không tự ý xóa database đang sử dụng nếu chưa sao lưu dữ liệu cần thiết.
 
-Không cần tự chạy lại SQL thủ công sau khi Backend đã khởi động thành công.
-
-Không xóa database đang sử dụng nếu chưa sao lưu dữ liệu cần thiết.
+Khi thay đổi cấu trúc cơ sở dữ liệu trong tương lai, nên tạo migration mới thay vì chỉnh sửa migration đã được sử dụng ở các môi trường khác.
 
 ---
 
 # 13. CẤU TRÚC REPOSITORY
 
-Cấu trúc chính:
+Cấu trúc chính của dự án:
 
 ```text
 smartcrm-2374802010207-warranty-claim-intake/
 │
 ├── docs/
 │   ├── srs.md
-│   ├── usecase.*
-│   ├── architecture.*
-│   ├── erd.*
-│   ├── wireframe*.png
 │   ├── e2e-luong-chinh.md
 │   ├── thay-doi-thiet-ke.md
 │   └── ai-disclosure.md
@@ -749,19 +720,9 @@ smartcrm-2374802010207-warranty-claim-intake/
 │   │       └── 002_seed.sql
 │   │
 │   ├── middleware/
-│   │   └── requireAuth.js
-│   │
-│   ├── routes/
-│   │   ├── auth.js
-│   │   ├── lookup.js
-│   │   └── tickets.js
-│   │
-│   ├── services/
-│   │   ├── lookupService.js
-│   │   └── ticketService.js
-│   │
 │   ├── repositories/
-│   │
+│   ├── routes/
+│   ├── services/
 │   ├── utils/
 │   │
 │   └── frontend/
@@ -782,7 +743,7 @@ smartcrm-2374802010207-warranty-claim-intake/
 └── README.md
 ```
 
-Cấu trúc trên thể hiện các thành phần chính. Các file và thư mục con khác có thể được bổ sung trong quá trình phát triển.
+Đây là cấu trúc khái quát, các thư mục có thể chứa thêm file triển khai chi tiết.
 
 ---
 
@@ -798,11 +759,11 @@ Hệ thống sử dụng năm bảng chính:
 
 | Bảng | Chức năng |
 |---|---|
-| customer | Lưu thông tin khách hàng |
-| device | Lưu thông tin thiết bị |
-| issue_category | Lưu danh mục nhóm sự cố |
-| ticket | Lưu thông tin phiếu bảo hành |
-| ticket_status_log | Lưu lịch sử thay đổi trạng thái |
+| `customer` | Lưu thông tin khách hàng |
+| `device` | Lưu thông tin thiết bị |
+| `issue_category` | Lưu danh mục nhóm sự cố |
+| `ticket` | Lưu thông tin phiếu bảo hành |
+| `ticket_status_log` | Lưu lịch sử thay đổi trạng thái |
 
 ## 14.1. Quan hệ dữ liệu
 
@@ -828,7 +789,7 @@ Ticket liên kết khách hàng gián tiếp thông qua:
 device.customer_id
 ```
 
-Không tạo thêm `ticket.customer_id` để tránh dư thừa dữ liệu.
+Không tạo thêm `ticket.customer_id` vì không có thuộc tính này trong DDL chuẩn của dự án.
 
 ## 14.2. Migration
 
@@ -839,16 +800,10 @@ src/db/migrations/001_create_tables.sql
 src/db/migrations/002_seed.sql
 ```
 
-- `001_create_tables.sql`: Khởi tạo các bảng và cấu trúc dữ liệu.
+- `001_create_tables.sql`: Khởi tạo cấu trúc bảng và các ràng buộc dữ liệu.
 - `002_seed.sql`: Khởi tạo danh mục sự cố và dữ liệu mẫu.
 
-Backend tự thực hiện migration khi khởi động bằng lệnh:
-
-```cmd
-npm start
-```
-
-Khi thay đổi cấu trúc database trong tương lai, nên tạo migration mới thay vì sửa migration đã được sử dụng.
+Backend thực hiện migration theo cơ chế đã triển khai khi khởi động.
 
 ---
 
@@ -865,7 +820,7 @@ GET /health
 POST /auth/login
 ```
 
-Các API còn lại yêu cầu token xác thực.
+Các API nghiệp vụ yêu cầu token xác thực.
 
 Header:
 
@@ -873,30 +828,26 @@ Header:
 Authorization: Bearer <token>
 ```
 
-Nếu token thiếu hoặc không hợp lệ, Backend trả về:
-
-```text
-401 Unauthorized
-```
+Nếu token thiếu hoặc không hợp lệ, Backend trả về HTTP 401 Unauthorized.
 
 ## 15.2. Danh sách API chính
 
-| Phương thức | Endpoint | Chức năng |
-|---|---|---|
-| GET | `/health` | Kiểm tra trạng thái Backend |
-| POST | `/auth/login` | Đăng nhập |
-| GET | `/customers?phone=` | Tra cứu khách hàng |
-| POST | `/customers` | Tạo khách hàng |
-| GET | `/devices?serial=` | Tra cứu thiết bị |
-| POST | `/devices` | Tạo thiết bị |
-| GET | `/categories` | Lấy danh mục nhóm sự cố |
-| GET | `/tickets` | Lấy danh sách phiếu |
-| POST | `/tickets` | Tạo phiếu |
-| GET | `/tickets/:id` | Xem chi tiết phiếu |
-| PATCH | `/tickets/:id` | Cập nhật phiếu |
-| DELETE | `/tickets/:id` | Đóng phiếu |
+| Phương thức | Endpoint | Vai trò được phép | Chức năng |
+|---|---|---|---|
+| GET | `/health` | Không cần đăng nhập | Kiểm tra Backend |
+| POST | `/auth/login` | Không cần đăng nhập | Đăng nhập |
+| GET | `/customers?phone=` | Nhân viên tiếp nhận | Tra cứu khách hàng |
+| POST | `/customers` | Nhân viên tiếp nhận | Tạo khách hàng |
+| GET | `/devices?serial=` | Nhân viên tiếp nhận | Tra cứu thiết bị |
+| POST | `/devices` | Nhân viên tiếp nhận | Tạo thiết bị |
+| GET | `/categories` | Nhân viên tiếp nhận, Quản lý trung tâm | Lấy nhóm sự cố |
+| GET | `/tickets` | Quản lý trung tâm | Lấy danh sách phiếu |
+| POST | `/tickets` | Nhân viên tiếp nhận | Tạo phiếu |
+| GET | `/tickets/:id` | Quản lý trung tâm | Xem chi tiết phiếu |
 
-Lưu ý: Endpoint DELETE thực hiện nghiệp vụ đóng phiếu, không xóa vật lý bản ghi khỏi database.
+`PATCH /tickets/:id` và `DELETE /tickets/:id` hiện không được cấp quyền cho các vai trò ứng dụng. Do đó, không xem đây là chức năng cập nhật hoặc đóng phiếu khả dụng trên giao diện.
+
+Hệ thống không xóa vật lý phiếu.
 
 ## 15.3. Kiểm tra API bằng cURL
 
@@ -906,10 +857,16 @@ Kiểm tra Health Check:
 curl http://localhost:3001/health
 ```
 
-Đăng nhập:
+Đăng nhập nhân viên:
 
 ```cmd
-curl -X POST http://localhost:3001/auth/login -H "Content-Type: application/json" -d "{\"username\":\"nhanvien\",\"password\":\"your_app_password\"}"
+curl -X POST http://localhost:3001/auth/login -H "Content-Type: application/json" -d "{\"username\":\"your_staff_username\",\"password\":\"your_staff_password\"}"
+```
+
+Đăng nhập quản lý:
+
+```cmd
+curl -X POST http://localhost:3001/auth/login -H "Content-Type: application/json" -d "{\"username\":\"your_manager_username\",\"password\":\"your_manager_password\"}"
 ```
 
 Sau khi đăng nhập thành công, sử dụng token trả về để gọi các API yêu cầu xác thực.
@@ -918,11 +875,15 @@ Có thể sử dụng Postman để kiểm tra các endpoint khác.
 
 ---
 
-# 16. XÁC THỰC NGƯỜI DÙNG
+# 16. XÁC THỰC VÀ PHÂN QUYỀN
 
-Hệ thống đã triển khai Authentication – xác thực người dùng bằng token.
+## 16.1. Authentication – Xác thực
 
-## 16.1. Luồng đăng nhập
+Hệ thống đã triển khai xác thực người dùng bằng token được ký và xác minh bằng HMAC-SHA256.
+
+Đây là cơ chế token tùy chỉnh của dự án, **không phải JWT**.
+
+Luồng đăng nhập:
 
 ```text
 Người dùng nhập tài khoản
@@ -934,7 +895,7 @@ POST /auth/login
 Backend kiểm tra tài khoản
         |
         v
-Trả token
+Backend tạo token
         |
         v
 Frontend lưu token
@@ -943,57 +904,74 @@ Frontend lưu token
 Gửi Bearer token khi gọi API
 ```
 
-Tài khoản và mật khẩu được cấu hình thông qua:
+## 16.2. Authorization – Phân quyền
 
-```env
-APP_USER=nhanvien
-APP_PASSWORD=your_app_password
-```
+Hệ thống kiểm tra quyền truy cập tại Backend theo vai trò:
 
-## 16.2. Xử lý token hết hạn
+| Chức năng | Nhân viên tiếp nhận | Quản lý trung tâm |
+|---|---|---|
+| Tra cứu khách hàng | Có | Không |
+| Tạo khách hàng | Có | Không |
+| Tra cứu thiết bị | Có | Không |
+| Ghi nhận thiết bị | Có | Không |
+| Tạo phiếu | Có | Không |
+| Xem danh sách phiếu | Không | Có |
+| Xem chi tiết phiếu | Không | Có |
+| Xem nhóm sự cố | Có | Có |
 
-Frontend xử lý HTTP 401 theo luồng:
+Frontend chỉ hiển thị chức năng phù hợp với vai trò. Backend vẫn là nơi kiểm tra quyền truy cập thực tế.
+
+## 16.3. Xử lý token hết hạn
+
+Khi API trả về HTTP 401, Frontend thực hiện:
 
 ```text
 API trả về 401
         |
         v
-Xóa token
+Xóa token và thông tin phiên
         |
         v
-Phát sự kiện phiên đăng nhập hết hạn
-        |
-        v
-Thông báo người dùng
+Thông báo phiên đăng nhập hết hạn
         |
         v
 Yêu cầu đăng nhập lại
 ```
 
-## 16.3. Phân biệt Authentication và Authorization
+## 16.4. Quy tắc hiển thị số điện thoại – QT-12
 
-- **Authentication:** Xác thực người dùng đã được triển khai.
-- **Authorization:** Phân quyền theo vai trò chưa hoàn thành.
+- Nhân viên tiếp nhận: được xem số điện thoại đầy đủ.
+- Quản lý trung tâm: số điện thoại được che.
 
-Không đồng nhất hai chức năng này.
+Quy tắc hiển thị được kiểm soát ở Backend, không chỉ dựa vào giao diện Frontend.
 
 ---
 
 # 17. KIỂM THỬ BACKEND
 
-Backend sử dụng Jest.
+Backend sử dụng Jest và Supertest để kiểm thử.
 
-## 17.1. Chạy kiểm thử
+## 17.1. Cài đặt dependencies
 
 Tại thư mục gốc dự án:
 
 ```cmd
-npm test -- --runInBand
+npm install
 ```
 
-## 17.2. Các nhóm kiểm thử
+## 17.2. Chạy kiểm thử
 
-Các nhóm kiểm thử được ghi nhận trong dự án:
+Chạy lệnh:
+
+```cmd
+node node_modules\jest\bin\jest.js --runInBand
+```
+
+Lệnh trên được sử dụng trong môi trường Windows của dự án.
+
+## 17.3. Các nhóm kiểm thử
+
+Các nhóm kiểm thử bao gồm:
 
 - Chuẩn hóa số điện thoại.
 - Tính SLA.
@@ -1001,23 +979,25 @@ Các nhóm kiểm thử được ghi nhận trong dự án:
 - Kiểm tra bảo hành.
 - Xử lý phiếu sắp hạn và quá hạn.
 - Xác thực token.
+- Phân quyền theo vai trò.
+- Kiểm tra hiển thị số điện thoại theo QT-12.
 - Ticket mapper.
 - Service nghiệp vụ.
 - Repository và middleware.
 
-Các test nghiệp vụ được thiết kế để kiểm tra logic mà không yêu cầu kết nối database thật đối với những trường hợp không cần truy cập database.
+Các kiểm thử API sử dụng Supertest để gửi request đến ứng dụng Express. Những trường hợp không cần truy cập database thật có thể sử dụng mock phù hợp.
 
-## 17.3. Kết quả kiểm thử đã ghi nhận
+## 17.4. Kết quả kiểm thử đã ghi nhận
 
-Kết quả tại môi trường phát triển:
+Kết quả trong môi trường phát triển:
 
 ```text
-Test Suites: 9 passed, 9 total
-Tests:       42 passed, 42 total
+Test Suites: 13 passed, 13 total
+Tests:       72 passed, 72 total
 Snapshots:   0 total
 ```
 
-Đây là kết quả đã được ghi nhận trong quá trình phát triển. Khi kiểm thử trên môi trường khác, cần chạy lại lệnh Jest để xác nhận.
+Đây là kết quả đã ghi nhận tại thời điểm kiểm thử. Khi cài đặt trên máy khác hoặc có thay đổi mã nguồn, cần chạy lại lệnh Jest để xác nhận.
 
 ---
 
@@ -1057,7 +1037,7 @@ src/frontend/package.json
 
 # 19. XỬ LÝ LỖI THƯỜNG GẶP
 
-## 19.1. Lỗi không kết nối được PostgreSQL
+## 19.1. Không kết nối được PostgreSQL
 
 Biểu hiện:
 
@@ -1068,18 +1048,18 @@ ECONNREFUSED
 Nguyên nhân có thể:
 
 - PostgreSQL chưa khởi động.
-- Sai DB_HOST.
-- Sai DB_PORT.
+- Sai `DB_HOST`.
+- Sai `DB_PORT`.
 - PostgreSQL không lắng nghe tại cổng cấu hình.
 
 Cách xử lý:
 
 1. Kiểm tra PostgreSQL 18 đang hoạt động.
 2. Kiểm tra Host và Port trong `.env`.
-3. Kiểm tra cấu hình kết nối bằng pgAdmin.
+3. Kiểm tra kết nối bằng pgAdmin.
 4. Khởi động lại Backend.
 
-## 19.2. Lỗi sai mật khẩu PostgreSQL
+## 19.2. Sai mật khẩu PostgreSQL
 
 Biểu hiện:
 
@@ -1087,38 +1067,26 @@ Biểu hiện:
 password authentication failed
 ```
 
-Nguyên nhân: `DB_PASSWORD` không khớp mật khẩu tài khoản PostgreSQL.
-
 Cách xử lý:
 
-- Mở `.env`.
 - Kiểm tra `DB_USER`.
 - Kiểm tra `DB_PASSWORD`.
-- Lưu file và chạy lại Backend.
+- Đảm bảo mật khẩu đúng với tài khoản PostgreSQL.
+- Khởi động lại Backend sau khi sửa `.env`.
 
 ## 19.3. Lỗi AUTH_SECRET
 
-Biểu hiện:
+Backend có thể không khởi động nếu thiếu hoặc cấu hình `AUTH_SECRET` không hợp lệ.
 
-```text
-AUTH_SECRET
-```
-
-Backend không khởi động do thiếu hoặc cấu hình không hợp lệ.
-
-Cách xử lý:
-
-Chạy lại lệnh tạo secret:
+Tạo secret mới:
 
 ```cmd
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 ```
 
-Cập nhật giá trị mới vào `.env`.
+Cập nhật vào `.env` và bảo đảm secret có ít nhất 32 ký tự.
 
-Đảm bảo secret có ít nhất 32 ký tự.
-
-## 19.4. Lỗi database không tồn tại
+## 19.4. Database không tồn tại
 
 Biểu hiện:
 
@@ -1131,17 +1099,15 @@ Cách xử lý:
 - Mở pgAdmin.
 - Kiểm tra database đã tạo chưa.
 - Kiểm tra `DB_NAME` trong `.env`.
-- Đảm bảo tên database là `smart_crm` hoặc đúng tên database đã tạo.
+- Đảm bảo tên database khớp với database đã tạo.
 
-## 19.5. Lỗi cổng 3001 đã được sử dụng
+## 19.5. Cổng 3001 đã được sử dụng
 
 Biểu hiện:
 
 ```text
 EADDRINUSE
 ```
-
-Nguyên nhân: Một chương trình khác đang sử dụng cổng 3001.
 
 Cách xử lý:
 
@@ -1154,7 +1120,7 @@ Kiểm tra:
 
 1. Backend đã chạy chưa.
 2. Backend có hoạt động tại `http://localhost:3001` không.
-3. API Health Check có trả về trạng thái `ok` không.
+3. Health Check API có trả về trạng thái hoạt động không.
 4. Cấu hình URL Backend trong Frontend có đúng không.
 
 Kiểm tra bằng:
@@ -1167,26 +1133,29 @@ curl http://localhost:3001/health
 
 Kiểm tra:
 
-- `APP_USER` trong `.env`.
-- `APP_PASSWORD` trong `.env`.
+- `STAFF_USER` và `STAFF_PASSWORD` nếu đăng nhập nhân viên.
+- `MANAGER_USER` và `MANAGER_PASSWORD` nếu đăng nhập quản lý.
 - Backend đã được khởi động lại sau khi thay đổi `.env` chưa.
+- `AUTH_SECRET` đã được cấu hình đúng chưa.
 
-Tài khoản đăng nhập ứng dụng sử dụng thông tin cấu hình trong `.env`, không sử dụng mật khẩu PostgreSQL.
+Tài khoản ứng dụng sử dụng thông tin cấu hình trong `.env`, không sử dụng mật khẩu PostgreSQL.
 
-## 19.8. Lỗi không tìm thấy lệnh npm hoặc node
+Backend tự xác định vai trò theo tài khoản đã cấu hình. Frontend không tự quyết định vai trò.
 
-Cài đặt Node.js phiên bản 20 trở lên.
+## 19.8. Không tìm thấy lệnh node hoặc npm
 
-Sau khi cài đặt, đóng và mở lại CMD:
+Cài đặt Node.js phiên bản phù hợp, sau đó đóng và mở lại CMD:
 
 ```cmd
 node -v
 npm -v
 ```
 
+Nếu vẫn không nhận lệnh, kiểm tra biến môi trường PATH của Windows.
+
 ## 19.9. Lỗi thiếu thư viện
 
-Tại thư mục gốc dự án, chạy:
+Tại thư mục gốc dự án:
 
 ```cmd
 npm install
@@ -1198,7 +1167,7 @@ Cài đặt lại thư viện Frontend:
 npm install --prefix src/frontend
 ```
 
-Không xóa hoặc chỉnh sửa package-lock.json tùy tiện khi chỉ cần cài đặt dependencies.
+Không xóa hoặc chỉnh sửa `package-lock.json` tùy tiện khi chỉ cần cài đặt dependencies.
 
 ---
 
@@ -1208,10 +1177,12 @@ Không xóa hoặc chỉnh sửa package-lock.json tùy tiện khi chỉ cần c
 
 - [x] Backend Express.
 - [x] Kiến trúc Routes → Services → Repositories.
-- [x] PostgreSQL.
+- [x] Kết nối PostgreSQL.
 - [x] Migration và dữ liệu mẫu.
 - [x] Tra cứu khách hàng.
+- [x] Tạo khách hàng.
 - [x] Tra cứu thiết bị.
+- [x] Ghi nhận thiết bị.
 - [x] Kiểm tra bảo hành.
 - [x] Tạo phiếu bảo hành.
 - [x] Phân loại sự cố.
@@ -1221,49 +1192,46 @@ Không xóa hoặc chỉnh sửa package-lock.json tùy tiện khi chỉ cần c
 - [x] Lọc danh sách phiếu.
 - [x] Phân trang.
 - [x] Frontend React + Vite.
-- [x] Ba màn hình nghiệp vụ chính.
 - [x] Gọi API từ Frontend.
 - [x] Đăng nhập và xác thực bằng token.
 - [x] Xử lý token hết hạn / HTTP 401.
 - [x] Loading / Empty / Error state.
+- [x] Phân quyền theo vai trò QT-11.
+- [x] Che số điện thoại theo vai trò QT-12.
 - [x] Kiểm thử Backend bằng Jest.
 - [x] Tài liệu README và tài liệu thiết kế.
 
 ## 20.2. Chức năng chưa hoàn thành
 
-- [ ] QT-11 – Phân quyền theo vai trò (Authorization).
+Các chức năng thuộc phạm vi L02 đã được triển khai theo kế hoạch tại thời điểm cập nhật tài liệu.
 
-QT-11 yêu cầu kiểm tra quyền tại Backend theo vai trò.
-
-Hiện tại hệ thống đã có Authentication (xác thực người dùng), nhưng Authorization (phân quyền theo vai trò) chưa hoàn thiện.
-
-Do đó, QT-11 được ghi nhận là chưa hoàn thành và không đánh dấu hoàn tất cho đến khi Backend thực hiện kiểm tra quyền thực tế.
+Những chức năng ngoài phạm vi đã xác định không được xem là hạng mục còn thiếu của module L02.
 
 ---
 
 # 21. TÀI LIỆU THIẾT KẾ VÀ MINH CHỨNG
 
-Các tài liệu thiết kế được lưu trong thư mục:
+Các tài liệu thiết kế và minh chứng được lưu trong thư mục:
 
 ```text
 docs/
 ```
 
-Các tài liệu chính:
+Các nhóm tài liệu cần có:
 
 | Tài liệu | Nội dung |
 |---|---|
-| `srs.md` | Đặc tả yêu cầu phần mềm |
-| `usecase.*` | Sơ đồ Use Case |
-| `architecture.*` | Thiết kế kiến trúc hệ thống |
-| `erd.*` | Mô hình dữ liệu |
-| `wireframe*.png` | Thiết kế giao diện |
-| `e2e-luong-chinh.md` | Mô tả kiểm thử luồng chính |
-| `e2e-*.png` | Ảnh minh chứng |
-| `thay-doi-thiet-ke.md` | Nhật ký thay đổi thiết kế |
-| `ai-disclosure.md` | Khai báo sử dụng công cụ AI |
-| `C5_truoc_migration.png` | Minh chứng dữ liệu trước migration |
-| `C5_sau_migration.png` | Minh chứng dữ liệu sau migration |
+| SRS | Đặc tả yêu cầu phần mềm |
+| Use Case | Mô hình các trường hợp sử dụng |
+| Architecture | Thiết kế kiến trúc hệ thống |
+| ERD | Mô hình dữ liệu |
+| Wireframe | Thiết kế giao diện |
+| E2E | Mô tả kiểm thử luồng chính |
+| Thay đổi thiết kế | Nhật ký thay đổi thiết kế |
+| AI Disclosure | Khai báo sử dụng công cụ AI |
+| Screenshots | Ảnh minh chứng quá trình thực hiện và kiểm thử |
+
+Tên file cụ thể cần đối chiếu với các file thực tế trong repository.
 
 ---
 
@@ -1280,13 +1248,17 @@ File `.gitignore` cần bỏ qua ít nhất:
 
 ```gitignore
 node_modules/
+
 .env
 .env.*
 !.env.example
+
 dist/
 src/frontend/dist/
+
 *.log
 npm-debug.log*
+
 .DS_Store
 Thumbs.db
 ```
@@ -1301,7 +1273,7 @@ Không đưa lên GitHub:
 - Token đăng nhập.
 - Dữ liệu nhạy cảm của người dùng.
 
-Khi triển khai ở môi trường khác, cần cấu hình lại các biến môi trường phù hợp với máy chủ và cơ sở dữ liệu thực tế.
+Khi triển khai trên môi trường khác, cần cấu hình lại các biến môi trường phù hợp với máy chủ và cơ sở dữ liệu thực tế.
 
 ---
 
@@ -1314,3 +1286,4 @@ Hệ thống tiếp nhận và quản lý yêu cầu bảo hành cho Mekong Mobi
 **Đồ án:** Chuyên đề tốt nghiệp 1
 **Chuyên ngành:** Software Engineering (SE)
 **Repository:** https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake
+

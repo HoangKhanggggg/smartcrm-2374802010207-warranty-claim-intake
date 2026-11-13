@@ -71,6 +71,65 @@ describe('Kiểm thử tích hợp xác thực và phân quyền QT-11, QT-12', 
   });
 
   describe('API phiếu bảo hành', () => {
+
+  describe('API danh mục nhóm sự cố', () => {
+    test('Nhân viên tiếp nhận được đọc danh mục nhóm sự cố', async () => {
+      lookupService.listCategories.mockResolvedValue([
+        { categoryId: 1, categoryName: 'Màn hình' },
+        { categoryId: 2, categoryName: 'Pin' }
+      ]);
+
+      const response = await request(app)
+        .get('/categories')
+        .set('Authorization', `Bearer ${staffToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(2);
+      expect(lookupService.listCategories).toHaveBeenCalledTimes(1);
+    });
+
+    test('Quản lý trung tâm được đọc danh mục nhóm sự cố', async () => {
+      lookupService.listCategories.mockResolvedValue([
+        { categoryId: 1, categoryName: 'Màn hình' },
+        { categoryId: 2, categoryName: 'Pin' }
+      ]);
+
+      const response = await request(app)
+        .get('/categories')
+        .set('Authorization', `Bearer ${managerToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(2);
+      expect(lookupService.listCategories).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('API tra cứu thiết bị', () => {
+    test('Quản lý trung tâm không được tra cứu thiết bị', async () => {
+      const response = await request(app)
+        .get('/devices')
+        .query({ serial: 'IMEI-TEST-001' })
+        .set('Authorization', `Bearer ${managerToken}`);
+
+      expect(response.status).toBe(403);
+      expect(lookupService.findDevice).not.toHaveBeenCalled();
+    });
+
+    test('Quản lý trung tâm không được ghi nhận thiết bị', async () => {
+      const response = await request(app)
+        .post('/devices')
+        .set('Authorization', `Bearer ${managerToken}`)
+        .send({
+          customerId: 1,
+          serialImei: 'IMEI-TEST-002',
+          warrantyEndDate: '2027-12-31'
+        });
+
+      expect(response.status).toBe(403);
+      expect(lookupService.createDevice).not.toHaveBeenCalled();
+    });
+  });
+
     test('Nhân viên tiếp nhận được phép tạo phiếu', async () => {
       ticketService.createTicket.mockResolvedValue(ticketRow);
 
