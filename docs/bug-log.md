@@ -32,7 +32,7 @@ Bổ sung kiểm thử hồi quy trong `tests/sla.test.js` để kiểm tra trư
 
 Kiểm thử sử dụng thời điểm đầu vào được xác định theo UTC và so sánh kết quả bằng `toISOString()`, bảo đảm hạn cam kết được chuyển sang Thứ Hai cùng giờ Việt Nam mà không phụ thuộc múi giờ máy chủ.
 
-Các kiểm thử SLA PASS trong lần chạy ngày 06/11/2026.
+Các kiểm thử SLA PASS trong lần chạy ngày 06/11/2026. Bộ kiểm thử hồi quy ngày 13/11/2026 tiếp tục ghi nhận toàn bộ 13 Test Suites và 72 test thành công.
 
 **7. Commit sửa lỗi:**
 
@@ -70,7 +70,7 @@ Bổ sung hai kiểm thử hồi quy trong `tests/services.test.js` cho trườn
 
 Kết quả kiểm thử xác nhận cả hai trường hợp đều bị từ chối với mã lỗi `DU_LIEU_KHONG_HOP_LE`. Đồng thời, Repository không được gọi các hàm `findDevice()` và `create()`, bảo đảm dữ liệu không hợp lệ bị chặn trước khi truy vấn thiết bị hoặc lưu phiếu.
 
-Cả hai kiểm thử PASS trong lần chạy ngày 06/11/2026.
+Cả hai kiểm thử PASS trong lần chạy ngày 06/11/2026. Bộ kiểm thử hồi quy ngày 13/11/2026 tiếp tục ghi nhận toàn bộ 13 Test Suites và 72 test thành công.
 
 **7. Commit sửa lỗi:**
 
@@ -96,7 +96,7 @@ Kiểm tra endpoint POST `/tickets` được khai báo trong `src/routes/tickets
 
 **4. Nguyên nhân gốc:**
 
-Route truyền trực tiếp `req.body` vào Service. Khi request không có body, `req.body` có thể là `undefined`; hàm Service sử dụng destructuring tham số nên có thể phát sinh lỗi khi nhận giá trị này.
+Route trước đây truyền trực tiếp `req.body` vào Service. Khi request không có body, `req.body` có thể là `undefined`; hàm Service sử dụng destructuring tham số nên có thể phát sinh lỗi khi nhận giá trị này.
 
 **5. Cách sửa:**
 
@@ -104,9 +104,11 @@ Bổ sung giá trị mặc định `req.body || {}` khi gọi Service tại endp
 
 **6. Xác nhận:**
 
-Bổ sung kiểm thử API trong `tests/tickets.routes.test.js` bằng Supertest. Kiểm thử xác nhận route truyền object rỗng đến Service và API trả HTTP 400 với mã `DU_LIEU_KHONG_HOP_LE`.
+Bổ sung kiểm thử API trong `tests/tickets.routes.test.js` bằng Supertest. Kiểm thử xác nhận route truyền object rỗng đến Service và API trả HTTP 400 với mã lỗi `DU_LIEU_KHONG_HOP_LE`.
 
-Kiểm thử API PASS trong lần chạy ngày 06/11/2026. Service được giả lập trong kiểm thử này nên đây là kiểm thử ở mức API route, không phải kiểm thử tích hợp PostgreSQL.
+Kiểm thử API PASS trong lần chạy ngày 06/11/2026. Bộ kiểm thử hồi quy ngày 13/11/2026 tiếp tục ghi nhận toàn bộ 13 Test Suites và 72 test thành công.
+
+Service được giả lập trong kiểm thử này nên đây là kiểm thử ở mức API Route, không phải kiểm thử tích hợp PostgreSQL.
 
 **Lý do phân loại mức độ MINOR:**
 
@@ -114,7 +116,13 @@ Lỗi xảy ra khi request tạo phiếu không cung cấp request body. Ngườ
 
 **7. Commit sửa lỗi:**
 
-[a0bbaca – Sửa SLA theo giờ Việt Nam và xử lý dữ liệu sai](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/a0bbacac40f783a624633f3358ca26aa3e213249)
+[a2e5bbe – Triển khai xác thực và phân quyền theo vai trò](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/a2e5bbe)
+
+**Commit bổ sung kiểm thử:**
+
+[d353284 – Bổ sung kiểm thử nghiệp vụ và API cho Buổi 13](https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake/commit/d3532841da31db089414da940cfadeec63fc7ad5)
+
+Ghi chú: Commit `a2e5bbe` đồng thời triển khai xác thực và phân quyền theo vai trò. Thay đổi `req.body || {}` tại `src/routes/tickets.js` được xác định qua kết quả `git blame`. Commit `d353284` bổ sung kiểm thử API cho trường hợp request không có body, không phải commit sửa lỗi.
 
 ---
 
@@ -124,11 +132,11 @@ Lỗi xảy ra khi request tạo phiếu không cung cấp request body. Ngườ
 |---|---|---|---|
 | BUG-01 | Tính sai hạn cam kết SLA khi kết thúc vào Chủ nhật | MAJOR | Đã sửa, kiểm thử hồi quy SLA PASS |
 | BUG-02 | Chưa kiểm tra đầy đủ mã thiết bị và mã nhóm sự cố | MINOR | Đã sửa, kiểm thử hồi quy nghiệp vụ PASS |
-| BUG-03 | Request tạo phiếu không có body có thể gây lỗi hệ thống | MINOR | Đã sửa, kiểm thử API route PASS |
+| BUG-03 | Request tạo phiếu không có body có thể gây lỗi hệ thống | MINOR | Đã sửa, kiểm thử API Route PASS |
 
 ### 4.1. Kết quả kiểm thử toàn bộ
 
-Kết quả kiểm thử được ghi nhận trong lần chạy ngày 06/11/2026:
+**Lần kiểm thử ngày 06/11/2026:**
 
 - Số lượng Test Suites: 10.
 - Tổng số kiểm thử: 46.
@@ -136,12 +144,27 @@ Kết quả kiểm thử được ghi nhận trong lần chạy ngày 06/11/2026
 - Số kiểm thử thành công: 46.
 - Kết quả: **46/46 test PASS**.
 
+**Lần kiểm thử hồi quy ngày 13/11/2026:**
+
+- Số lượng Test Suites: 13.
+- Tổng số kiểm thử: 72.
+- Số kiểm thử thất bại: 0.
+- Số kiểm thử thành công: 72.
+- Kết quả: **72/72 test PASS**.
+- Thời gian thực thi: 1.278 giây.
+
+Ảnh minh chứng lần chạy hồi quy ngày 13/11/2026 được lưu tại:
+
+`docs/screenshots/REGRESSION_2026-11-13.png`
+
 ### 4.2. Ghi chú
 
 Các liên kết commit thể hiện những thay đổi đã thực hiện trong quá trình phát triển và sửa lỗi.
 
-BUG-01 và BUG-03 cùng tham chiếu commit `a0bbacac40f783a624633f3358ca26aa3e213249` vì cả hai thay đổi được ghi nhận trong cùng một commit.
-
-BUG-02 tham chiếu commit riêng `3642d0ea40d3758d1831c51e5b3968d27c664c71`.
+- BUG-01 tham chiếu commit `a0bbacac40f783a624633f3358ca26aa3e213249`.
+- BUG-02 tham chiếu commit `3642d0ea40d3758d1831c51e5b3968d27c664c71`.
+- BUG-03 tham chiếu commit `a2e5bbe` là commit chứa thay đổi khắc phục tại route; commit `d353284` là commit bổ sung kiểm thử API.
 
 Các kết quả kiểm thử được ghi nhận dựa trên những lần chạy thực tế. Những kiểm thử sử dụng mock (giả lập thành phần phụ thuộc) được phân biệt với kiểm thử tương tác cơ sở dữ liệu PostgreSQL.
+
+Kết quả 72/72 test PASS là kết quả kiểm thử tự động toàn bộ bộ test hiện có, không đồng nghĩa với việc tất cả các kiểm thử đều được thực hiện trực tiếp trên PostgreSQL thật.
