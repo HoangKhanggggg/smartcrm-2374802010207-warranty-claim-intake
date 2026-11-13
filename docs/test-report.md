@@ -46,13 +46,16 @@ Kết quả trên là kết quả kiểm thử tự động, không đồng ngh�
 | Bảo mật / chất lượng dữ liệu | TC-03, TC-10, TC-11 |
 | Tính tái lập | TC-12 |
 
+Ngoài các test case chi tiết trên, bộ kiểm thử hồi quy ngày 13/11/2026 còn ghi nhận các suite liên quan đến xác thực, middleware và kiểm tra vai trò như `auth.test.js`, `middleware.test.js` và `authorizeRoles.test.js`. Các suite này được thể hiện trong ảnh kết quả kiểm thử hồi quy. Bảng test case trên chỉ mô tả chi tiết những trường hợp đã được ghi nhận từ TC-01 đến TC-12.
+
 Một test case có thể thuộc nhiều nhóm nếu nội dung kiểm tra đáp ứng nhiều mục tiêu kiểm thử khác nhau.
 
 ## 4. Nhận xét kết quả
 
 - Lần kiểm thử ngày 06/11/2026 ghi nhận 10/10 Test Suites thành công và 46/46 test thành công.
 - Lần kiểm thử hồi quy ngày 13/11/2026 ghi nhận 13/13 Test Suites thành công và 72/72 test thành công, không có test thất bại.
-- Bộ kiểm thử bao phủ các nghiệp vụ quan trọng đã hiện thực như tạo phiếu, chuẩn hóa số điện thoại, kiểm tra bảo hành, tính SLA, xác định trạng thái hạn, ánh xạ dữ liệu, phân quyền và xử lý lỗi.
+- Bộ kiểm thử bao phủ các nghiệp vụ quan trọng đã hiện thực như tạo phiếu, chuẩn hóa số điện thoại, kiểm tra bảo hành, tính SLA, xác định trạng thái hạn, ánh xạ dữ liệu và xử lý lỗi.
+- Bộ kiểm thử hồi quy còn bao gồm các suite liên quan đến xác thực, middleware và kiểm tra vai trò. Kết quả các suite này được thể hiện trong ảnh kiểm thử hồi quy.
 - Kiểm thử Repository và API sử dụng mock ở một số thành phần, do đó chưa thể thay thế kiểm thử tích hợp đầy đủ với PostgreSQL thật.
 - TC-12 đã được thực hiện trên database `smart_crm_test`. Migration và seed được chạy hai lần liên tiếp, không phát sinh lỗi và số lượng bản ghi của năm bảng không thay đổi.
 - Kết quả TC-01 đến TC-12 và ảnh minh chứng tương ứng được ghi nhận ngày 06/11/2026. Kết quả 13 Test Suites và 72 test là lần chạy hồi quy tự động ngày 13/11/2026.
