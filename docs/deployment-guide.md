@@ -1,10 +1,10 @@
-# Deployment Guide – Smart CRM Mekong Mobile
+# DEPLOYMENT GUIDE – SMART CRM MEKONG MOBILE
 
 ## 1. System Requirements
 
 Smart CRM – Mekong Mobile is a web application for the L02 warranty claim intake and classification workflow.
 
-The system uses the following technologies:
+The system consists of the following components:
 
 | Component | Technology |
 |---|---|
@@ -13,39 +13,47 @@ The system uses the following technologies:
 | Database | PostgreSQL 18 |
 | Backend testing | Jest, Supertest |
 | Frontend linting | Oxlint |
+| Containerization | Docker, Docker Compose |
 | Version control | Git |
 
 ### 1.1. Prerequisites
 
-Install the following software before setting up the project:
+For manual development deployment, install:
 
 - Node.js 20 or later.
 - npm 10 or later.
 - PostgreSQL 18.
 - Git.
 - Visual Studio Code (recommended).
-- pgAdmin 4 (recommended for database management).
+- pgAdmin 4 (recommended).
+
+For Docker deployment, install:
+
+- Docker Desktop with Docker Compose support, or Docker Engine with Docker Compose plugin.
+- Git.
 
 The development environment previously recorded for this project includes Node.js 24.12.0, npm 11.6.2, and PostgreSQL 18.6.
 
-### 1.2. Verify the installed tools
+### 1.2. Verify installed tools
 
-Open a terminal and run:
+Run the following commands:
 
 ```bash
 node --version
 npm --version
 psql --version
 git --version
+docker --version
+docker compose version
 ```
 
-Ensure that the installed versions satisfy the requirements above.
+The Docker commands are required only when using Docker deployment.
 
 ---
 
 ## 2. Get the Source Code
 
-Clone the project repository:
+Clone the public repository:
 
 ```bash
 git clone https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake.git
@@ -69,27 +77,17 @@ If the `code` command is unavailable, open the project folder manually using Vis
 
 ## 3. Database and Environment Configuration
 
-### 3.1. Create the PostgreSQL database
+### 3.1. Environment variables
 
-Open pgAdmin 4 and connect to your PostgreSQL server.
+The backend reads configuration from the `.env` file in the project root.
 
-Create a database named:
+Create a local environment file from the provided example:
 
-```text
-smart_crm
-```
-
-The database name must match the `DB_NAME` value in the environment configuration.
-
-### 3.2. Configure environment variables
-
-At the project root, create a local environment file from the example:
-
-```bash
+```cmd
 copy .env.example .env
 ```
 
-Open `.env` and configure the values for your local environment:
+Configure the following variables in `.env`:
 
 ```env
 PORT=3001
@@ -97,18 +95,30 @@ PORT=3001
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=your_postgres_password
+DB_PASSWORD=your_database_password
 DB_NAME=smart_crm
 
-APP_USER=nhanvien
-APP_PASSWORD=your_application_password
+STAFF_USER=your_staff_username
+STAFF_PASSWORD=your_staff_password
 
-AUTH_SECRET=your_generated_secret
+MANAGER_USER=your_manager_username
+MANAGER_PASSWORD=your_manager_password
+
+AUTH_SECRET=replace_with_random_secret_at_least_32_characters
 
 LOG_LEVEL=INFO
 ```
 
-Replace the example values with your own credentials.
+Replace all example values with your own configuration.
+
+Requirements:
+
+- `DB_PASSWORD` must match the PostgreSQL database user's password.
+- `STAFF_USER` and `STAFF_PASSWORD` configure the intake staff account.
+- `MANAGER_USER` and `MANAGER_PASSWORD` configure the center manager account.
+- The staff and manager usernames must be different.
+- `AUTH_SECRET` must contain at least 32 characters.
+- Use strong passwords for all accounts.
 
 Generate a random authentication secret using Node.js:
 
@@ -116,9 +126,23 @@ Generate a random authentication secret using Node.js:
 node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
 ```
 
-Copy the generated value into `AUTH_SECRET`. The secret must contain at least 32 characters.
+Copy the generated value into `AUTH_SECRET`.
 
-**Security note:** Never commit `.env` or disclose database passwords, application passwords, or authentication secrets. The repository includes `.env` in `.gitignore`, while `.env.example` contains variable names and placeholders only.
+**Security note:** Never commit `.env` or disclose database passwords, application passwords, or authentication secrets. The `.env` file is excluded from Git, while `.env.example` contains placeholder values only.
+
+### 3.2. Database configuration for manual deployment
+
+Open PostgreSQL using pgAdmin 4 or the PostgreSQL command line.
+
+Create a database named:
+
+```text
+smart_crm
+```
+
+Configure `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, and `DB_NAME` to match the PostgreSQL server.
+
+For manual deployment, the default database host is `localhost` and the default port is `5432`.
 
 ### 3.3. Database initialization
 
@@ -132,24 +156,42 @@ src/db/migrations/
 
 The current migration files include:
 
-- `001_create_tables.sql`: creates the database tables and indexes.
+- `001_create_tables.sql`: creates database tables and indexes.
 - `002_seed.sql`: inserts initial sample data.
 
-The scripts use idempotent SQL operations to support repeated initialization without creating duplicate seed records.
+The migration and seed scripts support repeated initialization without inserting duplicate sample records.
+
+### 3.4. Docker database configuration
+
+For Docker deployment, Docker Compose creates the PostgreSQL 18 container automatically.
+
+The database service uses the following environment variables:
+
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+
+The backend connects to the database using the Docker service name `db` and port `5432`. Docker Compose overrides `DB_HOST` and `DB_PORT` for the container environment.
+
+A persistent Docker volume named `smartcrm_pgdata` stores PostgreSQL data.
 
 ---
 
 ## 4. Install and Run the Application
 
-### 4.1. Install backend dependencies
+The application supports two deployment methods: manual development deployment and Docker deployment.
 
-Run the following command from the project root:
+### 4.1. Manual deployment
+
+#### Step 1: Install backend dependencies
+
+From the project root, run:
 
 ```bash
 npm install
 ```
 
-### 4.2. Start the backend
+#### Step 2: Start the backend
 
 Run:
 
@@ -167,15 +209,15 @@ http://localhost:3001
 
 Keep this terminal running.
 
-### 4.3. Install frontend dependencies
+#### Step 3: Install frontend dependencies
 
-Open another terminal at the project root and run:
+Open another terminal at the project root:
 
 ```bash
 npm install --prefix src/frontend
 ```
 
-### 4.4. Start the frontend
+#### Step 4: Start the frontend
 
 Run:
 
@@ -191,9 +233,125 @@ http://localhost:5173
 
 Open the frontend address in a web browser to access the application.
 
-### 4.5. Optional frontend checks
+### 4.2. Docker deployment
 
-Build the frontend:
+Docker Compose builds and runs the database, backend, and frontend services.
+
+#### Step 1: Configure environment variables
+
+Ensure that the project root contains a valid `.env` file.
+
+The `DB_PASSWORD`, staff credentials, manager credentials, and `AUTH_SECRET` must be configured before starting the containers.
+
+#### Step 2: Validate Docker Compose configuration
+
+Run:
+
+```bash
+docker compose config --quiet
+```
+
+If the command completes without errors, the Compose configuration is valid.
+
+#### Step 3: Build the Docker images
+
+Run:
+
+```bash
+docker compose build
+```
+
+This builds the backend and frontend images.
+
+#### Step 4: Start the application
+
+Run:
+
+```bash
+docker compose up -d
+```
+
+Docker Compose starts:
+
+| Service | Container | Purpose |
+|---|---|---|
+| `db` | `smartcrm-db` | PostgreSQL database |
+| `backend` | `smartcrm-backend` | Express API |
+| `frontend` | `smartcrm-frontend` | React application served by Nginx |
+
+The backend waits for the database healthcheck. The frontend waits for the backend healthcheck.
+
+#### Step 5: Check container status
+
+Run:
+
+```bash
+docker compose ps
+```
+
+Check service health and container status before accessing the application.
+
+#### Step 6: Access the application
+
+Frontend:
+
+```text
+http://localhost:5173
+```
+
+Backend health endpoint:
+
+```text
+http://localhost:3001/health
+```
+
+#### Step 7: View service logs
+
+To view all service logs:
+
+```bash
+docker compose logs
+```
+
+To view backend logs:
+
+```bash
+docker compose logs backend
+```
+
+To view database logs:
+
+```bash
+docker compose logs db
+```
+
+To view frontend logs:
+
+```bash
+docker compose logs frontend
+```
+
+#### Step 8: Stop the application
+
+Run:
+
+```bash
+docker compose down
+```
+
+This stops and removes the containers but preserves the named database volume.
+
+To remove the containers and database volume as well:
+
+```bash
+docker compose down -v
+```
+
+**Warning:** The `-v` option deletes the persistent database volume and its stored data. Do not use it when database data must be retained.
+
+### 4.3. Optional frontend checks
+
+For manual deployment, build the frontend:
 
 ```bash
 npm run build --prefix src/frontend
@@ -217,7 +375,7 @@ npm run preview --prefix src/frontend
 
 ### 5.1. Verify backend availability
 
-Open a browser or API client and send a GET request to:
+Send a GET request to:
 
 ```text
 http://localhost:3001/health
@@ -248,7 +406,7 @@ Confirm that the application page loads successfully.
 
 Open pgAdmin 4 and connect to the `smart_crm` database.
 
-Confirm that the expected tables exist:
+Confirm that the following tables exist:
 
 - `customer`
 - `device`
@@ -258,7 +416,18 @@ Confirm that the expected tables exist:
 
 Check that the initial sample data has been inserted.
 
-### 5.4. Run backend tests
+### 5.4. Verify authentication and authorization
+
+Use the configured staff and manager accounts to verify login.
+
+Check that:
+
+- The intake staff account can access the customer and device lookup functions and create warranty tickets.
+- The center manager account can access the ticket list and ticket details.
+- Requests without authentication are rejected.
+- Requests from unauthorized roles are rejected by backend authorization middleware.
+
+### 5.5. Run backend tests
 
 From the project root, execute:
 
@@ -268,33 +437,44 @@ npm test -- --runInBand
 
 The command runs the Jest test suite.
 
-A successful execution should report that all executed test suites and tests have passed. Record the actual result from your own environment.
+Record the actual number of passed and failed test suites and tests from the execution output.
 
-### 5.5. Troubleshooting
+### 5.6. Troubleshooting
 
 | Problem | Suggested action |
 |---|---|
 | Backend cannot connect to PostgreSQL | Check PostgreSQL service, database name, username, password, host, and port in `.env`. |
-| Port 3001 is already in use | Stop the process using the port or configure another available port in `.env`. |
+| Port 3001 is already in use | Stop the process using the port or configure another available port. |
 | Frontend cannot start | Run `npm install --prefix src/frontend` again and check the terminal output. |
-| Database tables are missing | Check the backend startup logs and verify that migration files exist. |
-| Login fails | Verify `APP_USER`, `APP_PASSWORD`, and `AUTH_SECRET` in `.env`. |
+| Database tables are missing | Check backend startup logs and verify that migration files exist. |
+| Login fails | Verify `STAFF_USER`, `STAFF_PASSWORD`, `MANAGER_USER`, `MANAGER_PASSWORD`, and `AUTH_SECRET`. |
 | Frontend cannot communicate with backend | Ensure that the backend is running and check the frontend API configuration. |
+| Docker database is unhealthy | Check `DB_PASSWORD`, Docker container logs, and database healthcheck status. |
+| Docker backend cannot connect to database | Verify that the `db` service is healthy and that the backend uses `DB_HOST=db`. |
+| Docker frontend cannot load | Check the frontend container, Nginx configuration, and `VITE_API_URL` build argument. |
 
 ---
 
-# Security Checklist
+# SECURITY CHECKLIST
 
-The following checklist records the current security configuration and the remaining work. Items marked as incomplete must not be considered implemented.
+The following checklist records the implemented security controls and deployment responsibilities. A checked item indicates that the corresponding implementation or configuration has been verified; it does not imply that the entire production environment has been security-certified.
 
 | No. | Security requirement | Status | Evidence / Notes |
 |---|---|---|---|
 | 1 | Keep environment files and secrets out of the Git repository. | [x] | `.gitignore` excludes `.env` and `.env.*`, while allowing `.env.example`. |
-| 2 | Use `.env.example` with placeholders instead of real credentials. | [x] | `.env.example` contains variable names and empty placeholder values. |
-| 3 | Use strong database and application credentials. | [ ] | Must be configured and verified by the deployer in `.env`. |
-| 4 | Generate a random authentication secret with at least 32 characters. | [ ] | The project provides a Node.js command for generating the secret; the deployer must configure it. |
-| 5 | Use parameterized SQL queries to reduce SQL injection risks. | [ ] | Review and verify all database query implementations before deployment. |
-| 6 | Enforce role-based authorization on the backend. | [ ] | QT-11 Authorization is not yet completed. Authentication is implemented, but role-based permission checks must not be assumed to exist. |
-| 7 | Protect production traffic and operational data. | [ ] | Configure HTTPS, restrict database access, protect backups, and avoid exposing credentials or sensitive information in logs before production deployment. |
+| 2 | Provide an environment example file with placeholder credentials. | [x] | `.env.example` contains variable names and placeholder values, not actual credentials. |
+| 3 | Configure strong database and application credentials. | [ ] | The deployer must configure strong PostgreSQL, staff, and manager passwords in `.env`. |
+| 4 | Validate that `AUTH_SECRET` contains at least 32 characters. | [x] | Backend validates `AUTH_SECRET` and rejects values shorter than 32 characters. The deployer must generate and configure a random secret. |
+| 5 | Use parameterized SQL queries to reduce SQL injection risks. | [ ] | Review and verify all database query implementations before production deployment. |
+| 6 | Enforce role-based authorization on the backend. | [x] | Authentication and role authorization are implemented using `requireAuth` and `authorizeRoles`. Route permissions are checked on the server. |
+| 7 | Protect production traffic and operational data. | [ ] | Production HTTPS, database network restrictions, backup protection, secret management, and log safety require deployment-specific configuration and verification. |
 
-**Deployment limitation:** The current guide describes the local development setup. A production deployment requires additional security configuration, especially HTTPS, access control, secret management, and completion of QT-11 Authorization.
+## Deployment Security Notes
+
+- Authentication and role-based authorization are implemented in the backend.
+- The application uses `STAFF_USER`, `STAFF_PASSWORD`, `MANAGER_USER`, `MANAGER_PASSWORD`, and `AUTH_SECRET` for authentication configuration.
+- The backend validates the authentication secret length and requires different usernames for staff and manager accounts.
+- The Docker Compose configuration provides service healthchecks and persistent database storage.
+- The current Docker configuration is intended for the project deployment environment. Additional production security controls, including HTTPS termination, network restrictions, backup policies, and secret management, must be configured before public production deployment.
+
+The deployment operator is responsible for replacing all example credentials, protecting environment files, and verifying the security configuration of the target environment before deployment.
