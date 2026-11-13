@@ -13,7 +13,7 @@
 | Tổng số test | 46 | 72 |
 | Test thành công | 46 | 72 |
 | Test thất bại | 0 | 0 |
-| Thời gian thực thi | 1.289 giây | 1.232 giây |
+| Thời gian thực thi | 1.289 giây | 1.278 giây |
 
 Kết quả ngày 06/11/2026 được giữ lại làm mốc kiểm thử ban đầu. Ngày 13/11/2026, bộ kiểm thử hồi quy được thực thi lại bằng lệnh `npm test -- --runInBand`, ghi nhận 13/13 Test Suites và 72/72 test thành công, không có test thất bại.
 
@@ -76,7 +76,5 @@ Một test case có thể thuộc nhiều nhóm nếu nội dung kiểm tra đá
 | TC-11 | `TC-11.png` |
 | TC-12 | `TC-12_truoc_migration.png`, `TC-12_migration_log.png`, `TC-12_sau_lan_1.png`, `TC-12_sau_lan_2.png` |
 | Kiểm thử hồi quy ngày 13/11/2026 | `REGRESSION_2026-11-13.png` |
-
-**Lưu ý:** Ảnh `REGRESSION_2026-11-13.png` cần được chụp từ lần chạy kiểm thử thực tế ngày 13/11/2026 và lưu vào `docs/screenshots/`. Không sử dụng ảnh của lần kiểm thử ngày 06/11/2026 để thay thế minh chứng này.
 
 Các ảnh thể hiện kết quả chạy Jest, log migration/seed và số lượng bản ghi trên database kiểm thử trước và sau hai lần thực thi.
