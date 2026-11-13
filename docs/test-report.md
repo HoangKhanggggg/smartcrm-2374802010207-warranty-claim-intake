@@ -1,21 +1,23 @@
 # TEST REPORT – SMART CRM L02
 
-**Ngày thực hiện:** 06/11/2026
+**Ngày thực hiện:** 06/11/2026 và 13/11/2026
 **Môi trường:** Windows, Node.js 24.12.0, npm 11.6.2, Express.js, Jest 30.5.2, Supertest 7.3.1, PostgreSQL 18
-**Lệnh kiểm thử tự động:** `npm test -- --runInBand --verbose`
+**Lệnh kiểm thử tự động:** `npm test -- --runInBand`
 
 ## 1. Tổng hợp kết quả
 
-| Chỉ tiêu | Kết quả |
-|---|---:|
-| Tổng số Test Suites | 10 |
-| Test Suites thành công | 10 |
-| Tổng số test | 46 |
-| Test thành công | 46 |
-| Test thất bại | 0 |
-| Thời gian thực thi | 1.289 giây |
+| Chỉ tiêu | Lần kiểm thử 06/11/2026 | Lần kiểm thử 13/11/2026 |
+|---|---:|---:|
+| Tổng số Test Suites | 10 | 13 |
+| Test Suites thành công | 10 | 13 |
+| Tổng số test | 46 | 72 |
+| Test thành công | 46 | 72 |
+| Test thất bại | 0 | 0 |
+| Thời gian thực thi | 1.289 giây | 1.232 giây |
 
-Kết quả trên được lấy từ lần chạy Jest gần nhất ngày 06/11/2026. Đây là kết quả kiểm thử tự động, không đồng nghĩa với việc toàn bộ chức năng đã được kiểm thử tích hợp trên PostgreSQL thật.
+Kết quả ngày 06/11/2026 được giữ lại làm mốc kiểm thử ban đầu. Ngày 13/11/2026, bộ kiểm thử hồi quy được thực thi lại bằng lệnh `npm test -- --runInBand`, ghi nhận 13/13 Test Suites và 72/72 test thành công, không có test thất bại.
+
+Kết quả trên là kết quả kiểm thử tự động, không đồng nghĩa với việc toàn bộ chức năng đã được kiểm thử tích hợp trên PostgreSQL thật.
 
 ## 2. Danh sách test case
 
@@ -46,21 +48,14 @@ Kết quả trên được lấy từ lần chạy Jest gần nhất ngày 06/11
 
 Một test case có thể thuộc nhiều nhóm nếu nội dung kiểm tra đáp ứng nhiều mục tiêu kiểm thử khác nhau.
 
-**Lưu ý về phạm vi kiểm thử:**
-
-- TC-10 kiểm tra xử lý lỗi Repository với các phụ thuộc PostgreSQL được giả lập, không phải bằng chứng ghi dữ liệu và rollback trực tiếp trên PostgreSQL thật.
-- TC-11 kiểm tra API Route bằng Supertest với Service được giả lập, không phải kiểm thử toàn bộ luồng API kết nối PostgreSQL.
-- TC-12 là trường hợp kiểm thử thực tế trên database `smart_crm_test`, sử dụng pgAdmin để đối chiếu số lượng bản ghi trước và sau khi chạy migration/seed.
-- Các test case được chạy riêng bằng bộ lọc Jest có thể hiển thị các test còn lại ở trạng thái skipped. Đây không phải test thất bại.
-
 ## 4. Nhận xét kết quả
 
-- Bộ kiểm thử tự động hiện có 10 Test Suites và 46 test.
-- Lần chạy Jest gần nhất ghi nhận 10/10 Test Suites thành công, 46/46 test thành công và không có test thất bại.
-- Các kiểm thử bao phủ những nghiệp vụ quan trọng đã hiện thực như tạo phiếu, chuẩn hóa số điện thoại, kiểm tra bảo hành, tính SLA, xác định trạng thái hạn, ánh xạ dữ liệu và xử lý lỗi.
-- Kiểm thử Repository và API hiện có sử dụng mock ở một số thành phần, do đó chưa thể thay thế kiểm thử tích hợp đầy đủ với PostgreSQL thật.
+- Lần kiểm thử ngày 06/11/2026 ghi nhận 10/10 Test Suites thành công và 46/46 test thành công.
+- Lần kiểm thử hồi quy ngày 13/11/2026 ghi nhận 13/13 Test Suites thành công và 72/72 test thành công, không có test thất bại.
+- Bộ kiểm thử bao phủ các nghiệp vụ quan trọng đã hiện thực như tạo phiếu, chuẩn hóa số điện thoại, kiểm tra bảo hành, tính SLA, xác định trạng thái hạn, ánh xạ dữ liệu, phân quyền và xử lý lỗi.
+- Kiểm thử Repository và API sử dụng mock ở một số thành phần, do đó chưa thể thay thế kiểm thử tích hợp đầy đủ với PostgreSQL thật.
 - TC-12 đã được thực hiện trên database `smart_crm_test`. Migration và seed được chạy hai lần liên tiếp, không phát sinh lỗi và số lượng bản ghi của năm bảng không thay đổi.
-- Kết quả PASS/FAIL trong báo cáo được ghi nhận dựa trên kết quả thực thi và ảnh minh chứng thực tế ngày 06/11/2026.
+- Kết quả TC-01 đến TC-12 và ảnh minh chứng tương ứng được ghi nhận ngày 06/11/2026. Kết quả 13 Test Suites và 72 test là lần chạy hồi quy tự động ngày 13/11/2026.
 
 ## 5. Minh chứng
 
@@ -80,5 +75,8 @@ Một test case có thể thuộc nhiều nhóm nếu nội dung kiểm tra đá
 | TC-10 | `TC-10.png` |
 | TC-11 | `TC-11.png` |
 | TC-12 | `TC-12_truoc_migration.png`, `TC-12_migration_log.png`, `TC-12_sau_lan_1.png`, `TC-12_sau_lan_2.png` |
+| Kiểm thử hồi quy ngày 13/11/2026 | `REGRESSION_2026-11-13.png` |
+
+**Lưu ý:** Ảnh `REGRESSION_2026-11-13.png` cần được chụp từ lần chạy kiểm thử thực tế ngày 13/11/2026 và lưu vào `docs/screenshots/`. Không sử dụng ảnh của lần kiểm thử ngày 06/11/2026 để thay thế minh chứng này.
 
 Các ảnh thể hiện kết quả chạy Jest, log migration/seed và số lượng bản ghi trên database kiểm thử trước và sau hai lần thực thi.
