@@ -107,6 +107,8 @@ MANAGER_PASSWORD=your_manager_password
 AUTH_SECRET=replace_with_random_secret_at_least_32_characters
 
 LOG_LEVEL=INFO
+
+VITE_API_URL=http://localhost:3001
 ```
 
 Replace all example values with your own configuration.
@@ -118,6 +120,7 @@ Requirements:
 - `MANAGER_USER` and `MANAGER_PASSWORD` configure the center manager account.
 - The staff and manager usernames must be different.
 - `AUTH_SECRET` must contain at least 32 characters.
+- `VITE_API_URL` specifies the backend API address used by the frontend build.
 - Use strong passwords for all accounts.
 
 Generate a random authentication secret using Node.js:
@@ -237,13 +240,55 @@ Open the frontend address in a web browser to access the application.
 
 Docker Compose builds and runs the database, backend, and frontend services.
 
-#### Step 1: Configure environment variables
+#### Docker Quick Start
+
+For a fresh deployment using Docker, follow these steps.
+
+**Step 1: Clone the repository and enter the project directory.**
+
+```bash
+git clone https://github.com/HoangKhanggggg/smartcrm-2374802010207-warranty-claim-intake.git
+cd smartcrm-2374802010207-warranty-claim-intake
+```
+
+**Step 2: Create and configure the environment file.**
+
+```cmd
+copy .env.example .env
+```
+
+Edit `.env` and replace all placeholder values with valid credentials. Ensure that `AUTH_SECRET` contains at least 32 characters.
+
+**Step 3: Build and start all services with one command.**
+
+```bash
+docker compose up -d --build
+```
+
+Docker Compose builds the images and starts PostgreSQL, the backend, and the frontend. The backend waits for the database healthcheck, and the frontend waits for the backend healthcheck.
+
+**Step 4: Verify the deployment.**
+
+```bash
+docker compose ps
+```
+
+Access the application at:
+
+- Frontend: `http://localhost:5173`
+- Backend health endpoint: `http://localhost:3001/health`
+
+No host-side Node.js installation or `npm install` is required when using Docker deployment.
+
+#### Detailed Docker deployment
+
+**Step 1: Configure environment variables**
 
 Ensure that the project root contains a valid `.env` file.
 
 The `DB_PASSWORD`, staff credentials, manager credentials, and `AUTH_SECRET` must be configured before starting the containers.
 
-#### Step 2: Validate Docker Compose configuration
+**Step 2: Validate Docker Compose configuration**
 
 Run:
 
@@ -253,7 +298,7 @@ docker compose config --quiet
 
 If the command completes without errors, the Compose configuration is valid.
 
-#### Step 3: Build the Docker images
+**Step 3: Build the Docker images**
 
 Run:
 
@@ -263,7 +308,7 @@ docker compose build
 
 This builds the backend and frontend images.
 
-#### Step 4: Start the application
+**Step 4: Start the application**
 
 Run:
 
@@ -281,7 +326,7 @@ Docker Compose starts:
 
 The backend waits for the database healthcheck. The frontend waits for the backend healthcheck.
 
-#### Step 5: Check container status
+**Step 5: Check container status**
 
 Run:
 
@@ -291,7 +336,7 @@ docker compose ps
 
 Check service health and container status before accessing the application.
 
-#### Step 6: Access the application
+**Step 6: Access the application**
 
 Frontend:
 
@@ -305,7 +350,7 @@ Backend health endpoint:
 http://localhost:3001/health
 ```
 
-#### Step 7: View service logs
+**Step 7: View service logs**
 
 To view all service logs:
 
@@ -331,7 +376,7 @@ To view frontend logs:
 docker compose logs frontend
 ```
 
-#### Step 8: Stop the application
+**Step 8: Stop the application**
 
 Run:
 
