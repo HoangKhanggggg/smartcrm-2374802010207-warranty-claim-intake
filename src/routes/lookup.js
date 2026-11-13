@@ -1,3 +1,4 @@
+
 const router = require('express').Router();
 const svc = require('../services/lookupService');
 
@@ -5,8 +6,9 @@ const requireAuth = require('../middleware/requireAuth');
 const authorizeRoles = require('../middleware/authorizeRoles');
 
 const STAFF = 'NHAN_VIEN_TIEP_NHAN';
+const MANAGER = 'QUAN_LY_TRUNG_TAM';
 
-// Tra cứu khách hàng.
+// Tra cứu khách hàng: chỉ nhân viên tiếp nhận.
 router.get(
   '/customers',
   requireAuth,
@@ -16,7 +18,7 @@ router.get(
   }
 );
 
-// Tạo khách hàng.
+// Tạo khách hàng: chỉ nhân viên tiếp nhận.
 router.post(
   '/customers',
   requireAuth,
@@ -27,7 +29,7 @@ router.post(
   }
 );
 
-// Tra cứu thiết bị.
+// Tra cứu thiết bị: chỉ nhân viên tiếp nhận.
 router.get(
   '/devices',
   requireAuth,
@@ -37,7 +39,7 @@ router.get(
   }
 );
 
-// Ghi nhận thiết bị.
+// Ghi nhận thiết bị: chỉ nhân viên tiếp nhận.
 router.post(
   '/devices',
   requireAuth,
@@ -49,11 +51,11 @@ router.post(
   }
 );
 
-// Tra cứu nhóm sự cố.
+// Tra cứu nhóm sự cố: nhân viên và quản lý đều được đọc.
 router.get(
   '/categories',
   requireAuth,
-  authorizeRoles(STAFF),
+  authorizeRoles(STAFF, MANAGER),
   async (req, res) => {
     res.json({ data: await svc.listCategories() });
   }

@@ -83,7 +83,7 @@ export default function LookupPage({ customer, setCustomer, device, setDevice, o
       )}
 
       {customer && (
-        <p className="result"><strong>Kết quả khách hàng:</strong> {customer.fullName} — {customer.phoneMasked}</p>
+        <p className="result"><strong>Kết quả khách hàng:</strong> {customer.fullName} — {customer.phone}</p>
       )}
 
       {customer && (

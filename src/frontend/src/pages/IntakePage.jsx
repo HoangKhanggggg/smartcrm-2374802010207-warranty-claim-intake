@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createTicket, getCategories } from '../api/ticket.api';
-import { useAsync } from '../hooks/useAsync';
 import DataState from '../components/DataState';
+import { useAsync } from '../hooks/useAsync';
 import { PRIORITIES, WARRANTY_LABEL, formatDateTime } from '../labels';
 
 // Màn hình 2 – Tiếp nhận và phân loại yêu cầu
@@ -61,7 +61,7 @@ export default function IntakePage({ customer, device, onGoLookup, onGoList }) {
   return (
     <section className="panel">
       <h2>Tiếp nhận và phân loại yêu cầu</h2>
-      <p><strong>Khách hàng:</strong> {customer.fullName} — {customer.phoneMasked}</p>
+      <p><strong>Khách hàng:</strong> {customer.fullName} — {customer.phone}</p>
       <p>
         <strong>Thiết bị:</strong> {device.serialImei} ·{' '}
         <span className={`badge ${device.warrantyStatus}`}>{WARRANTY_LABEL[device.warrantyStatus]}</span>
