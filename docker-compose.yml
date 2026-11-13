@@ -1,0 +1,60 @@
+
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: smartcrm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-smart_crm}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Vui long cau hinh DB_PASSWORD trong .env}
+    volumes:
+      - smartcrm_pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartcrm-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
+    container_name: smartcrm-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  smartcrm_pgdata:
