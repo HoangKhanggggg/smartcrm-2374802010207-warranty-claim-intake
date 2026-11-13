@@ -1277,6 +1277,153 @@ Khi triển khai trên môi trường khác, cần cấu hình lại các biến
 
 ---
 
+# 23. ĐÓNG GÓI VÀ TRIỂN KHAI BẰNG DOCKER
+
+## 23.1. Công nghệ sử dụng
+
+Dự án sử dụng Docker và Docker Compose để đóng gói, khởi chạy các thành phần độc lập:
+
+| Thành phần | Công nghệ |
+|---|---|
+| Backend | Node.js 22 Alpine |
+| Frontend | React + Vite, Nginx Alpine |
+| Database | PostgreSQL 18 Alpine |
+| Điều phối container | Docker Compose |
+
+## 23.2. Cấu trúc tệp Docker
+
+```text
+smartcrm-2374802010207-warranty-claim-intake/
+├── Dockerfile
+├── docker-compose.yml
+├── .dockerignore
+├── .env
+└── src/
+    └── frontend/
+        ├── Dockerfile
+        ├── nginx.conf
+        └── .dockerignore
+```
+
+## 23.3. Cấu hình môi trường
+
+Tạo file `.env` tại thư mục gốc dự án và cấu hình các biến môi trường cần thiết.
+
+Các thông tin bí mật bao gồm mật khẩu PostgreSQL, mật khẩu tài khoản ứng dụng và AUTH_SECRET phải được thay bằng giá trị riêng của môi trường triển khai.
+
+Không đưa `.env` hoặc thông tin bí mật lên GitHub.
+
+Trong Docker Compose, Backend kết nối PostgreSQL thông qua hostname dịch vụ `db`, không sử dụng `localhost`.
+
+## 23.4. Build các Docker image
+
+Tại thư mục gốc dự án, chạy:
+
+```cmd
+docker compose config --quiet
+docker compose build
+```
+
+Lệnh đầu kiểm tra cấu hình Compose. Lệnh thứ hai xây dựng các Docker image.
+
+## 23.5. Khởi động hệ thống
+
+Chạy:
+
+```cmd
+docker compose up -d
+```
+
+Docker Compose khởi động ba dịch vụ:
+
+- PostgreSQL: cổng nội bộ 5432.
+- Backend: `http://localhost:3001`.
+- Frontend: `http://localhost:5173`.
+
+Backend chỉ khởi động sau khi PostgreSQL vượt qua health check.
+
+## 23.6. Kiểm tra trạng thái container
+
+Chạy:
+
+```cmd
+docker compose ps
+```
+
+Kiểm tra trạng thái:
+
+- `smartcrm-db`: Healthy.
+- `smartcrm-backend`: Healthy.
+- `smartcrm-frontend`: Up.
+
+Kiểm tra Backend:
+
+```cmd
+curl http://localhost:3001/health
+```
+
+Truy cập giao diện:
+
+```text
+http://localhost:5173
+```
+
+## 23.7. Xem log và quản lý container
+
+Xem log Backend:
+
+```cmd
+docker compose logs -f backend
+```
+
+Xem log Frontend:
+
+```cmd
+docker compose logs -f frontend
+```
+
+Xem log PostgreSQL:
+
+```cmd
+docker compose logs -f db
+```
+
+Khởi động lại hệ thống:
+
+```cmd
+docker compose restart
+```
+
+Dừng hệ thống:
+
+```cmd
+docker compose down
+```
+
+Lưu ý: Không sử dụng `docker compose down -v` nếu cần giữ lại dữ liệu PostgreSQL trong volume.
+
+## 23.8. Lưu trữ dữ liệu
+
+Docker Compose sử dụng named volume `smartcrm_pgdata` để lưu trữ dữ liệu PostgreSQL.
+
+Dữ liệu trong volume được giữ lại khi container được khởi động lại hoặc dừng bằng `docker compose down`.
+
+## 23.9. Kết quả triển khai đã kiểm tra
+
+Trong môi trường triển khai Docker trên máy phát triển, đã thực hiện:
+
+- Build thành công Docker image Backend.
+- Build thành công Docker image Frontend.
+- Khởi động PostgreSQL 18, Backend và Frontend.
+- Kiểm tra Backend thông qua API `/health`.
+- Truy cập giao diện Smart CRM.
+- Đăng nhập theo vai trò.
+- Tạo phiếu bảo hành và kiểm tra dữ liệu trong PostgreSQL.
+- Kiểm tra bản ghi lịch sử trạng thái ban đầu.
+- Khởi động lại các container và xác nhận dữ liệu phiếu vẫn tồn tại.
+
+Kết quả kiểm tra cụ thể được lưu bằng ảnh minh chứng trong thư mục tài liệu của dự án.
+
 # THÔNG TIN DỰ ÁN
 
 **Warranty App – Smart CRM**
